@@ -1,17 +1,31 @@
 #ifndef PINHOLEPOSECAL3S2_H
 #define PINHOLEPOSECAL3S2_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  * @file   PinholePose.h
  * @brief  Pinhole camera with known calibration
- * @author
- * @date
+ * @author Yong-Dian Jian
+ * @author Frank Dellaert
+ * @date   Feb 20, 2015
  */
-
 #pragma once
 
 #include "../geometry/CalibratedCamera.h"
 #include "../geometry/Cal3_S2.h"
+
+namespace minisam
+{
 
 /**
  * A pinhole camera class that has a Pose3 and a *fixed* Calibration.
@@ -86,7 +100,7 @@ public:
     /** project a point from world coordinate to the image
      *  @param pw is a point at infinity in the world coordinates
      */
-    Eigen::Vector2d projectUnit(const Unit3& pw)
+     Eigen::Vector2d projectUnit(const Unit3& pw)
     {
         const Unit3 pc = pose().rotation().unrotateUnit(pw); // convert to camera frame
         const Eigen::Vector2d pn = PinholeBase::ProjectUnit(pc); // project to normalized coordinates
@@ -99,7 +113,6 @@ public:
      *  @param Dpoint is the Jacobian w.r.t. point3
      *  @param Dcal is the Jacobian w.r.t. calibration
      */
-    //template <class POINT>
     Eigen::Vector2d _projectPoint(const Eigen::Vector3d& pw,
                                   Eigen::MatrixXd* Dpose,
                                   Eigen::MatrixXd* Dpoint,
@@ -146,7 +159,7 @@ public:
     }
 
     /// project a 3D point from world coordinates into the image
-    Eigen::Vector2d projectPoint(const Eigen::Vector3d& pw,Eigen::MatrixXd* Dpose,
+     Eigen::Vector2d projectPoint(const Eigen::Vector3d& pw,Eigen::MatrixXd* Dpose,
                                  Eigen::MatrixXd* Dpoint,
                                  Eigen::MatrixXd* Dcal)
     {
@@ -215,7 +228,6 @@ public:
      * @param camera Other camera
      * @return range (double)
      */
-// template<class CalibrationB>
     double range(const PinholeBaseKCal3S2& camera,
                  Eigen::MatrixXd* Dcamera,
                  Eigen::MatrixXd* Dother) const
@@ -223,16 +235,8 @@ public:
         return pose().range(camera.pose(), Dcamera, Dother);
     }
 
-    /** private:
+    ///@}
 
-    Serialization function
-     friend class boost::serialization::access;
-     template<class Archive>
-     void serialize(Archive & ar, const unsigned int) {
-       ar
-       & boost::serialization::make_nvp("PinholeBase",
-           boost::serialization::base_object<PinholeBase>(*this));
-     }*/
 
 };
 // end of class PinholeBaseK
@@ -244,14 +248,12 @@ public:
  * @addtogroup geometry
  * \nosubgrouping
  */
-//template<typename CALIBRATION>
 class PinholePoseCal3S2: public PinholeBaseKCal3S2
 {
 
 private:
 
-// typedef PinholeBaseK<CALIBRATION> Base; ///< base class has 3D pose as private member
-    Cal3_S2* K_; ///< shared pointer to fixed calibration
+    Cal3_S2* K_; ///< pointer to fixed calibration
 
 public:
 
@@ -331,7 +333,7 @@ public:
 
     /// Init from Vector and calibration
     PinholePoseCal3S2(const Eigen::VectorXd  &v, const Eigen::VectorXd &K) :
-        PinholeBaseKCal3S2(v), K_(new Cal3_S2(K))
+    PinholeBaseKCal3S2(v), K_(new Cal3_S2(K))
     {
     }
 
@@ -355,7 +357,7 @@ public:
     {
     }
 
-    /// return shared pointer to calibration
+    /// return  pointer to calibration
     const Cal3_S2* sharedCalibration() const
     {
         return K_;
@@ -404,14 +406,12 @@ public:
     /// move a cameras according to d
     PinholePoseCal3S2 retract(const Eigen::VectorXd& d) const
     {
-        //return PinholePoseCal3S2(PinholeBaseKCal3S2::pose().retract(d), K_);
-        return PinholePoseCal3S2(Pose3::ChartAtOrigin::Retract(d), K_);
+        return PinholePoseCal3S2(Pose3::ChartAtOrigin::retract(d), K_);
     }
 
     /// return canonical coordinate
     Eigen::VectorXd localCoordinates(const PinholePoseCal3S2& p) const
     {
-        // return PinholeBaseKCal3S2::pose().localCoordinates(p.PinholeBaseKCal3S2::pose());
         return Pose3::ChartAtOrigin::Local(p.PinholeBaseKCal3S2::pose());
     }
 
@@ -422,6 +422,8 @@ public:
     }
 
     /// @}
+};
+
 };
 // end of class PinholePose
 #endif // PINHOLEPOSE_H

@@ -1,15 +1,31 @@
+/* ----------------------------------------------------------------------------
+
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /*
  * @file Unit3.h
  * @date Feb 02, 2011
- * @author
+ * @author Can Erdogan
+ * @author Frank Dellaert
+ * @author Alex Trevor
  * @brief Develop a Unit3 class - basically a point on a unit sphere
  */
 
 #pragma once
 
 #include "../base/Matrix.h"
+#include "../base/MatCal.h"
 #include <string>
 
+namespace minisam
+{
 
 /// Represents a 3D point on a unit sphere.
 class Unit3
@@ -34,7 +50,6 @@ public:
     /// Default constructor
     Unit3()
     {
-        // p_=Eigen::VectorXd(3);
         p_<<1.0, 0.0, 0.0;
     }
 
@@ -47,7 +62,6 @@ public:
     /// Construct from x,y,z
     Unit3(double x, double y, double z)
     {
-        // p_=Eigen::VectorXd(3);
         p_<<x,y,z;
         p_.normalize();
     }
@@ -56,7 +70,6 @@ public:
     /// Unit3(p,1) can be viewed as normalized homogeneous coordinates of 2D point
     explicit Unit3(const Eigen::Vector2d& p, double f)
     {
-        //p_=Eigen::VectorXd(3);
         p_<<p(0), p(1), f;
         p_.normalize();
     }
@@ -79,9 +92,6 @@ public:
     static Unit3 FromPoint3(const Eigen::Vector3d& point, //
                             Eigen::MatrixXd* H);
 
-    /// Random direction, using boost::uniform_on_sphere
-    //static Unit3 Random(boost::mt19937 & rng);
-
     /// @}
 
     /// @name Testable
@@ -89,13 +99,6 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const Unit3& pair);
 
-    /// The print fuction
-// void print(const std::string& s = std::string()) const;
-
-    /// The equals function with tolerance
-    //bool equals(const Unit3& s, double tol = 1e-9) const {
-    //  return equal_with_abs_tol(p_, s.p_, tol);
-    //}
     /// @}
 
     /// @name Other functionality
@@ -107,7 +110,6 @@ public:
      * tangent to the sphere at the current direction.
      * Provides derivatives of the basis with the two basis vectors stacked up as a 6x1.
      */
-    //const Matrix32& basis(OptionalJacobian<6, 2> H = boost::none) const;
     const Eigen::MatrixXd& basis() const;
     const Eigen::MatrixXd& basis(Eigen::MatrixXd* H) const;
     /// Return skew-symmetric associated with 3D point on unit sphere
@@ -122,7 +124,6 @@ public:
     /// Return scaled direction as Point3
     friend Eigen::Vector3d operator*(double s, const Unit3& d)
     {
-        //return Point3(s * d.p_);
         Eigen::Vector3d p3=s*d.p_;
         return p3;
     }
@@ -190,4 +191,4 @@ public:
     /// @}
 
 };
-
+};

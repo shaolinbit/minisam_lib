@@ -1,16 +1,30 @@
 #ifndef PINHOLECAMERACAL3S2_H
 #define PINHOLECAMERACAL3S2_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
- * @file PinholeCameraCal3S2.h
+ * @file PinholeCamera.h
  * @brief Base class for all pinhole cameras
- * @author
- * @date
+ * @author Yong-Dian Jian
+ * @date Jan 27, 2012
  */
 
 #pragma once
 
 #include "../geometry/PinholePoseCal3S2.h"
+
+namespace minisam
+{
 
 /**
  * A pinhole camera class that has a Pose3 and a Calibration.
@@ -22,7 +36,6 @@ class PinholeCameraCal3S2: public PinholeBaseKCal3S2
 {
 private:
 
-    //typedef PinholeBaseK<Calibration> Base; ///< base class has 3D pose as private member
     Cal3_S2 K_; ///< Calibration, part of class now
 
     // Get dimensions of calibration type at compile time
@@ -98,14 +111,10 @@ public:
                                       Eigen::MatrixXd* H1, //
                                       Eigen::MatrixXd* H2)
     {
-        // typedef Eigen::Matrix<double, DimK, 6> MatrixK6;
         if (H1!=NULL)
         {
             *H1<<Eigen::MatrixXd::Identity(6,6),Eigen::MatrixXd::Zero(DimK,6);
         }
-        //   *H1 << I_6x6, MatrixK6::Zero();
-        // typedef Eigen::Matrix<double, 6, DimK> Matrix6K;
-        // typedef Eigen::Matrix<double, DimK, DimK> MatrixK;
         if (H2!=NULL)
             *H2 << Eigen::MatrixXd::Zero(6,DimK),Eigen::MatrixXd::Identity(DimK,DimK);
         return PinholeCameraCal3S2(pose,K);
@@ -176,21 +185,17 @@ public:
         return dimension;
     }
 
-// typedef Eigen::Matrix<double, dimension, 1> VectorK6;
 
     /// move a cameras according to d
     PinholeCameraCal3S2 retract(const Eigen::VectorXd& d)
     {
         if ( d.size() == 6)
         {
-            // return PinholeCamera(this->pose().retract(d), calibration());
-            return PinholeCameraCal3S2(Pose3::ChartAtOrigin::Retract(d), calibration());
+            return PinholeCameraCal3S2(Pose3::ChartAtOrigin::retract(d), calibration());
         }
         else
         {
-            //return PinholeCameraCal3S2(this->pose().retract(d.head<6>()),
-            //calibration().retract(d.tail(calibration().dim())));
-            return PinholeCameraCal3S2(Pose3::ChartAtOrigin::Retract(d.head<6>()),
+            return PinholeCameraCal3S2(Pose3::ChartAtOrigin::retract(d.head<6>()),
                                        calibration().retract(d.tail(calibration().dim())));
 
         }
@@ -201,7 +206,6 @@ public:
     Eigen::VectorXd localCoordinates(PinholeCameraCal3S2& T2)
     {
         Eigen::VectorXd d;
-        // d.template head<6>() = this->pose().localCoordinates(T2.pose());
         d.template head<6>() = Pose3::ChartAtOrigin::Local(T2.pose());
         d.template tail<DimK>() = calibration().localCoordinates(T2.calibration());
         return d;
@@ -217,33 +221,27 @@ public:
     /// @name Transformations and measurement functions
     /// @{
 
-    //typedef Eigen::Matrix<double, 2, DimK> Matrix2K;
-
     /** Templated projection of a 3D point or a point at infinity into the image
      *  @param pw either a Point3 or a Unit3, in world coordinates
      */
-    //template<class POINT>
     Eigen::Vector2d _project2Point(const Eigen::Vector3d& pw, Eigen::MatrixXd*  Dcamera,
                                    Eigen::MatrixXd* Dpoint)
     {
         // We just call 3-derivative version in Base
         Eigen::MatrixXd Dpose(2,6);
         Eigen::MatrixXd Dcal(2,DimK);
-        // Eigen::Matrix<double, 2, DimK> Dcal;
         Eigen::Vector2d pi = PinholeBaseKCal3S2::projectPoint(pw, Dcamera ? &Dpose : NULL, Dpoint,
                              Dcamera ? &Dcal : NULL);
         if (Dcamera!=NULL)
             *Dcamera << Dpose, Dcal;
         return pi;
     }
-    // template<class POINT>
     Eigen::Vector2d _project2Unit(const Unit3& pw, Eigen::MatrixXd*  Dcamera,
                                   Eigen::MatrixXd* Dpoint)
     {
         // We just call 3-derivative version in Base
         Eigen::MatrixXd Dpose(2,6);
         Eigen::MatrixXd Dcal(2,DimK);
-        //Eigen::Matrix<double, 2, DimK> Dcal;
         Eigen::Vector2d pi = PinholeBaseKCal3S2::projectUnit(pw, Dcamera ? &Dpose : NULL, Dpoint,
                              Dcamera ? &Dcal : NULL);
         if (Dcamera!=NULL)
@@ -300,7 +298,6 @@ public:
      * @param camera Other camera
      * @return range (double)
      */
-// template<class CalibrationB>
     double range(const PinholeCameraCal3S2& camera,
                  Eigen::MatrixXd*  Dcamera,
                  Eigen::MatrixXd*  Dother) const
@@ -332,6 +329,8 @@ public:
         return range(camera.pose(), Dcamera, Dother);
     }
 
-};
+     ///@}
 
+};
+};
 #endif // PINHOLECAMERA_H

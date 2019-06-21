@@ -1,16 +1,30 @@
 #ifndef PREINTEGRATIONPARAMS_H
 #define PREINTEGRATIONPARAMS_H
+
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  *  @file  PreintegrationParams.h
- *  @author
+ *  @author Frank Dellaert
  **/
 
 #pragma once
 
 #include "../navigation/PreintegratedRotation.h"
+namespace minisam
+{
 
 /// Parameters for pre-integration:
-/// Usage: Create just a single Params and pass a shared pointer to the constructor
+/// Usage: Create just a single Params and pass a  pointer to the constructor
 struct PreintegrationParams: PreintegratedRotationParams
 {
     Eigen::Matrix3d accelerometerCovariance; ///< continuous-time "Covariance" of accelerometer
@@ -20,7 +34,7 @@ struct PreintegrationParams: PreintegratedRotationParams
 
     /// The Params constructor insists on getting the navigation frame gravity vector
     /// For convenience, two commonly used conventions are provided by named constructors below
-    PreintegrationParams(const Eigen::Vector3d& n_gravity)
+     PreintegrationParams(const Eigen::Vector3d& n_gravity)
         :PreintegratedRotationParams(PreintegratedRotationParams()), accelerometerCovariance(Eigen::MatrixXd::Identity(3,3)),
          integrationCovariance(Eigen::MatrixXd::Identity(3,3)),
          use2ndOrderCoriolis(false),
@@ -38,24 +52,22 @@ struct PreintegrationParams: PreintegratedRotationParams
         return PreintegrationParams(Eigen::Vector3d(0, 0, -g));
     }
 
-// void print(const std::string& s) const;
-// bool equals(const PreintegratedRotation::Params& other, double tol) const;
 
 
-    void setAccelerometerCovariance(const Eigen::Matrix3d& cov)
+     void setAccelerometerCovariance(const Eigen::Matrix3d& cov)
     {
         accelerometerCovariance = cov;
     }
-    void setIntegrationCovariance(const Eigen::Matrix3d& cov)
+     void setIntegrationCovariance(const Eigen::Matrix3d& cov)
     {
         integrationCovariance = cov;
     }
-    void setUse2ndOrderCoriolis(bool flag)
+     void setUse2ndOrderCoriolis(bool flag)
     {
         use2ndOrderCoriolis = flag;
     }
 
-    const Eigen::Matrix3d& getAccelerometerCovariance() const
+     const Eigen::Matrix3d& getAccelerometerCovariance() const
     {
         return accelerometerCovariance;
     }
@@ -63,7 +75,7 @@ struct PreintegrationParams: PreintegratedRotationParams
     {
         return integrationCovariance;
     }
-    bool           getUse2ndOrderCoriolis()     const
+     bool           getUse2ndOrderCoriolis()     const
     {
         return use2ndOrderCoriolis;
     }
@@ -79,5 +91,5 @@ protected:
     /// Default constructor for serialization only: uninitialized!
     PreintegrationParams() {}
 };
-
+};
 #endif

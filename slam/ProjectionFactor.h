@@ -1,33 +1,43 @@
 #ifndef PROJECTIONFACTOR_H
 #define PROJECTIONFACTOR_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
 
 /**
  * @file ProjectionFactor.h
  * @brief Basic bearing factor from 2D measurement
- * @author
+ * @author Chris Beall
+ * @author Richard Roberts
+ * @author Frank Dellaert
+ * @author Alex Cunningham
  */
-
 #pragma once
 
 #include "../nonlinear/NonlinearFactor.h"
 #include "../geometry/SimpleCamera.h"
-//#include <boost/optional.hpp>
-
-
+namespace minisam
+{
 /**
  * Non-linear factor for a constraint derived from a 2D measurement. The calibration is known here.
  * i.e. the main building block for visual SLAM.
  * @addtogroup SLAM
  */
-// template<class POSE, class LANDMARK, class CALIBRATION = Cal3_S2>
 class GenericProjectionFactor: public NoiseModelFactor2
 {
 protected:
 
     // Keep a copy of measurement and calibration for I/O
     Eigen::Vector2d measured_;                    ///< 2D measurement
-    Cal3_S2* K_;  ///< shared pointer to calibration object
+    Cal3_S2* K_;  ///<  pointer to calibration object
     Pose3* body_P_sensor_; ///< The pose of the sensor in the body frame
 
     // verbosity handling for Cheirality Exceptions
@@ -36,17 +46,8 @@ protected:
 
 public:
 
-    /// shorthand for base class type
-    // typedef NoiseModelFactor2<POSE, LANDMARK> Base;
-
-    /// shorthand for this class
-    //typedef GenericProjectionFactor<POSE, LANDMARK, CALIBRATION> This;
-
-    /// shorthand for a smart pointer to a factor
-    // typedef boost::shared_ptr<This> shared_ptr;
-
     /// Default constructor
-    GenericProjectionFactor() :
+     GenericProjectionFactor() :
         measured_(0, 0), throwCheirality_(false), verboseCheirality_(false),NoiseModelFactor2(2)
     {
     }
@@ -58,10 +59,10 @@ public:
      * @param model is the standard deviation
      * @param poseKey is the index of the camera
      * @param pointKey is the index of the landmark
-     * @param K shared pointer to the constant calibration
+     * @param K  pointer to the constant calibration
      * @param body_P_sensor is the transform from body to sensor frame (default identity)
      */
-    GenericProjectionFactor(const Eigen::Vector2d& measured, SharedNoiseModel* model,
+     GenericProjectionFactor(const Eigen::Vector2d& measured, SharedNoiseModel* model,
                             int poseKey, int pointKey,  Cal3_S2* K,
                             Pose3* body_P_sensor=NULL) :
         NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor),
@@ -74,12 +75,12 @@ public:
      * @param model is the standard deviation
      * @param poseKey is the index of the camera
      * @param pointKey is the index of the landmark
-     * @param K shared pointer to the constant calibration
+     * @param K  pointer to the constant calibration
      * @param throwCheirality determines whether Cheirality exceptions are rethrown
      * @param verboseCheirality determines whether exceptions are printed for Cheirality
      * @param body_P_sensor is the transform from body to sensor frame  (default identity)
      */
-    GenericProjectionFactor(const  Eigen::Vector2d& measured, SharedNoiseModel* model,
+     GenericProjectionFactor(const  Eigen::Vector2d& measured, SharedNoiseModel* model,
                             int poseKey, int pointKey,  Cal3_S2* K,
                             bool throwCheirality, bool verboseCheirality,
                             Pose3*  body_P_sensor) :
@@ -89,16 +90,7 @@ public:
     /** Virtual destructor */
     virtual ~GenericProjectionFactor() {}
 
-    /// @return a deep copy of this factor
-    //virtual NonlinearFactor* clone() const {
-    //  return NonlinearFactor*( new GenericProjectionFactor()); }
-
-    /**
-     * print
-     * @param s optional string naming the factor
-     * @param keyFormatter optional formatter useful for printing Symbols
-     */
-    /// Evaluate error h(x)-z and optionally derivatives
+    /// Evaluate error h(x)-z
     Eigen::VectorXd evaluateError(const Pose3& pose, const Eigen::Vector3d& point,
                                   Eigen::MatrixXd& H1, Eigen::MatrixXd& H2) const
     {
@@ -107,19 +99,12 @@ public:
             Eigen::MatrixXd* fdf=NULL;
             if(body_P_sensor_!=NULL)
             {
-                // if(H1!=NULL) {
                 Eigen::MatrixXd H0= (*body_P_sensor_).inverse().AdjointMap();
                 PinholeCameraCal3S2 camera(pose*(*body_P_sensor_), *K_);
 
-                //Eigen::MatrixXd* fdf=NULL;
-                //PinholeCameraCal3S2 camera(pose.compose(*body_P_sensor_, H0), *K_);
                 Eigen::Vector2d reprojectionError(camera.projectPoint(point, &H1, &H2, fdf) - measured_);
                 H1 = H1 * H0;
                 return reprojectionError;
-                // } else {
-                //    PinholeCameraCal3S2 camera(pose*(*body_P_sensor_), *K_);
-                //    return camera.projectPoint(point, H1, H2, NULL) - measured_;
-                //  }
             }
             else
             {
@@ -129,9 +114,7 @@ public:
         }
         catch( exception& e)
         {
-            //if (H1!=NULL)
             H1 = Eigen::MatrixXd::Zero(2,6);
-            // if (H2!=NULL)
             H2 = Eigen::MatrixXd::Zero(2,3);
             if (verboseCheirality_)
                 std::cout << ": Landmark ";//<< DefaultKeyFormatter(this->key2())
@@ -147,22 +130,14 @@ public:
     {
         try
         {
-            // Eigen::MatrixXd* fdf=NULL;
             if(body_P_sensor_!=NULL)
             {
-                // if(H1!=NULL) {
                 Eigen::MatrixXd H0= (*body_P_sensor_).inverse().AdjointMap();
                 PinholeCameraCal3S2 camera(pose*(*body_P_sensor_), *K_);
 
-                //Eigen::MatrixXd* fdf=NULL;
-                //PinholeCameraCal3S2 camera(pose.compose(*body_P_sensor_, H0), *K_);
                 Eigen::Vector2d reprojectionError(camera.projectPoint(point) - measured_);
                 // H1 = H1 * H0;
                 return reprojectionError;
-                // } else {
-                //    PinholeCameraCal3S2 camera(pose*(*body_P_sensor_), *K_);
-                //    return camera.projectPoint(point, H1, H2, NULL) - measured_;
-                //  }
             }
             else
             {
@@ -172,10 +147,6 @@ public:
         }
         catch( exception& e)
         {
-            //if (H1!=NULL)
-            //  H1 = Eigen::MatrixXd::Zero(2,6);
-            // if (H2!=NULL)
-            // H2 = Eigen::MatrixXd::Zero(2,3);
             if (verboseCheirality_)
                 std::cout << ": Landmark ";//<< DefaultKeyFormatter(this->key2())
             std::cout<< " moved behind camera "  << std::endl;
@@ -281,5 +252,6 @@ public:
         return newfactor;
     }
 
+};
 };
 #endif // PROJECTIONFACTOR_H

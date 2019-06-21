@@ -3,18 +3,18 @@
 因子图库
 
 Need gcc compiler version:5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.11)
-
+Need Cmake above version 2.6
 Usage:
 
 1.install eigen3 
 
-2.Copy libminisam.so to library path,eg:/usr/lib
+2.Clone the project to your local
 
-3.build the example: 
+3.run the commands in the project dictory: 
 
-	g++ -fpic -std=c++11 -o main main.cpp -lminisam -I /usr/include/eigen3/
+	mkdir build
+	cd build
+	cmake ..
+	sudo make install
 	
-4.run the example:
-
-	./main
-
+4.That's all.

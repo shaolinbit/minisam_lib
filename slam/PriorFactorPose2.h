@@ -1,6 +1,15 @@
 #ifndef PRIORFACTORPOSE2_H_INCLUDED
 #define PRIORFACTORPOSE2_H_INCLUDED
 
+
+
+/**
+ * A class for a soft prior on Pose2 Value
+ * @addtogroup SLAM
+ */
+
+namespace minisam
+{
 class PriorFactorPose2: public NoiseModelFactor1
 {
 private:
@@ -29,7 +38,7 @@ public:
 
     virtual Eigen::VectorXd evaluateError(const Pose2& x) const
     {
-       // Pose2 h=x.inverse()*prior_;
+        // Pose2 h=x.inverse()*prior_;
         Pose2 h=x->inverse()*prior_;
         Eigen::VectorXd v(3);
         v=-Pose2::ChartAtOrigin::Local(h);
@@ -98,5 +107,5 @@ public:
     }
 
 };
-
+};
 #endif // PRIORFACTORPOSE2_H_INCLUDED

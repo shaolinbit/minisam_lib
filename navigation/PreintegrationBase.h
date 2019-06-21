@@ -1,9 +1,26 @@
 #ifndef PREINTEGRATIONBASE_H
 #define PREINTEGRATIONBASE_H
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  *  @file  PreintegrationBase.h
- *  @author
+ *  @author Luca Carlone
+ *  @author Stephen Williams
+ *  @author Richard Roberts
+ *  @author Vadim Indelman
+ *  @author David Jensen
+ *  @author Frank Dellaert
  **/
+
 
 #pragma once
 
@@ -14,6 +31,8 @@
 
 #include <iosfwd>
 
+namespace minisam
+{
 
 /**
  * PreintegrationBase is the base class for PreintegratedMeasurements
@@ -23,9 +42,6 @@
  */
 class PreintegrationBase
 {
-//public:
-    //typedef imuBias::ConstantBias Bias;
-    //typedef PreintegrationParams Params;
 
 protected:
 
@@ -61,53 +77,31 @@ public:
     /// Re-initialize PreintegratedMeasurements
     virtual void resetIntegration()=0;
 
-    /// @name Basic utilities
-    /// @{
     /// Re-initialize PreintegratedMeasurements and set new bias
     void resetIntegrationAndSetBias(const ConstantBias& biasHat);
 
-// PreintegrationBase operator=(const PreintegrationBase& other);
+    /// check parameters equality: checks whether  pointer points to same Params object.
+    bool matchesParamsWith(const PreintegrationBase& other) const;
 
-    /// check parameters equality: checks whether shared pointer points to same Params object.
-    bool matchesParamsWith(const PreintegrationBase& other) const
-    {
-        return *p_== *other.p_;
-    }
-
-    /// shared pointer to params
-    PreintegrationParams* params() const
-    {
-        return p_;
-    }
+    /// pointer to params
+    PreintegrationParams* params() const;
 
     /// const reference to params
-    PreintegrationParams* p() const
-    {
-        return p_;
-    }
+    PreintegrationParams* p() const;
+
+    ///@}
 
     /// @name Instance variables access
     /// @{
-    const ConstantBias& biasHat() const
-    {
-        return biasHat_;
-    }
-    void SetbiasHat(const ConstantBias& cb)
-    {
-        biasHat_=cb;
-    }
-    double deltaTij() const
-    {
-        return deltaTij_;
-    }
-    void SetdeltaTij(double tij)
-    {
-        deltaTij_=tij;
-    }
-    void setParam(PreintegrationParams* p)
-    {
-        p_=p;
-    }
+    const ConstantBias& biasHat() const;
+
+    void SetbiasHat(const ConstantBias& cb);
+
+    double deltaTij() const;
+
+    void SetdeltaTij(double tij);
+
+    void setParam(PreintegrationParams* p);
 
     virtual Eigen::Vector3d  deltaPij() const=0;
     virtual Eigen::Vector3d  deltaVij() const=0;
@@ -115,16 +109,7 @@ public:
     virtual NavState deltaXij() const=0;
 
     // Exposed for MATLABEigen::MatrixXd::Identity(3,3)
-    Eigen::VectorXd biasHatVector() const
-    {
-        return biasHat_.vector();
-    }
-    /// @}
-
-    /// @name Testable
-    /// @{
-    //friend std::ostream& operator<<(std::ostream& os, const PreintegrationBase& pim);
-    //virtual void print(const std::string& s) const;
+    Eigen::VectorXd biasHatVector() const;
     /// @}
 
     /// @name Main functionality
@@ -180,6 +165,6 @@ public:
             const Eigen::VectorXd& bias_i) const;
 
 };
-
+};
 
 #endif

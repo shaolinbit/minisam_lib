@@ -1,15 +1,30 @@
 #ifndef TANGENTPREINTEGRATION_H
 #define TANGENTPREINTEGRATION_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  *  @file   TangentPreintegration.h
- *  @author
+ *  @author Frank Dellaert
+ *  @author Adam Bry
  **/
+
 
 #pragma once
 
 #include "../navigation/PreintegrationBase.h"
 
+namespace minisam
+{
 
 /**
  * Integrate on the 9D tangent space of the NavState manifold.
@@ -90,10 +105,7 @@ public:
         return preintegrated_H_biasOmega_;
     }
 
-    /// @name Testable
-    /// @{
-// bool equals(const TangentPreintegration& other, double tol) const;
-    /// @}
+    ///@}
 
     /// @name Main functionality
     /// @{
@@ -110,13 +122,11 @@ public:
     /// Update preintegrated measurements and get derivatives
     /// It takes measured quantities in the j frame
     /// Modifies preintegrated quantities in place after correcting for bias and possibly sensor pose
-    /// NOTE(frank): implementation is different in two versions
     void update(const Eigen::Vector3d& measuredAcc, const Eigen::Vector3d& measuredOmega,
                 const double dt,Eigen::MatrixXd* A, Eigen::MatrixXd* B, Eigen::MatrixXd* C) override;
 
     /// Given the estimate of the bias, return a NavState tangent vector
     /// summarizing the preintegrated IMU measurements so far
-    /// NOTE(frank): implementation is different in two versions
     Eigen::VectorXd biasCorrectedDelta(const Eigen::VectorXd& bias_i,
                                        Eigen::MatrixXd* H = NULL) const override;
 
@@ -137,9 +147,7 @@ public:
         TangentPreintegration* xb=new TangentPreintegration();
         return xb;
     }
-
-    /// @}
 };
-
+};
 
 #endif

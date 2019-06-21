@@ -3,15 +3,17 @@
 
 
 /**
- *  @file  BetweenFactor.h
- *  @author Frank Dellaert, Viorela Ila
+ *  @file  BetweenFactorPose3.h
+ *  @author
  **/
 #pragma once
 #include "../nonlinear/NonlinearFactor.h"
+namespace minisam
+{
 
-/**
+    /**
  * A class for a measurement predicted by "between(config[key1],config[key2])"
- * @tparam VALUE the Value type
+ * @tparam VALUE the Pose3 Value type
  * @addtogroup SLAM
  */
 class BetweenFactorPose3: public NoiseModelFactor2
@@ -24,10 +26,10 @@ public:
 
 
     /** default constructor - only use for serialization */
-    BetweenFactorPose3() {}
+     BetweenFactorPose3() {}
 
     /** Constructor */
-    BetweenFactorPose3(int key1, int key2, const Pose3& measured,
+     BetweenFactorPose3(int key1, int key2, const Pose3& measured,
                        SharedNoiseModel* model) :
         NoiseModelFactor2(model, key1, key2), measured_(measured)
     {
@@ -39,30 +41,20 @@ public:
     virtual Eigen::VectorXd evaluateError(const Eigen::VectorXd& p1, const Eigen::VectorXd& p2) const
     {
         Eigen::VectorXd hx = p2-p1; // h(x)
-        // manifold equivalent of h(x)-z -> log(z,h(x))
-        // cout<<p2<<endl;
-        //  cout<<p1<<endl;
-        // cout<<measured_<<endl;
         return hx;
-        //return (hx-measured_);
     }
 
     virtual  Eigen::VectorXd evaluateError(const Eigen::VectorXd& p1,
                                            const Eigen::VectorXd& p2, Eigen::MatrixXd& H1,Eigen::MatrixXd& H2) const
     {
         Eigen::VectorXd hx = p2-p1; // h(x)
-        //  cout<<p2<<endl;
-        //  cout<<p1<<endl;
-        // cout<<measured_<<endl;
         int rankn=p1.rows();
         H1=Eigen::MatrixXd(rankn,rankn);
         H1.setIdentity();
         H1=-(H1);
         H2=Eigen::MatrixXd(rankn,rankn);
         H2.setIdentity();
-        //cout<<H1<<endl;
         return hx;
-        // return (hx-measured_);
     }
     /** return the measured */
     const Pose3& measured() const
@@ -75,7 +67,6 @@ public:
     {
         return 2;
     }
-//#ifdef GMF_Using_Pose3
     virtual Eigen::VectorXd unwhitenedError(const std::map<int,Pose3>& x,std::vector<Eigen::MatrixXd>& H) const
     {
         std::map<int,Pose3>::const_iterator itb1=x.find(key1());
@@ -103,26 +94,17 @@ public:
     Eigen::VectorXd
     evaluateError(const Pose3& X1, const Pose3& X2, Eigen::MatrixXd& H1,Eigen::MatrixXd& H2 ) const
     {
-       // Pose3 tx1=X1;
-       // Pose3 hx = tx1.between(*X2, H1, H2); // h(x)
         Pose3 hx = X1.between(X2, H1, H2); // h(x)
-
-      Pose3  tx1=measured();
-       // cout<<"measured_"<<tx1<<endl;
+        Pose3  tx1=measured();
         return tx1.LocalCoordinates(hx);
     }
 
     Eigen::VectorXd
     evaluateError(const Pose3& X1, const Pose3& X2) const
     {
-       // Pose3 tx1=X1;
-        //Pose3 hx = tx1.between(X2); // h(x)
         Pose3 hx = X1.between(X2); // h(x)
-       Pose3 tx1=measured();
-       // cout<<measured()<<endl;
+        Pose3 tx1=measured();
         return tx1.LocalCoordinates(hx);
-        // manifold equivalent of h(x)-z -> log(z,h(x))
-        // return traits<T>::Local(measured_, hx);
     }
     virtual NonlinearFactor* clone()const
     {
@@ -130,6 +112,6 @@ public:
         return newfactor;
     }
 };
-
+};
 
 #endif // BETWEENFACTORPOSE3_H_INCLUDED

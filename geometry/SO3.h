@@ -12,10 +12,13 @@
 #pragma once
 
 #include "../base/Matrix.h"
+#include "../base/MatCal.h"
 
 #include <cmath>
 #include <iosfwd>
 
+namespace minisam
+{
 
 /**
  *  True SO(3), i.e., 3*3 matrix subgroup
@@ -24,7 +27,6 @@
  */
 class SO3
 {
-//protected:
 public:
     Eigen::Matrix3d Matrix3;
 public:
@@ -43,7 +45,6 @@ public:
     }
 
     /// Constructor from Eigen Matrix
-    //template<typename Derived>
     SO3(const Eigen::MatrixXd& R) :
         Matrix3(R.eval())
     {
@@ -59,36 +60,15 @@ public:
     static SO3 AxisAngle(const Eigen::VectorXd& axis, double theta);
 
     /// @}
-    /// @name Testable
-    /// @{
 
-// void print(const std::string& s) const;
-
-// bool equals(const SO3 & R, double tol) const {
-    //  return equal_with_abs_tol(*this, R, tol);
-    //}
-
-    /// @}
     /// @name Group
     /// @{
 
     /// identity rotation for group operation
-    static SO3 identity()
-    {
-        SO3 xp;
-        xp.Matrix3=Eigen::MatrixXd::Identity(3,3);
-        return xp;
-        //return Eigen::MatrixXd::Identity(3,3);
-    }
+    static SO3 identity();
 
     /// inverse of a rotation = transpose
-    SO3 inverse() const
-    {
-        // return this->Matrix3.inverse();
-        SO3 xp;
-        xp.Matrix3=this->Matrix3.inverse();
-        return xp;
-    }
+    SO3 inverse() const;
 
     /// @}
     /// @name Lie Group
@@ -98,7 +78,6 @@ public:
      * Exponential map at identity - create a rotation from canonical coordinates
      * \f$ [R_x,R_y,R_z] \f$ using Rodrigues' formula
      */
-    //static SO3 Expmap(const Vector3& omega, ChartJacobian H = boost::none);
     static SO3 Expmap(const Eigen::Vector3d& omega);
     static SO3 Expmap(const Eigen::Vector3d& omega,Eigen::MatrixXd* H);
     /// Derivative of Expmap
@@ -136,11 +115,11 @@ public:
     // Chart at origin
     struct ChartAtOrigin
     {
-        static SO3 Retract(const Eigen::VectorXd& omega)
+        static SO3 retract(const Eigen::VectorXd& omega)
         {
             return Expmap(omega);
         }
-        static SO3 Retract(const Eigen::VectorXd& omega, Eigen::MatrixXd* H)
+        static SO3 retract(const Eigen::VectorXd& omega, Eigen::MatrixXd* H)
         {
             return Expmap(omega, H);
         }
@@ -154,15 +133,12 @@ public:
         }
     };
 
-    //using LieGroup<SO3, 3>::inverse;
-
     /// @}
 };
 
 // This namespace exposes two functors that allow for saving computation when
 // exponential map and its derivatives are needed at the same location in so<3>
 // The second functor also implements dedicated methods to apply dexp and/or inv(dexp)
-//namespace so3 {
 
 /// Functor implementing Exponential map
 class ExpmapFunctor
@@ -220,4 +196,6 @@ public:
                                  Eigen::Matrix3d* H1,
                                  Eigen::Matrix3d* H2 ) const;
 };
+};
+
 #endif // SO3_H

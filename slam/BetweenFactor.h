@@ -7,7 +7,8 @@
  **/
 #pragma once
 #include "../nonlinear/NonlinearFactor.h"
-
+namespace minisam
+{
 /**
  * A class for a measurement predicted by "between(config[key1],config[key2])"
  * @tparam VALUE the Value type
@@ -21,14 +22,11 @@ private:
 
 public:
 
-    // shorthand for a smart pointer to a factor
-    // typedef typename boost::shared_ptr<BetweenFactor> shared_ptr;
-
     /** default constructor - only use for serialization */
-    BetweenFactor() {}
+     BetweenFactor() {}
 
     /** Constructor */
-    BetweenFactor(int key1, int key2, const Eigen::VectorXd measured,
+     BetweenFactor(int key1, int key2, const Eigen::VectorXd measured,
                   SharedNoiseModel* model) :
         NoiseModelFactor2(model, key1, key2), measured_(measured)
     {
@@ -40,10 +38,6 @@ public:
     virtual Eigen::VectorXd evaluateError(const Eigen::VectorXd& p1, const Eigen::VectorXd& p2) const
     {
         Eigen::VectorXd hx = p2-p1; // h(x)
-        // manifold equivalent of h(x)-z -> log(z,h(x))
-        //  cout<<p2<<endl;
-        //  cout<<p1<<endl;
-        // cout<<measured_<<endl;
         return (hx-measured_);
     }
 
@@ -51,7 +45,6 @@ public:
                                             const std::map<int, Eigen::VectorXd>& x2,
                                             std::vector<Eigen::MatrixXd> &H) const
     {
-        //Eigen::VectorXd f;
         std::map<int,Eigen::VectorXd>::const_iterator itb1=x2.find(key1());
         std::map<int,Eigen::VectorXd>::const_iterator itb2=x2.find(key2());
 
@@ -62,7 +55,6 @@ public:
     virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x1,
                                             const std::map<int, Eigen::VectorXd>& x2) const
     {
-        //Eigen::VectorXd f;
         std::map<int,Eigen::VectorXd>::const_iterator itb1=x2.find(key1());
         std::map<int,Eigen::VectorXd>::const_iterator itb2=x2.find(key2());
 
@@ -73,16 +65,12 @@ public:
                                            const Eigen::VectorXd& p2, Eigen::MatrixXd& H1,Eigen::MatrixXd& H2) const
     {
         Eigen::VectorXd hx = p2-p1; // h(x)
-        //   cout<<p2<<endl;
-        //    cout<<p1<<endl;
-//     cout<<measured_<<endl;
         int rankn=p1.rows();
         H1=Eigen::MatrixXd(rankn,rankn);
         H1.setIdentity();
         H1=-(H1);
         H2=Eigen::MatrixXd(rankn,rankn);
         H2.setIdentity();
-        //cout<<H1<<endl;
 
         return (hx-measured_);
     }
@@ -99,6 +87,6 @@ public:
     }
 
 }; // \class BetweenFactor
-
+};
 
 #endif // BETWEENFACTOR_H

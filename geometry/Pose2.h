@@ -1,9 +1,22 @@
 #ifndef POSE2_H
 #define POSE2_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  * @file  Pose2.h
  * @brief 2D Pose
+ * @author: Frank Dellaert
+ * @author: Richard Roberts
  */
 
 
@@ -11,7 +24,11 @@
 
 #include "../geometry/Rot2.h"
 #include "../base/Matrix.h"
+#include "../base/MatCal.h"
 #include <iostream>
+
+namespace minisam
+{
 
 /**
  * A 2D pose (Point2,Rot2)
@@ -29,54 +46,32 @@ public:
     /// @{
 
     /** default constructor = origin */
-    Pose2() : r_(Rot2::identity())
-    {
-        //t_=Eigen::VectorXd::setZero(2,2)
-        Eigen::Vector2d v20;
-        v20 << 0, 0;
-        t_ = v20;
-    }
+    Pose2();
 
     /** copy constructor */
-    Pose2(const Pose2 &pose) : r_(pose.r_), t_(pose.t_) {}
-
+    Pose2(const Pose2 &pose);
     /**
     * construct from (x,y,theta)
     * @param x x coordinate
     * @param y y coordinate
     * @param theta angle with positive X-axis
     */
-    Pose2(double x, double y, double theta) : r_(Rot2::fromAngle(theta))
-    {
-        t_.setZero();
-        t_ << x, y;
-    }
+    Pose2(double x, double y, double theta);
 
     /** construct from rotation and translation */
-    Pose2(double theta, const Eigen::Vector2d &t) : r_(Rot2::fromAngle(theta)), t_(t)
-    {
-    }
+    Pose2(double theta, const Eigen::Vector2d &t);
 
     /** construct from r,t */
-    Pose2(const Rot2 &r, const Eigen::Vector2d &t) : r_(r), t_(t) {}
-
+    Pose2(const Rot2 &r, const Eigen::Vector2d &t);
     /** Constructor from 3*3 matrix */
-    Pose2(const Eigen::Matrix3d &T) : r_(Rot2::atan2(T(1, 0), T(0, 0))) //, t_(T(0, 2), T(1, 2))
-    {
-        t_.setZero();
-        t_ << (0, 2), T(1, 2);
-        assert(T.rows() == 3 && T.cols() == 3);
-    }
+    Pose2(const Eigen::Matrix3d &T);
 
     /// @}
     /// @name Advanced Constructors
     /// @{
 
     /** Construct from canonical coordinates \f$ [T_x,T_y,\theta] \f$ (Lie algebra) */
-    Pose2(const Eigen::VectorXd &v) : Pose2()
-    {
-        *this = Expmap(v);
-    }
+    Pose2(const Eigen::VectorXd &v);
 
     /// @}
     /// @name Group
@@ -94,20 +89,10 @@ public:
     /// compose syntactic sugar
     inline Pose2 operator*(const Pose2 &p2) const
     {
-        // std::cout<<r_<<std::endl;
-        //  std::cout<<p2.r()<<std::endl;
-        //  std::cout<<r_*p2.r()<<std::endl;
-        //  std::cout<<p2.t()<<std::endl;
-        //  std::cout<<r_*p2.t()<<std::endl;
         return Pose2(r_ * p2.r(), t_ + r_ * p2.t());
     }
     inline Pose2* multiply(const Pose2 &p2) const
     {
-        // std::cout<<r_<<std::endl;
-        //  std::cout<<p2.r()<<std::endl;
-        //  std::cout<<r_*p2.r()<<std::endl;
-        //  std::cout<<p2.t()<<std::endl;
-        //  std::cout<<r_*p2.t()<<std::endl;
         return new Pose2(r_ * p2.r(), t_ + r_ * p2.t());
     }
 
@@ -116,12 +101,10 @@ public:
     /// @{
 
     ///Exponential map at identity - create a rotation from canonical coordinates \f$ [T_x,T_y,\theta] \f$
-    //static Pose2 Expmap(const Vector3& xi, ChartJacobian H = boost::none);
     static Pose2 Expmap(const Eigen::Vector3d &xi);
     static Pose2 Expmap(const Eigen::Vector3d &xi, Eigen::MatrixXd *H);
 
     ///Log map at identity - return the canonical coordinates \f$ [T_x,T_y,\theta] \f$ of this rotation
-    //static Vector3 Logmap(const Pose2& p, ChartJacobian H = boost::none);
     static Eigen::Vector3d Logmap(const Pose2 &p);
     static Eigen::Vector3d Logmap(const Pose2 &p, Eigen::MatrixXd *H);
     /**
@@ -164,15 +147,14 @@ public:
     // Chart at origin, depends on compile-time flag SLOW_BUT_CORRECT_EXPMAP
     struct ChartAtOrigin
     {
-        // static Pose2 Retract(const Vector3& v, ChartJacobian H = boost::none);
-        static Pose2 Retract(const Eigen::Vector3d &v);
-        static Pose2 Retract(const Eigen::Vector3d &v, Eigen::MatrixXd *H);
+        static Pose2 retract(const Eigen::Vector3d &v);
+        static Pose2 retract(const Eigen::Vector3d &v, Eigen::MatrixXd *H);
         static Eigen::VectorXd Local(const Pose2 &r);
         static Eigen::VectorXd Local(const Pose2 &r, Eigen::MatrixXd *H);
     };
 
-    Pose2 retract_(const Eigen::VectorXd &v);
-    Pose2* retractpointer_(const Eigen::VectorXd &v);
+    Pose2 retract(const Eigen::VectorXd &v);
+    Pose2* retractpointer(const Eigen::VectorXd &v);
 
 
     Pose2 between(const Pose2 &X2, Eigen::MatrixXd &H1, Eigen::MatrixXd &H2) const;
@@ -262,9 +244,6 @@ public:
     * @param point SO(2) location of other pose
     * @return 2D rotation \f$ \in SO(2) \f$
     */
-    //Rot2 bearing(const Pose2& pose,
-    //             OptionalJacobian<1, 3> H1=boost::none,
-    //              OptionalJacobian<1, 3> H2=boost::none) const;
     Rot2 bearing(const Pose2 &pose) const;
     Rot2 bearing(const Pose2 &pose,
                  Eigen::MatrixXd *H1,
@@ -274,10 +253,6 @@ public:
     * Calculate range to a landmark
     * @param point 2D location of landmark
     * @return range (double)
-
-    double range(const Point2& point,
-      OptionalJacobian<1, 3> H1=boost::none,
-      OptionalJacobian<1, 2> H2=boost::none) const;
     */
     double range(const Eigen::Vector2d &point) const;
     double range(const Eigen::Vector2d &point,
@@ -289,9 +264,6 @@ public:
     * @param point 2D location of other pose
     * @return range (double)
 
-    double range(const Pose2& point,
-      OptionalJacobian<1, 3> H1=boost::none,
-      OptionalJacobian<1, 3> H2=boost::none) const;
     */
     double range(const Pose2 &point) const;
     double range(const Pose2 &point,
@@ -317,12 +289,10 @@ public:
     * exponential map parameterization
     * @return a pair of [start, end] indices into the tangent space vector
     */
-    static std::pair<int, int> rotationInterval()
-    {
-        return std::make_pair(2, 2);
-    }
+    static std::pair<int, int> rotationInterval();
 
     friend std::ostream &operator<<(std::ostream &os, const Pose2 &p);
+    ///@}
 }; // Pose2
 
 /**
@@ -338,5 +308,5 @@ std::map<int, Pose2> Pose2ValuesRetract(const std::map<int, Pose2> &LinPose2,
 std::map<int, Eigen::VectorXd> Pose2VectorValuesZero(std::map<int, Pose2*> vvz);
 
 void Pose2ValuesUpdate(std::map<int, Pose2*> *vectorvalues1, const std::map<int, Pose2*> &vectorvalues2);
-
+};
 #endif // POSE2_H

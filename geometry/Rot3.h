@@ -1,9 +1,26 @@
+#ifndef ROT3_H
+#define ROT3_H
+
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  * @file    Rot3.h
  * @brief   3D rotation represented as a rotation matrix or quaternion
- * @author
+ * @author  Alireza Fathi
+ * @author  Christian Potthast
+ * @author  Frank Dellaert
+ * @author  Richard Roberts
+ * @author  Luca Carlone
  */
-// \callgraph
 
 #pragma once
 
@@ -29,6 +46,8 @@
 #endif
 #endif
 #endif
+namespace minisam
+{
 
 
 /**
@@ -55,7 +74,7 @@ public:
     /// @{
 
     /** default constructor, unit rotation */
-    Rot3();
+     Rot3();
 
     /**
      * Constructor from *columns*
@@ -63,10 +82,10 @@ public:
      * @param r2 Y-axis of rotated frame
      * @param r3 Z-axis of rotated frame
      */
-    Rot3(const Eigen::Vector3d& col1, const Eigen::Vector3d& col2, const Eigen::Vector3d& col3);
+     Rot3(const Eigen::Vector3d& col1, const Eigen::Vector3d& col2, const Eigen::Vector3d& col3);
 
     /** constructor from a rotation matrix, as doubles in *row-major* order !!! */
-    Rot3(double R11, double R12, double R13,
+     Rot3(double R11, double R12, double R13,
          double R21, double R22, double R23,
          double R31, double R32, double R33);
 
@@ -78,7 +97,7 @@ public:
      * See: http://stackoverflow.com/questions/27094132/cannot-understand-if-this-is-circular-dependency-or-clang#tab-top
      */
 
-    inline explicit Rot3(const Eigen::Matrix3d& R)
+     inline explicit Rot3(const Eigen::Matrix3d& R)
     {
 #ifdef USE_QUATERNIONS
         quaternion_=QQuaternion(R);
@@ -87,18 +106,6 @@ public:
 #endif
     }
 
-    /**
-     * Constructor from a rotation matrix
-     * Overload version for Matrix3 to avoid casting in quaternion mode.
-     */
-    /*inline explicit Rot3(const Eigen::Matrix3d& R)
-    {
-#ifdef USE_QUATERNIONS
-        quaternion_=Matrix3(R);
-#else
-        rot_ = R;
-#endif
-    }*/
 
     /** Constructor from a quaternion.  This can also be called using a plain
      * Vector, due to implicit conversion from Vector to Quaternion
@@ -106,9 +113,6 @@ public:
      */
     Rot3(const QQuaternion& q);
     Rot3(double x, double y, double z, double w) : Rot3(QQuaternion(x, y, z, w)) {}
-
-    /// Random, generates a random axis, then random angle \in [-p,pi]
-    //static Rot3 Random(boost::mt19937 & rng);
 
     /** Virtual destructor */
     virtual ~Rot3() {}
@@ -125,32 +129,22 @@ public:
     static Rot3 Rz(double t);
 
     /// Rotations around Z, Y, then X axes as in http://en.wikipedia.org/wiki/Rotation_matrix, counterclockwise when looking from unchanging axis.
-    static Rot3 RzRyRx(double x, double y, double z);
+     static Rot3 RzRyRx(double x, double y, double z);
 
     /// Rotations around Z, Y, then X axes as in http://en.wikipedia.org/wiki/Rotation_matrix, counterclockwise when looking from unchanging axis.
-    inline static Rot3 RzRyRx(const Eigen::VectorXd& xyz)
+     inline static Rot3 RzRyRx(const Eigen::VectorXd& xyz)
     {
         assert(xyz.size() == 3);
         return RzRyRx(xyz(0), xyz(1), xyz(2));
     }
 
     /// Positive yaw is to right (as in aircraft heading). See ypr
-    static Rot3 Yaw  (double t)
-    {
-        return Rz(t);
-    }
-
+    static Rot3 Yaw  (double t);
     /// Positive pitch is up (increasing aircraft altitude).See ypr
-    static Rot3 Pitch(double t)
-    {
-        return Ry(t);
-    }
+    static Rot3 Pitch(double t);
 
     //// Positive roll is to right (increasing yaw in aircraft).
-    static Rot3 Roll (double t)
-    {
-        return Rx(t);
-    }
+    static Rot3 Roll (double t);
 
     /**
      * Returns rotation nRb from body to nav frame.
@@ -166,32 +160,17 @@ public:
      * Positive pitch is down (decreasing aircraft altitude).
      * Positive roll is to right (decreasing yaw in aircraft).
      */
-    static Rot3 Ypr(double y, double p, double r)
-    {
-        return RzRyRx(r,p,y);
-    }
+    static Rot3 Ypr(double y, double p, double r);
 
     /** Create from Quaternion coefficients */
-    static Rot3 Quaternion(double w, double x, double y, double z)
-    {
-        QQuaternion q(w, x, y, z);
-        return Rot3(q);
-    }
-
+    static Rot3 Quaternion(double w, double x, double y, double z);
     /**
      * Convert from axis/angle representation
      * @param  axisw is the rotation axis, unit length
      * @param   angle rotation angle
      * @return incremental rotation
      */
-    static Rot3 AxisAngle(const Eigen::Vector3d& axis, double angle)
-    {
-#ifdef USE_QUATERNIONS
-        return Rot3(QQuaternion(Eigen::AngleAxis<double>(angle, axis)));
-#else
-        return Rot3(SO3::AxisAngle(axis,angle).Matrix3);
-#endif
-    }
+    static Rot3 AxisAngle(const Eigen::Vector3d& axis, double angle);
 
     /**
      * Convert from axis/angle representation
@@ -199,21 +178,13 @@ public:
      * @param   angle rotation angle
      * @return incremental rotation
      */
-    static Rot3 AxisAngle(const Unit3& axis, double angle)
-    {
-        return AxisAngle(axis.unitVector(),angle);
-    }
-
+    static Rot3 AxisAngle(const Unit3& axis, double angle);
     /**
      * Rodrigues' formula to compute an incremental rotation
      * @param w a vector of incremental roll,pitch,yaw
      * @return incremental rotation
      */
-    static Rot3 Rodrigues(const Eigen::Vector3d& w)
-    {
-        return Rot3::Expmap(w);
-    }
-
+    static Rot3 Rodrigues(const Eigen::Vector3d& w);
     /**
      * Rodrigues' formula to compute an incremental rotation
      * @param wx Incremental roll (about X)
@@ -221,13 +192,7 @@ public:
      * @param wz Incremental yaw (about Z)
      * @return incremental rotation
      */
-    static Rot3 Rodrigues(double wx, double wy, double wz)
-    {
-        Eigen::Vector3d p3;
-        p3<<wx,wy,wz;
-        return Rodrigues(p3);
-        //return Rodrigues(Vector3(wx, wy, wz));
-    }
+    static Rot3 Rodrigues(double wx, double wy, double wz);
 
     /// Determine a rotation to bring two vectors into alignment, using the rotation axis provided
     static Rot3 AlignPair(const Unit3& axis, const Unit3& a_p, const Unit3& b_p);
@@ -239,9 +204,6 @@ public:
     /// @}
     /// @name Testable
     /// @{
-
-    /** print */
-    //void print(const std::string& s="R") const;
 
     /** equals with an tolerance */
     bool equals(const Rot3& p, double tol = 1e-9) const;
@@ -260,25 +222,14 @@ public:
     Rot3 operator*(const Rot3& R2) const;
 
     /// inverse of a rotation, TODO should be different for M/Q
-    Rot3 inverse() const
-    {
-        Eigen::Matrix3d m3=transpose();
-      //  std::cout<<m3<<std::endl;
-        return Rot3(m3);
-        // return Rot3(Matrix3(transpose()));
-    }
+    Rot3 inverse() const;
 
     /**
      * Conjugation: given a rotation acting in frame B, compute rotation c1Rc2 acting in a frame C
      * @param cRb rotation from B frame to C frame
      * @return c1Rc2 = cRb * b1Rb2 * cRb'
      */
-    Rot3 conjugate(const Rot3& cRb) const
-    {
-        // TODO: do more efficiently by using Eigen or quaternion properties
-        return cRb * (*this) * cRb.inverse();
-    }
-
+    Rot3 conjugate(const Rot3& cRb) const;
     /// @}
     /// @name Manifold
     /// @{
@@ -305,39 +256,23 @@ public:
     // Cayley chart around origin
     struct CayleyChart
     {
-        static Rot3 Retract(const Eigen::Vector3d& v);
-        static Rot3 Retract(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
+        static Rot3 retract(const Eigen::Vector3d& v);
+        static Rot3 retract(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
         static Eigen::Vector3d Local(const Rot3& r);
         static Eigen::Vector3d Local(const Rot3& r, Eigen::Matrix3d* H);
     };
 
     /// Retraction from R^3 to Rot3 manifold using the Cayley transform
-    Rot3 retractCayley(const Eigen::VectorXd& omega) const
-    {
-        return (*this)*CayleyChart::Retract(omega);
-        //return compose(CayleyChart::Retract(omega));
-    }
+    Rot3 retractCayley(const Eigen::VectorXd& omega) const;
 
     /// Inverse of retractCayley
-    Eigen::Vector3d localCayley(const Rot3& other) const
-    {
-        return CayleyChart::Local(this->inverse()*other);
-        //return CayleyChart::Local(between(other));
-    }
+    Eigen::Vector3d localCayley(const Rot3& other) const;
 
 
 
 #endif
-  Rot3 between(const Rot3& g, Eigen::Matrix3d* H1=NULL,
-                 Eigen::Matrix3d* H2 =NULL) const
-    {
-        Rot3 result =this->inverse() * g;
-        if (H1!=NULL)
-            *H1 = - result.inverse().AdjointMap();
-        if (H2!=NULL)
-            *H2 = Eigen::MatrixXd::Identity(3,3);
-        return result;
-    }
+    Rot3 between(const Rot3& g, Eigen::Matrix3d* H1=NULL,
+                 Eigen::Matrix3d* H2 =NULL) const;
 
     /// @}
     /// @name Lie Group
@@ -347,26 +282,8 @@ public:
      * Exponential map at identity - create a rotation from canonical coordinates
      * \f$ [R_x,R_y,R_z] \f$ using Rodrigues' formula
      */
-    static Rot3 Expmap(const Eigen::Vector3d& v)
-    {
-        // if(H) *H = Rot3::ExpmapDerivative(v);
-#ifdef USE_QUATERNIONS
-        return QQuaternion::Expmap(v);
-#else
-        return Rot3(SO3::Expmap(v).Matrix3);
-#endif
-    }
-    static Rot3 Expmap(const Eigen::Vector3d& v, Eigen::Matrix3d* H)
-    {
-        if(H)
-            *H = Rot3::ExpmapDerivative(v);
-#ifdef USE_QUATERNIONS
-        return QQuaternion::Expmap(v);
-#else
-        return Rot3(SO3::Expmap(v).Matrix3);
-#endif
-    }
-
+    static Rot3 Expmap(const Eigen::Vector3d& v);
+    static Rot3 Expmap(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
 
 
     /**
@@ -392,8 +309,8 @@ public:
     // Chart at origin, depends on compile-time flag ROT3_DEFAULT_COORDINATES_MODE
     struct ChartAtOrigin
     {
-        static Rot3 Retract(const Eigen::Vector3d& v);
-        static Rot3 Retract(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
+        static Rot3 retract(const Eigen::Vector3d& v);
+        static Rot3 retract(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
         static Eigen::Vector3d Local(const Rot3& r);
         static Eigen::Vector3d Local(const Rot3& r, Eigen::Matrix3d* H);
     };
@@ -426,17 +343,14 @@ public:
             *H2=D_g_v;
         return h;
     }
-    Rot3 Retract(const Eigen::VectorXd& v)
+    Rot3 retract(const Eigen::VectorXd& v)
     {
-        return Rot3::ChartAtOrigin::Retract(v);
+        return Rot3::ChartAtOrigin::retract(v);
     }
     Eigen::Vector3d LocalCoordinates(const Rot3& g)
     {
         return Rot3::ChartAtOrigin::Local(g);
     }
-
-
-    //using LieGroup<Rot3, 3>::inverse; // version with derivative
 
     /// @}
     /// @name Group Action on Point3
@@ -445,7 +359,6 @@ public:
     /**
      * rotate point from rotated coordinate frame to world \f$ p^w = R_c^w p^c \f$
      */
-    //  Eigen::Vector3d rotatePoint(const Eigen::Vector3d& p) const;
     Eigen::Vector3d rotatePoint(const Eigen::Vector3d& p, Eigen::Matrix3d* H1=NULL,
                                 Eigen::Matrix3d* H2=NULL) const;
 
@@ -486,7 +399,6 @@ public:
      * Return 3*3 transpose (inverse) rotation matrix
      */
     Eigen::Matrix3d transpose() const;
-    // TODO: const Eigen::Transpose<const Matrix3> transpose() const;
 
     /// @deprecated, this is base 1, and was just confusing
     Eigen::Vector3d  column(int index) const;
@@ -568,16 +480,16 @@ public:
      */
     Rot3 slerp(double t, const Rot3& other) const;
 
-inline Rot3& operator=(const Rot3& rObj)
-{
+    inline Rot3& operator=(const Rot3& rObj)
+    {
 
-    #ifdef USE_QUATERNIONS
-    quaternion_=rObj.quaternion_;
-    #else
-    rot_=rObj.matrix();
-    #endif // USE_QUATERNIONS
-    return *this;
-}
+#ifdef USE_QUATERNIONS
+        quaternion_=rObj.quaternion_;
+#else
+        rot_=rObj.matrix();
+#endif // USE_QUATERNIONS
+        return *this;
+    }
 
     /// Output stream operator
     friend std::ostream &operator<<(std::ostream &os, const Rot3& p);
@@ -598,4 +510,5 @@ inline Rot3& operator=(const Rot3& rObj)
  * @return a vector [thetax, thetay, thetaz] in radians.
  */
 std::pair<Eigen::Matrix3d,Eigen::Vector3d> RQ(const Eigen::Matrix3d& A);
-
+};
+#endif // ROT3_H

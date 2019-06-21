@@ -1,110 +1,79 @@
+#ifndef PRIORFACTOR_H
+#define PRIORFACTOR_H
+
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
 
 /**
  *  @file  PriorFactor.h
- *  @author
+ *  @author Frank Dellaert
  **/
 #pragma once
 
 #include "../nonlinear/NonlinearFactor.h"
 #include "../linear/NoiseModel.h"
-
-
-/**
- * A class for a soft prior on any Value type
- * @addtogroup SLAM
- */
-//template<class VALUE>
-class PriorFactor: public NoiseModelFactor1
+namespace minisam
 {
 
-public:
-    //typedef VALUE T;
+/**
+ * A class for a soft prior on Vector Value type
+ * @addtogroup SLAM
+ */
+
+class PriorFactor: public NoiseModelFactor1
+{
 
 private:
     Eigen::VectorXd prior_; /** The measurement */
 public:
     /** default constructor - only use for serialization */
-    PriorFactor() {}
+     PriorFactor() {}
 
     virtual ~PriorFactor() {}
 
     /** Constructor */
-    PriorFactor(int key, const Eigen::VectorXd& prior, SharedNoiseModel* model) :
+     PriorFactor(int key, const Eigen::VectorXd& prior, SharedNoiseModel* model) :
         NoiseModelFactor1(model, key), prior_(prior)
     {
     }
 
     /** Convenience constructor that takes a full covariance argument */
-    PriorFactor(int key, const Eigen::VectorXd& prior, const Eigen::MatrixXd& covariance) :
+     PriorFactor(int key, const Eigen::VectorXd& prior, const Eigen::MatrixXd& covariance) :
         NoiseModelFactor1(newGaussianNoiseModelCovariance(covariance), key), prior_(prior)
     {}
 
 
     /** implement functions needed for Testable */
 
-    /** print
-    virtual void print(const std::string& s, const KeyFormatter& keyFormatter = DefaultKeyFormatter) const {
-      std::cout << s << "PriorFactor on " << keyFormatter(this->key()) << "\n";
-      traits<T>::Print(prior_, "  prior mean: ");
-      this->noiseModel_->print("  noise model: ");
-    }*/
-
-    /** equals
-    virtual bool equals(const NonlinearFactor& expected, double tol=1e-9) const {
-      const This* e = dynamic_cast<const This*> (&expected);
-      return e != NULL && Base::equals(*e, tol) && traits<T>::Equals(prior_, e->prior_, tol);
-    } */
-
-    /** implement functions needed to derive from Factor */
-
-    /** vector of errors
-    Vector evaluateError(const T& x, boost::optional<Matrix&> H = boost::none) const
-     {
-      if (H) (*H) = Matrix::Identity(traits<T>::GetDimension(x),traits<T>::GetDimension(x));
-      // manifold equivalent of z-x -> Local(x,z)
-      // TODO(ASL) Add Jacobians.
-      return -traits<T>::Local(x, prior_);
-    }*/
-
     virtual Eigen::VectorXd unwhitenedError(const std::map<int,Eigen::VectorXd>& x)const
     {
-        //std::map<int,Eigen::VectorXd>::const_iterator itb=x.begin();
         std::map<int,Eigen::VectorXd>::const_iterator itb=x.find(key());
         return -(prior_-itb->second);//evaluateError(x);(prior_-x);
     }
     virtual Eigen::VectorXd unwhitenedError(const std::map<int,Eigen::VectorXd>& x,std::vector<Eigen::MatrixXd>& H) const
     {
-        //std::map<int,Eigen::VectorXd>::const_iterator itb=x.begin();
         std::map<int,Eigen::VectorXd>::const_iterator itb=x.find(key());
-        // return (prior_-itb->second);//evaluateError(x);(prior_-x);
         return evaluateError(itb->second,*(H.begin()));
     }
 
     Eigen::VectorXd evaluateError(const Eigen::VectorXd& x) const
     {
-        // if (H) (*H) = Matrix::Identity(traits<T>::GetDimension(x),traits<T>::GetDimension(x));
-        // manifold equivalent of z-x -> Local(x,z)
-        // TODO(ASL) Add Jacobians.
         return -(prior_-x);
     }
     Eigen::VectorXd evaluateError(const Eigen::VectorXd& x, Eigen::MatrixXd& H) const
     {
-        // H = Eigen::.rows()),x.cols());
         H=Eigen::MatrixXd::Identity(x.rows(),x.rows());
-
-        //return -traits<T>::Local(x, prior_);
-        //return -return x.localCoordinates(prior_);
-
-        //Class h = x.between(prior_); // derivatives inlined below
-        //TangentVector v = Class::ChartAtOrigin::Local(h);
         Eigen::VectorXd h(x.rows());
         h=prior_-x;
-        // Eigen::VectorXd v(x.rows());
-
         return -h;
-        // manifold equivalent of z-x -> Local(x,z)
-        // TODO(ASL) Add Jacobians.
-        //return (prior_-x);
     }
 
 
@@ -161,5 +130,6 @@ public:
         return newfactor;
     }
 };
+};
 
-
+#endif

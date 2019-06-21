@@ -1,17 +1,29 @@
 #ifndef  CALIBRATEDCAMERA_H
 #define  CALIBRATEDCAMERA_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  * @file CalibratedCamera.h
  * @brief Calibrated camera for which only pose is unknown
- * @date
- * @author
+ * @date Aug 17, 2009
+ * @author Frank Dellaert
  */
-
 #pragma once
 
 #include "../geometry/Pose3.h"
 
+namespace minisam
+{
 
 /**
  * A pinhole camera class that has a Pose3, functions as base class for all pinhole cameras
@@ -20,19 +32,6 @@
  */
 class PinholeBase
 {
-
-public:
-
-    /** Pose Concept requirements */
-    //typedef Rot3 Rotation;
-// typedef Point3 Translation;
-
-    /**
-     *  Some classes template on either PinholeCamera or StereoCamera,
-     *  and this typedef informs those classes what "project" returns.
-     */
-    //typedef Point2 Measurement;
-
 private:
 
     Pose3 pose_; ///< 3D pose of camera
@@ -60,7 +59,6 @@ protected:
     /// @}
 
 public:
-
     /// @name Static functions
     /// @{
 
@@ -107,16 +105,6 @@ public:
         pose_(Pose3::Expmap(v))
     {
     }
-
-    /// @}
-    /// @name Testable
-    /// @{
-
-    /// assert equality up to a tolerance
-    //bool equals(const PinholeBase &camera, double tol = 1e-9) const;
-
-    /// print
-//void print(const std::string& s = "PinholeBase") const;
 
     /// @}
     /// @name Standard Interface
@@ -205,15 +193,6 @@ public:
 
     /// @}
 
-//private:
-
-    /** Serialization function */
-    //friend class boost::serialization::access;
-    //template<class Archive>
-    //void serialize(Archive & ar, const unsigned int /*version*/) {
-    //  ar & BOOST_SERIALIZATION_NVP(pose_);
-// }
-
 };
 // end of class PinholeBase
 
@@ -255,15 +234,12 @@ public:
     // Create CalibratedCamera, with derivatives
     static CalibratedCamera Create(const Pose3& pose)
     {
-        //if (H1)
-        //    *H1 << I_6x6;
         return CalibratedCamera(pose);
     }
 
     static CalibratedCamera Create(const Pose3& pose,
                                    Eigen::MatrixXd* H1)
     {
-        // if (H1)
         *H1 << Eigen::MatrixXd::Identity(6,6);
         return CalibratedCamera(pose);
     }
@@ -341,60 +317,37 @@ public:
                             Eigen::MatrixXd* Dpoint) const;
 
     /// backproject a 2-dimensional point to a 3-dimensional point at given depth
-    Eigen::Vector3d backproject(const Eigen::Vector2d& pn, double depth) const
-    {
-        return pose().transform_from(backproject_from_camera(pn, depth));
-    }
-
+    Eigen::Vector3d backproject(const Eigen::Vector2d& pn, double depth) const;
     /**
      * Calculate range to a landmark
      * @param point 3D location of landmark
      * @return range (double)
      */
-    double range(const Eigen::Vector3d& point) const
-    {
-        return pose().range(point);
-    }
+    double range(const Eigen::Vector3d& point) const;
 
     double range(const Eigen::Vector3d& point,
                  Eigen::MatrixXd* Dcamera,
-                 Eigen::MatrixXd* Dpoint) const
-    {
-        return pose().range(point, Dcamera, Dpoint);
-    }
-
+                 Eigen::MatrixXd* Dpoint) const;
 
     /**
      * Calculate range to another pose
      * @param pose Other SO(3) pose
      * @return range (double)
      */
-    double range(const Pose3& pose) const
-    {
-        return this->pose().range(pose);
-    }
+    double range(const Pose3& pose) const;
     double range(const Pose3& pose, Eigen::MatrixXd* Dcamera,
-                 Eigen::MatrixXd*Dpose) const
-    {
-        return this->pose().range(pose, Dcamera, Dpose);
-    }
+                 Eigen::MatrixXd*Dpose) const;
 
     /**
      * Calculate range to another camera
      * @param camera Other camera
      * @return range (double)
      */
-    double range(const CalibratedCamera& camera) const
-    {
-        return pose().range(camera.pose());
-    }
+    double range(const CalibratedCamera& camera) const;
     double range(const CalibratedCamera& camera, //
                  Eigen::MatrixXd* H1, //
-                 Eigen::MatrixXd* H2) const
-    {
-        return pose().range(camera.pose(), H1, H2);
-    }
+                 Eigen::MatrixXd* H2) const;
 };
 
-
+};
 #endif // CALIBRATEDCAMERA_H

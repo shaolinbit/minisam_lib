@@ -1,8 +1,25 @@
 #ifndef IMUFACTOR_H
 #define IMUFACTOR_H
+
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  *  @file  ImuFactor.h
- *  @author
+ *  @author Luca Carlone
+ *  @author Stephen Williams
+ *  @author Richard Roberts
+ *  @author Vadim Indelman
+ *  @author David Jensen
+ *  @author Frank Dellaert
  **/
 
 #pragma once
@@ -10,6 +27,10 @@
 #include "../nonlinear/NonlinearFactor.h"
 #include "../navigation/ManifoldPreintegration.h"
 #include "../navigation/TangentPreintegration.h"
+
+
+namespace minisam
+{
 
 #ifdef TANGENT_PREINTEGRATION
 typedef TangentPreintegration PreintegrationType;
@@ -65,41 +86,22 @@ protected:
 public:
 
     /// Default constructor for serialization and Cython wrapper
-    PreintegratedImuMeasurements()
-    {
-        //preintMeasCov_.setZero();
-        preintMeasCov_=Eigen::MatrixXd::Zero(9,9);
-    }
+     PreintegratedImuMeasurements();
 
     /**
       *  Constructor, initializes the class with no measurements
       *  @param bias Current estimate of acceleration and rotation rate biases
       *  @param p    Parameters, typically fixed in a single application
       */
-    PreintegratedImuMeasurements(PreintegrationParams* p,
-                                 const ConstantBias& biasHat = ConstantBias()) :
-        PreintegrationType(p, biasHat),pp_(p),ConstantBias_(biasHat_)
-    {
-        // preintMeasCov_.setZero();
-        preintMeasCov_=Eigen::MatrixXd::Zero(9,9);
-    }
+     PreintegratedImuMeasurements(PreintegrationParams* p,
+                                 const ConstantBias& biasHat = ConstantBias());
 
     /**
       *  Construct preintegrated directly from members: base class and preintMeasCov
       *  @param base               PreintegrationType instance
       *  @param preintMeasCov      Covariance matrix used in noise model.
       */
-    PreintegratedImuMeasurements(const PreintegrationType& base, const Eigen::MatrixXd& preintMeasCov)
-        : PreintegrationType(base),
-          preintMeasCov_(preintMeasCov)
-    {
-    }
-
-    /// print
-    //void print(const std::string& s = "Preintegrated Measurements:") const override;
-
-    /// equals
-// bool equals(const PreintegratedImuMeasurements& expected, double tol = 1e-9) const;
+     PreintegratedImuMeasurements(const PreintegrationType& base, const Eigen::MatrixXd& preintMeasCov);
 
     /// Re-initialize PreintegratedIMUMeasurements
     void resetIntegration() override;
@@ -110,18 +112,15 @@ public:
      * @param measuredOmega Measured angular velocity (as given by the sensor)
      * @param dt Time interval between this and the last IMU measurement
      */
-    void integrateMeasurement(const Eigen::Vector3d& measuredAcc,
+     void integrateMeasurement(const Eigen::Vector3d& measuredAcc,
                               const Eigen::Vector3d& measuredOmega, const double dt) override;
 
     /// Add multiple measurements, in matrix columns
-    void integrateMeasurements(const Eigen::MatrixXd& measuredAccs, const Eigen::MatrixXd& measuredOmegas,
+     void integrateMeasurements(const Eigen::MatrixXd& measuredAccs, const Eigen::MatrixXd& measuredOmegas,
                                const Eigen::MatrixXd& dts);
 
     /// Return pre-integrated measurement covariance
-    Eigen::MatrixXd preintMeasCov() const
-    {
-        return preintMeasCov_;
-    }
+    Eigen::MatrixXd preintMeasCov() const;
 
 #ifdef TANGENT_PREINTEGRATION
     /// Merge in a different set of measurements and update bias derivatives accordingly
@@ -147,19 +146,8 @@ private:
     PreintegratedImuMeasurements _PIM_;
 public:
 
-    /** Shorthand for a smart pointer to a factor
-    #if !defined(_MSC_VER) && __GNUC__ == 4 && __GNUC_MINOR__ > 5
-    typedef typename boost::shared_ptr<ImuFactor> shared_ptr;
-    #else
-    typedef boost::shared_ptr<ImuFactor> shared_ptr;
-    #endif*/
-
     /** Default constructor - only use for serialization */
-    ImuFactor()
-    {
-        factortype=5;
-    }
-
+     ImuFactor();
     /**
      * Constructor
      * @param pose_i Previous pose key
@@ -168,7 +156,7 @@ public:
      * @param vel_j  Current velocity key
      * @param bias   Previous bias key
      */
-    ImuFactor(int pose_i, int vel_i, int pose_j, int vel_j, int bias,
+     ImuFactor(int pose_i, int vel_i, int pose_j, int vel_j, int bias,
               const PreintegratedImuMeasurements& preintegratedMeasurements);
 
     virtual ~ImuFactor()
@@ -240,10 +228,6 @@ public:
 class ImuFactor2 : public NoiseModelFactor
 {
 private:
-
-    //typedef ImuFactor2 This;
-    //typedef NoiseModelFactor3<NavState, NavState, imuBias::ConstantBias> Base;
-
     PreintegratedImuMeasurements _PIM_;
 
 public:
@@ -299,5 +283,5 @@ public:
 
 };
 // class ImuFactor2
-
+};
 #endif

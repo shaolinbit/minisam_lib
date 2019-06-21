@@ -1,21 +1,31 @@
 #ifndef SCATTER_H
 #define SCATTER_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
 
 /**
  * @file    Scatter.h
  * @brief   Maps global variable indices to slot indices
- * @author
+ * @author  Richard Roberts
+ * @author  Frank Dellaert
  * @date    June 2015
  */
 
-//#pragma once
-
-//#include "../linear/GaussianFactorGraph.h"
 #include "../inference/Ordering.h"
 #include "../linear/GaussianFactorGraph.h"
 
-//class GaussianFactorGraph;
+namespace minisam
+{
+
 class GaussianFactorGraph;
 class Ordering;
 
@@ -61,5 +71,5 @@ private:
     /// Find the SlotEntry with the right key (linear time worst case)
     iterator find(int key);
 };
-
+};
 #endif // SCATTER_H

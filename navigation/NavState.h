@@ -1,6 +1,17 @@
 #ifndef NAVSTATE_H
 #define NAVSTATE_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  * @file    NavState.h
  * @brief   Navigation state composing of attitude, position, and velocity
@@ -12,17 +23,16 @@
 
 #include "../geometry/Pose3.h"
 /// Velocity is currently typedef'd to Vector3
+namespace minisam
+{
 
 /**
  * Navigation state: Pose (rotation, translation) + velocity
- * NOTE(frank): it does not make sense to make this a Lie group, but it is a 9D manifold
  */
 class NavState
 {
 private:
 
-    // TODO(frank):
-    // - should we rename t_ to p_? if not, we should rename dP do dT
     Rot3 R_; ///< Rotation nRb, rotates points/velocities in body to points/velocities in nav
     Eigen::Vector3d t_; ///< position n_t, in nav frame
     Eigen::Vector3d v_; ///< velocity n_v in nav frame
@@ -114,7 +124,6 @@ public:
 
 
     // Tangent space sugar.
-    // TODO(frank): move to private navstate namespace in cpp
     static Eigen::Block<Eigen::VectorXd, 3, 1> dR(Eigen::VectorXd& v)
     {
         return v.segment<3>(0);
@@ -171,4 +180,6 @@ public:
                                Eigen::MatrixXd* H2 =NULL) const;
 
 };
+};
+
 #endif

@@ -2,6 +2,17 @@
 #define  POSE3_H
 
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  *@file  Pose3.h
  *@brief 3D Pose
@@ -9,8 +20,10 @@
 
 #pragma once
 #include "../geometry/Rot3.h"
-//#include "../slam/BearingRange.h"
 #include "../gmfconfig.h"
+
+namespace minisam
+{
 
 class Pose2;
 // forward declare
@@ -33,35 +46,19 @@ public:
     /// @{
 
     /** Default constructor is origin */
-    Pose3() : R_(Rot3::identity())
-    {
-        // Eigen::Vector3d tt;
-        // tt.setIdentity();
-        t_.setZero();
-        //  cout<<t_<<endl;
-    }
+     Pose3();
 
     /** Copy constructor */
-    Pose3(const Pose3& pose) :
-        R_(pose.R_), t_(pose.t_)
-    {
-    }
+     Pose3(const Pose3& pose);
 
     /** Construct from R,t */
-    Pose3(const Rot3& R, const Eigen::Vector3d& t) :
-        R_(R), t_(t)
-    {
-    }
+     Pose3(const Rot3& R, const Eigen::Vector3d& t);
 
     /** Construct from Pose2 */
-    explicit Pose3(const Pose2& pose2);
+     explicit Pose3(const Pose2& pose2);
 
     /** Constructor from 4*4 matrix */
-    Pose3(const Eigen::Matrix3d &T) :
-        R_(T(0, 0), T(0, 1), T(0, 2), T(1, 0), T(1, 1), T(1, 2), T(2, 0), T(2, 1),
-           T(2, 2)), t_(T(0, 3), T(1, 3), T(2, 3))
-    {
-    }
+     Pose3(const Eigen::Matrix3d &T);
 
     /// Named constructor with derivatives
     static Pose3 Create(const Rot3& R, const Eigen::Vector3d& t);
@@ -85,32 +82,20 @@ public:
     /// @{
 
     /// identity for group operation
-    static Pose3 identity()
-    {
-        return Pose3();
-    }
+    static Pose3 identity();
 
     /// inverse transformation with derivatives
     Pose3 inverse() const;
 
     /// compose syntactic sugar
-    Pose3 operator*(const Pose3& T) const
+     Pose3 operator*(const Pose3& T) const
     {
         return Pose3(R_ * T.R_, t_ + R_ * T.t_);
     }
-     Pose3* multiply(const Pose3& T) const
-    {
-        return new Pose3(R_ * T.R_, t_ + R_ * T.t_);
-    }
+    Pose3* multiply(const Pose3& T) const;
 
-    void setT(const Eigen::Vector3d& outt)
-    {
-        t_=outt;
-    }
-    void setRot(const Rot3& outR)
-    {
-        R_=outR;
-    }
+    void setT(const Eigen::Vector3d& outt);
+    void setRot(const Rot3& outR);
 
 
     /// @}
@@ -179,17 +164,16 @@ public:
     // Chart at origin, depends on compile-time flag POSE3_EXPMAP
     struct ChartAtOrigin
     {
-        static Pose3 Retract(const Eigen::VectorXd& v);
-        static Pose3 Retract(const Eigen::VectorXd& v, Eigen::MatrixXd* H);
+        static Pose3 retract(const Eigen::VectorXd& v);
+        static Pose3 retract(const Eigen::VectorXd& v, Eigen::MatrixXd* H);
         static Eigen::VectorXd Local(const Pose3& r);
         static Eigen::VectorXd Local(const Pose3& r, Eigen::MatrixXd*  H);
     };
 
-// using LieGroup<Pose3, 6>::inverse; // version with derivative
 
-    Pose3 retract_(const Eigen::VectorXd& v);
+    Pose3 retract(const Eigen::VectorXd& v);
 
-    Pose3* retractpointer_(const Eigen::VectorXd& v);
+    Pose3* retractpointer(const Eigen::VectorXd& v);
 
     Eigen::VectorXd LocalCoordinates(const Pose3& pg) const;
 
@@ -207,10 +191,7 @@ public:
      * @return xihat, 4*4 element of Lie algebra that can be exponentiated
      */
     static Eigen::MatrixXd wedge(double wx, double wy, double wz, double vx, double vy,
-                                 double vz)
-    {
-        return (Eigen::MatrixXd(4, 4) << 0., -wz, wy, vx, wz, 0., -wx, vy, -wy, wx, 0., vz, 0., 0., 0., 0.).finished();
-    }
+                                 double vz);
 
     /// @}
     /// @name Group Action on Point3
@@ -228,7 +209,7 @@ public:
                                    Eigen::Matrix3d* Dpoint) const;
 
     /** syntactic sugar for transform_from */
-    inline Eigen::Vector3d operator*(const Eigen::Vector3d& p) const
+     inline Eigen::Vector3d operator*(const Eigen::Vector3d& p) const
     {
         return transform_from(p);
     }
@@ -258,22 +239,13 @@ public:
     const Eigen::Vector3d& translation() const;
     const Eigen::Vector3d& translation(Eigen::MatrixXd*  H) const;
     /// get x
-    double x() const
-    {
-        return t_.x();
-    }
+    double x() const;
 
     /// get y
-    double y() const
-    {
-        return t_.y();
-    }
+    double y() const;
 
     /// get z
-    double z() const
-    {
-        return t_.z();
-    }
+    double z() const;
 
     /** convert to 4*4 matrix */
     Eigen::MatrixXd matrix() const;
@@ -349,16 +321,7 @@ public:
 
     /// Output stream operator
 
-    friend std::ostream &operator<<(std::ostream &os, const Pose3& p);
-    /*
-     private:
-
-      friend class boost::serialization::access;
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int ) {
-        ar & BOOST_SERIALIZATION_NVP(R_);
-        ar & BOOST_SERIALIZATION_NVP(t_);
-      }*/
+     friend std::ostream &operator<<(std::ostream &os, const Pose3& p);
     /// @}
 
 };
@@ -371,7 +334,6 @@ public:
  *  v = 3D velocity
  * @return xihat, 4*4 element of Lie algebra that can be exponentiated
  */
-//template<>
 inline Eigen::MatrixXd wedge(const Eigen::VectorXd& xi)
 {
     return Pose3::wedge(xi(0), xi(1), xi(2), xi(3), xi(4), xi(5));
@@ -383,14 +345,13 @@ inline Eigen::MatrixXd wedge(const Eigen::VectorXd& xi)
  * @deprecated: use Pose3::Align with point pairs ordered the opposite way
  */
 void align(const std::vector<std::pair<Eigen::Vector3d, Eigen::Vector3d>>& baPointPairs,Pose3* alignresult);
-//Pose3 align(const std::vector<std::pair<Eigen::Vector3d, Eigen::Vector3d>>& baPointPairs);
-
 std::map<int,Pose3> Pose3ValuesRetract(const std::map<int,Pose3>& LinPose3,
                                        const std::map<int,Eigen::VectorXd>& vectorvalues2);
 std::map<int,Pose3> DPose3ValuesRetract(const std::map<int,Pose3>& LinPose3,
-                                       const std::map<int,Eigen::VectorXd>& vectorvalues2);
+                                        const std::map<int,Eigen::VectorXd>& vectorvalues2);
 
 std::map<int,Eigen::VectorXd> Pose3VectorValuesZero(std::map<int,Pose3> vvz);
 void Pose3ValuesUpdate(std::map<int,Pose3*>* vectorvalues1,const std::map<int,Pose3*>& vectorvalues2);
 
+};
 #endif // POSE3_H

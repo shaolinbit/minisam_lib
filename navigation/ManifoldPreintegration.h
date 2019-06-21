@@ -1,15 +1,33 @@
 #ifndef MANIFOLDPREINTEGRATION_H
 #define MANIFOLDPREINTEGRATION_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  *  @file  ManifoldPreintegration.h
- *  @author
+ *  @author Luca Carlone
+ *  @author Stephen Williams
+ *  @author Richard Roberts
+ *  @author Vadim Indelman
+ *  @author David Jensen
+ *  @author Frank Dellaert
  **/
-
 #pragma once
 
 #include "../navigation/NavState.h"
 #include "../navigation/PreintegrationBase.h"
+
+namespace minisam
+{
 
 /**
  * IMU pre-integration on NavSatet manifold.
@@ -117,12 +135,6 @@ public:
     {
         delVdelBiasOmega_=n3d;
     }
-
-
-
-    /// @name Testable
-    /// @{
-    //bool equals(const ManifoldPreintegration& other, double tol) const;
     /// @}
 
     /// @name Main functionality
@@ -131,13 +143,11 @@ public:
     /// Update preintegrated measurements and get derivatives
     /// It takes measured quantities in the j frame
     /// Modifies preintegrated quantities in place after correcting for bias and possibly sensor pose
-    /// NOTE(frank): implementation is different in two versions
     void update(const Eigen::Vector3d& measuredAcc, const Eigen::Vector3d& measuredOmega, const double dt,
                 Eigen::MatrixXd* A, Eigen::MatrixXd* B, Eigen::MatrixXd* C) override;
 
     /// Given the estimate of the bias, return a NavState tangent vector
     /// summarizing the preintegrated IMU measurements so far
-    /// NOTE(frank): implementation is different in two versions
     Eigen::VectorXd biasCorrectedDelta(const Eigen::VectorXd& bias_i,
                                        Eigen::MatrixXd* H = NULL) const override;
 
@@ -155,5 +165,5 @@ public:
 
     /// @}
 };
-
+};
 #endif

@@ -1,17 +1,33 @@
 #ifndef SIMPLECAMERA_H
 #define SIMPLECAMERA_H
+#ifndef DLL_PUBLIC
+#define DLL_PUBLIC __attribute__ ((visibility("default")))
+#endif
+
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
 
 /**
  * @file SimpleCamera.h
  * @brief A simple camera class with a Cal3_S2 calibration
- * @date
- * @author
+ * @date Aug 16, 2009
+ * @author Frank Dellaert
  */
 
 #pragma once
 #include "../geometry/PinholeCameraCal3S2.h"
 #include "../geometry/Cal3_S2.h"
 
+namespace minisam
+{
 
 class SimpleCamera : public PinholeCameraCal3S2
 {
@@ -22,19 +38,19 @@ public:
     /// @{
 
     /** default constructor */
-    SimpleCamera() :
+     SimpleCamera() :
         PinholeCameraCal3S2()
     {
     }
 
     /** constructor with pose */
-    explicit SimpleCamera(const Pose3& pose) :
+     explicit SimpleCamera(const Pose3& pose) :
         PinholeCameraCal3S2(pose)
     {
     }
 
     /** constructor with pose and calibration */
-    SimpleCamera(const Pose3& pose, const Cal3_S2& K) :
+     SimpleCamera(const Pose3& pose, const Cal3_S2& K) :
         PinholeCameraCal3S2(pose, K)
     {
     }
@@ -51,17 +67,10 @@ public:
      * @param height camera height
      */
     static SimpleCamera Level(const Cal3_S2 &K, const Pose2& pose2,
-                              double height)
-    {
-        return SimpleCamera(PinholeCameraCal3S2::LevelPose(pose2, height), K);
-    }
+                              double height);
 
     /// PinholeCamera::level with default calibration
-    static SimpleCamera Level(const Pose2& pose2, double height)
-    {
-        return SimpleCamera::Level(Cal3_S2(), pose2, height);
-    }
-
+    static SimpleCamera Level(const Pose2& pose2, double height);
     /**
      * Create a camera at the given eye position looking at a target point in the scene
      * with the specified up direction vector.
@@ -72,10 +81,7 @@ public:
      * @param K optional calibration parameter
      */
     static SimpleCamera Lookat(const Eigen::Vector3d& eye, const Eigen::Vector3d& target,
-                               const Eigen::Vector3d& upVector, const Cal3_S2& K = Cal3_S2())
-    {
-        return SimpleCamera(PinholeCameraCal3S2::LookatPose(eye, target, upVector), K);
-    }
+                               const Eigen::Vector3d& upVector, const Cal3_S2& K = Cal3_S2());
 
     /// @}
     /// @name Advanced Constructors
@@ -94,38 +100,19 @@ public:
     }
 
     /// Copy this object as its actual derived type.
-    SimpleCamera* clone() const
-    {
-        return new SimpleCamera(*this);
-    }
-
-
+    SimpleCamera* clone() const;
     /// @}
     /// @name Manifold
     /// @{
 
     /// move a cameras according to d
-    SimpleCamera retract(const Eigen::VectorXd& d)
-    {
-        if (d.size() == 6)
-        {
-            //  return SimpleCamera(this->pose().retract(d), calibration());
-            return SimpleCamera(Pose3::ChartAtOrigin::Retract(d), calibration());
-        }
-        else
-        {
-            //        return SimpleCamera(this->pose().retract(d.head(6)),
-            //   calibration().retract(d.tail(calibration().dim())));
-            return SimpleCamera(Pose3::ChartAtOrigin::Retract(d.head(6)),
-                                calibration().retract(d.tail(calibration().dim())));
-        }
-
-    }
-
+    SimpleCamera retract(const Eigen::VectorXd& d);
     /// @}
 
 };
 
 /// Recover camera from 3*4 camera matrix
 SimpleCamera simpleCamera(const Eigen::MatrixXd& P);
+};
+
 #endif // SIMPLECAMERA_H

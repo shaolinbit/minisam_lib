@@ -1,53 +1,70 @@
 #ifndef PREINTEGRATEDROTATION_H
 #define PREINTEGRATEDROTATION_H
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  *  @file  PreintegratedRotation.h
- *  @author
+ *  @author Luca Carlone
+ *  @author Stephen Williams
+ *  @author Richard Roberts
+ *  @author Vadim Indelman
+ *  @author David Jensen
+ *  @author Frank Dellaert
  **/
 
 #pragma once
 
 #include "../geometry/Pose3.h"
 #include "../base/Matrix.h"
+#include "../base/MatCal.h"
+
+namespace minisam
+{
 
 /// Parameters for pre-integration:
-/// Usage: Create just a single Params and pass a shared pointer to the constructor
+/// Usage: Create just a single Params and pass a  pointer to the constructor
 struct PreintegratedRotationParams
 {
     Eigen::MatrixXd gyroscopeCovariance;  ///< continuous-time "Covariance" of gyroscope measurements
     Eigen::Vector3d omegaCoriolis;  ///< Coriolis constant
     Pose3* body_P_sensor;    ///< The pose of the sensor in the body frame
 
-    PreintegratedRotationParams() : gyroscopeCovariance(Eigen::MatrixXd::Identity(3,3)),omegaCoriolis(Eigen::Vector3d::Zero(3)),body_P_sensor(NULL) {}
+     PreintegratedRotationParams() : gyroscopeCovariance(Eigen::MatrixXd::Identity(3,3)),omegaCoriolis(Eigen::Vector3d::Zero(3)),body_P_sensor(NULL) {}
 
     virtual ~PreintegratedRotationParams() {}
 
-    //virtual void print(const std::string& s) const;
-    //virtual bool equals(const PreintegratedRotationParams& other, double tol=1e-9) const;
-
-    void setGyroscopeCovariance(const Eigen::MatrixXd& cov)
+     void setGyroscopeCovariance(const Eigen::MatrixXd& cov)
     {
         gyroscopeCovariance = cov;
     }
-    void setOmegaCoriolis(const Eigen::VectorXd& omega)
+      void setOmegaCoriolis(const Eigen::VectorXd& omega)
     {
         omegaCoriolis=omega;
     }
-    void setBodyPSensor(const Pose3& pose)
+     void setBodyPSensor(const Pose3& pose)
     {
         *body_P_sensor=pose;
     }
 
-    const Eigen::MatrixXd& getGyroscopeCovariance()     const
+     const Eigen::MatrixXd& getGyroscopeCovariance()     const
     {
         return gyroscopeCovariance;
     }
-    Eigen::Vector3d getOmegaCoriolis() const
+     Eigen::Vector3d getOmegaCoriolis() const
     {
         return omegaCoriolis;
     }
-    Pose3*   getBodyPSensor()   const
+     Pose3*   getBodyPSensor()   const
     {
         return body_P_sensor;
     }
@@ -76,17 +93,12 @@ public:
     /// @{
 
     /// Default constructor, resets integration to zero
-    explicit PreintegratedRotation(PreintegratedRotationParams* p) : p_(p)
-    {
-        resetIntegration();
-    }
+    explicit PreintegratedRotation(PreintegratedRotationParams* p);
 
     /// Explicit initialization of all class members
     PreintegratedRotation(PreintegratedRotationParams* p,
                           double deltaTij, const Rot3& deltaRij,
-                          const Eigen::MatrixXd& delRdelBiasOmega)
-        : p_(p), deltaTij_(deltaTij), deltaRij_(deltaRij), delRdelBiasOmega_(delRdelBiasOmega) {}
-
+                          const Eigen::MatrixXd& delRdelBiasOmega);
     /// @}
 
     /// @name Basic utilities
@@ -95,37 +107,16 @@ public:
     /// Re-initialize PreintegratedMeasurements
     void resetIntegration();
 
-    /// check parameters equality: checks whether shared pointer points to same Params object.
-    bool matchesParamsWith(const PreintegratedRotation& other) const
-    {
-        return p_ == other.p_;
-    }
+    /// check parameters equality: checks whether  pointer points to same Params object.
+    bool matchesParamsWith(const PreintegratedRotation& other) const;
     /// @}
 
     /// @name Access instance variables
     /// @{
-    const PreintegratedRotationParams* params() const
-    {
-        return p_;
-    }
-    const double& deltaTij() const
-    {
-        return deltaTij_;
-    }
-    const Rot3& deltaRij() const
-    {
-        return deltaRij_;
-    }
-    const Eigen::MatrixXd& delRdelBiasOmega() const
-    {
-        return delRdelBiasOmega_;
-    }
-    /// @}
-
-    /// @name Testable
-    /// @{
-    //void print(const std::string& s) const;
-    //bool equals(const PreintegratedRotation& other, double tol) const;
+    const PreintegratedRotationParams* params() const;
+    const double& deltaTij() const;
+    const Rot3& deltaRij() const;
+    const Eigen::MatrixXd& delRdelBiasOmega() const;
     /// @}
 
     /// @name Main functionality
@@ -143,14 +134,12 @@ public:
     void integrateMeasurement(const Eigen::VectorXd& measuredOmega, const Eigen::VectorXd& biasHat, double deltaT,
                               Eigen::MatrixXd* D_incrR_integratedOmega=NULL,
                               Eigen::Matrix3d*  F =NULL);
-    //  OptionalJacobian<3, 3> D_incrR_integratedOmega = boost::none,
-    //  OptionalJacobian<3, 3> F = boost::none);
+
 
     /// Return a bias corrected version of the integrated rotation, with optional Jacobian
     Rot3 biascorrectedDeltaRij(const Eigen::VectorXd& biasOmegaIncr,
                                Eigen::MatrixXd& H);
     Rot3 biascorrectedDeltaRij(const Eigen::VectorXd& biasOmegaIncr);
-    //OptionalJacobian<3, 3> H = boost::none) const;
 
     /// Integrate coriolis correction in body frame rot_i
     Eigen::VectorXd integrateCoriolis(const Rot3& rot_i) const;
@@ -158,5 +147,5 @@ public:
     /// @}
 
 };
-
+};
 #endif

@@ -2,15 +2,30 @@
 #define SYMBOL_H
 
 
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  * @file Symbol.h
- * @date
- * @author:
+ * @date Jan 12, 2010
+ * @author: Frank Dellaert
+ * @author: Richard Roberts
  */
+
 
 
 #include <cstdint>
 #include <string>
+namespace minisam
+{
 
 /**
  * Character and index key used in VectorValues, GaussianFactorGraph,
@@ -27,41 +42,34 @@ public:
 public:
 
     /** Default constructor */
-    Symbol() :
+     Symbol() :
         c_(0), j_(0)
     {
     }
 
     /** Copy constructor */
-    Symbol(const Symbol& key) :
+     Symbol(const Symbol& key) :
         c_(key.c_), j_(key.j_)
     {
     }
 
     /** Constructor */
-    Symbol(unsigned char c, int j) :
+     Symbol(unsigned char c, int j) :
         c_(c), j_(j)
     {
     }
 
     /** Constructor that decodes an integer Key */
-    Symbol(int key);
+     Symbol(int key);
 
     /** return Key (integer) representation */
-    int key() const;
+     int key() const;
 
     /** Cast to integer */
     int Key() const
     {
         return key();
     }
-
-    /// Print
-    //void print(const std::string& s = "") const;
-
-    /// Check equality
-    //bool equals(const Symbol& expected, double tol = 0.0) const;
-
     /** Retrieve key character */
     unsigned char chr() const
     {
@@ -93,11 +101,6 @@ public:
     }
 
     /** Comparison for use in maps */
-// bool operator==(Symbol comp) const {
-//   return comp == (*this);
-// }
-
-    /** Comparison for use in maps */
     bool operator!=(const Symbol& comp) const
     {
         return comp.c_ != c_ || comp.j_ != j_;
@@ -108,23 +111,6 @@ public:
     {
         return comp != (*this);
     }
-
-    /** Return a filter function that returns true when evaluated on a Key whose
-     * character (when converted to a Symbol) matches \c c.  Use this with the
-     * Values::filter() function to retrieve all key-value pairs with the
-     * requested character.
-     */
-    //static boost::function<bool(Key)> ChrTest(unsigned char c);
-
-//private:
-
-    /** Serialization function */
-    //friend class boost::serialization::access;
-    //template<class ARCHIVE>
-    //void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-    //  ar & BOOST_SERIALIZATION_NVP(c_);
-    //  ar & BOOST_SERIALIZATION_NVP(j_);
-    //}
 };
 
 /** Create a symbol key from a character and index, i.e. x5. */
@@ -252,5 +238,5 @@ inline Symbol Z(int j)
     return Symbol('z', j);
 }
 }
-
+};
 #endif // SYMBOL_H

@@ -1,15 +1,30 @@
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
 /**
  * @file   Quaternion.h
  * @brief  Lie Group wrapper for Eigen Quaternions
- * @author
+ * @author Frank Dellaert
  **/
+
 
 #pragma once
 
 #include "../geometry/SO3.h" // Logmap/Expmap derivatives
 #include "../base/Matrix.h"
+#include "../base/MatCal.h"
 #include <limits>
 #include <iostream>
+namespace minisam
+{
 
 class QQuaternion
 {
@@ -26,11 +41,11 @@ public:
     {
         Q_=Eigen::Quaternion<double, Eigen::DontAlign>(df);
     }
-     QQuaternion(const Eigen::Quaternion<double, Eigen::DontAlign>& df)
+    QQuaternion(const Eigen::Quaternion<double, Eigen::DontAlign>& df)
     {
         Q_=df;
     }
-      QQuaternion(const Eigen::AngleAxisd& df)
+    QQuaternion(const Eigen::AngleAxisd& df)
     {
         Q_=df;
     }
@@ -53,17 +68,12 @@ public:
     {
         dimension = 3
     };
-    //typedef OptionalJacobian<3, 3> ChartJacobian;
-    //typedef Eigen::Matrix<_Scalar, 3, 1, _Options, 3, 1> TangentVector;
 
     /// @}
     /// @name Lie group traits
     /// @{
     static QQuaternion Compose(const QQuaternion &g, const QQuaternion & h)
     {
-        // if (Hg) *Hg = h.toRotationMatrix().transpose();
-        // if (Hh) *Hh = I_3x3;
-        //return g * h;
         QQuaternion qq;
         qq.Q_=g.Q_*h.Q_;
         return qq;
@@ -71,9 +81,7 @@ public:
     static QQuaternion Compose(const QQuaternion &g, const QQuaternion & h,
                                Eigen::Matrix3d* Hg, Eigen::Matrix3d* Hh)
     {
-        //if (Hg)
         *Hg = h.Q_.toRotationMatrix().transpose();
-        // if (Hh)
         *Hh = Eigen::Matrix3d::Identity();
         QQuaternion qq;
         qq.Q_=g.Q_*h.Q_;
@@ -85,8 +93,6 @@ public:
     {
         QQuaternion d;
         d.Q_ = g.Q_.inverse() * h.Q_;
-        // if (Hg) *Hg = -d.toRotationMatrix().transpose();
-        // if (Hh) *Hh = I_3x3;
         return d;
     }
 
@@ -95,26 +101,21 @@ public:
     {
         QQuaternion d;
         d.Q_ = g.Q_.inverse() * h.Q_;
-        //if (Hg)
         *Hg = -d.Q_.toRotationMatrix().transpose();
-        // if (Hh)
         *Hh = Eigen::Matrix3d::Identity();
         return d;
     }
 
     static QQuaternion Inverse(const QQuaternion &g)
     {
-        // if (H) *H = -g.toRotationMatrix();
         QQuaternion dg;
         dg.Q_=g.Q_.inverse();
         return dg;
-        // return g.inverse();
     }
 
     static QQuaternion Inverse(const QQuaternion &g,
                                Eigen::Matrix3d* H)
     {
-        //if (H)
         *H = -g.Q_.toRotationMatrix();
         QQuaternion dg;
         dg.Q_=g.Q_.inverse();
@@ -126,7 +127,6 @@ public:
     {
         using std::cos;
         using std::sin;
-        //if (H) *H = SO3::ExpmapDerivative(omega.template cast<double>());
         double theta2 = omega.dot(omega);
         if (theta2 > std::numeric_limits<double>::epsilon())
         {
@@ -203,7 +203,6 @@ public:
             omega = (angle / s) * q.Q_.vec();
         }
 
-        // if(H) *H = SO3::LogmapDerivative(omega.template cast<double>());
         return omega;
     }
 
@@ -244,7 +243,6 @@ public:
             omega = (angle / s) * q.Q_.vec();
         }
 
-        //if(H)
         *H = SO3::LogmapDerivative(omega.template cast<double>());
         return omega;
     }
@@ -258,8 +256,6 @@ public:
         QQuaternion b = Between(g, h);
         Eigen::Matrix3d D_v_b;
         Eigen::Vector3d v = Logmap(b);
-        //if (H1) *H1 = D_v_b * (*H1);
-        // if (H2) *H2 = D_v_b * (*H2);
         return v;
     }
 
@@ -269,28 +265,24 @@ public:
         QQuaternion b = Between(g, h, H1, H2);
         Eigen::Matrix3d D_v_b;
         Eigen::Vector3d v = Logmap(b, &D_v_b);
-        // if (H1)
         *H1 = D_v_b * (*H1);
-        //if (H2)
         *H2 = D_v_b * (*H2);
         return v;
     }
 
-    static QQuaternion Retract(const QQuaternion& g, const Eigen::Vector3d& v)
+    static QQuaternion retract(const QQuaternion& g, const Eigen::Vector3d& v)
     {
         Eigen::Matrix3d D_h_v;
         QQuaternion b = Expmap(v);
         QQuaternion h = Compose(g, b);
-        // if (H2) *H2 = (*H2) * D_h_v;
         return h;
     }
-    static QQuaternion Retract(const QQuaternion& g, const Eigen::Vector3d& v,
+    static QQuaternion retract(const QQuaternion& g, const Eigen::Vector3d& v,
                                Eigen::Matrix3d* H1, Eigen::Matrix3d* H2)
     {
         Eigen::Matrix3d D_h_v;
         QQuaternion b = Expmap(v,&D_h_v);
         QQuaternion h = Compose(g, b, H1, H2);
-        //if (H2)
         *H2 = (*H2) * D_h_v;
         return h;
     }
@@ -300,6 +292,8 @@ public:
         Q_=rObj.Q_;
     }
 
-};
+    ///@}
 
+};
+};
 

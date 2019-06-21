@@ -1,8 +1,33 @@
 #ifndef FACTOR_H_INCLUDED
 #define FACTOR_H_INCLUDED
 
+
+/* ----------------------------------------------------------------------------
+
+ * GTSAM Copyright 2010, Georgia Tech Research Corporation,
+ * Atlanta, Georgia 30332-0415
+ * All Rights Reserved
+ * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
+
+ * See LICENSE for the license information
+
+ * -------------------------------------------------------------------------- */
+
+/**
+ * @file    Factor.h
+ * @brief   The base class for all factors
+ * @author  Kai Ni
+ * @author  Frank Dellaert
+ * @author  Richard Roberts
+ */
+
+
 #include <vector>
 #include <algorithm>
+
+
+namespace minisam
+{
 
 /**
  * This is the base class for all factor types.  It is templated on a KEY type,
@@ -14,9 +39,6 @@
  * class, using Index keys.  This class does not store any data other than its
  * keys.  Derived classes store data such as matrices and probability tables.
  *
- * Note that derived classes *must* redefine the ConditionalType and shared_ptr
- * typedefs to refer to the associated conditional and shared_ptr types of the
- * derived class.  See IndexFactor, JacobianFactor, etc. for examples.
  *
  * This class is \b not virtual for performance reasons - derived symbolic classes,
  * IndexFactor and IndexConditional, need to be created and destroyed quickly
@@ -39,109 +61,59 @@ public:
     /// @{
 
     /** Default constructor for I/O */
-    Factor()
-    {
-        keys_.clear();
-    }
+     Factor();
     virtual ~Factor();
 
     /** Construct factor from container of keys.  This constructor is used internally from derived factor
     *  constructors, either from a container of keys or from a boost::assign::list_of. */
-    //template<typename CONTAINER>
-    explicit Factor(const std::vector<int> keys) : keys_(keys.begin(), keys.end()) {}
+     explicit Factor(const std::vector<int> keys) : keys_(keys.begin(), keys.end()) {}
 
-    Factor(const int& key)
-    {
-        keys_.clear();
-        keys_.push_back(key);
-    }
+     Factor(const int& key);
 
-    Factor(const Factor& fc):keys_(fc.keys()) {}
-
+     Factor(const Factor& fc);
     /** Construct factor from iterator keys.  This constructor may be used internally from derived
     *  factor constructors, although our code currently does not use this. */
-    //  template<typename ITERATOR>
-    Factor(std::vector<int>::iterator first, std::vector<int>::iterator last) : keys_(first, last) {}
-    Factor(std::vector<int>::const_iterator first, std::vector<int>::const_iterator last) : keys_(first, last) {}
+     Factor(std::vector<int>::iterator first, std::vector<int>::iterator last);
+     Factor(std::vector<int>::const_iterator first, std::vector<int>::const_iterator last);
     /** Construct factor from container of keys.  This is called internally from derived factor static
     *  factor methods, as a workaround for not being able to call the protected constructors above. */
-    //template<typename CONTAINER>
-    static Factor FromKeys(const std::vector<int>& keys)
-    {
-        return Factor(keys);
-    }
+    static Factor FromKeys(const std::vector<int>& keys);
 
     /** Construct factor from iterator keys.  This is called internally from derived factor static
     *  factor methods, as a workaround for not being able to call the protected constructors above. */
-    static Factor FromIterators(std::vector<int>::iterator first, std::vector<int>::iterator last)
-    {
-        return Factor(first, last);
-    }
+    static Factor FromIterators(std::vector<int>::iterator first, std::vector<int>::iterator last);
 //
     /// @}
-
-    //virtual Factor* clone() const=0;
 
 public:
     /// @name Standard Interface
     /// @{
 
     /// First key
-    int front() const
-    {
-        return keys_.front();
-    }
+    int front() const;
 
     /// Last key
-    int back() const
-    {
-        return keys_.back();
-    }
+    int back() const;
 
     /// find
-    std::vector<int>::const_iterator find(int key) const
-    {
-        return std::find(begin(), end(), key);
-    }
+    std::vector<int>::const_iterator find(int key) const;
 
     /// Access the factor's involved variable keys
-    const std::vector<int>& keys() const
-    {
-        return keys_;
-    }
+    const std::vector<int>& keys() const;
     /** Iterator at beginning of involved variable keys */
-    std::vector<int>::const_iterator begin() const
-    {
-        return keys_.begin();
-    }
+    std::vector<int>::const_iterator begin() const;
 
     /** Iterator at end of involved variable keys */
-    std::vector<int>::const_iterator end() const
-    {
-        return keys_.end();
-    }
+    std::vector<int>::const_iterator end() const;
     /**
     * @return the number of variables involved in this factor
     */
-    int size() const
-    {
-        return keys_.size();
-    }
+    int size() const;
 
-    void push_back(int key)
-    {
-        keys_.push_back(key);
-    }
-    void clear()
-    {
-        keys_.clear();
-    }
+    void push_back(int key);
+    void clear();
 
-    Factor& operator=(const Factor& rObj)
-    {
-        this->keys_ = rObj.keys_;
-        return *this;
-    }
+    Factor& operator=(const Factor& rObj);
 
     /// @}
 
@@ -151,10 +123,7 @@ public:
 
 protected:
     /// check equality
-    bool equals(const Factor& other, double tol = 1e-9) const
-    {
-        return keys_ == other.keys_;
-    };
+    bool equals(const Factor& other, double tol = 1e-9) const;
 
     /// @}
 
@@ -163,41 +132,23 @@ public:
     /// @{
 
     /** @return keys involved in this factor */
-    std::vector<int>& keys()
-    {
-        return keys_;
-    }
-
+    std::vector<int>& keys();
     /** Iterator at beginning of involved variable keys */
-    std::vector<int>::iterator begin()
-    {
-        return keys_.begin();
-    }
+    std::vector<int>::iterator begin();
 
     /** Iterator at end of involved variable keys */
-    std::vector<int>::iterator end()
-    {
-        return keys_.end();
-    }
+    std::vector<int>::iterator end();
 
-    void erase(std::vector<int>::iterator needtoerase)
-    {
-        keys_.erase(needtoerase);
-    }
-    void erase(int key)
-    {
-        //keys_.erase();
-        keys_.erase(keys_.begin()+key);
-    }
-    bool empty()
-    {
-        return keys_.empty();
-    }
+    void erase(std::vector<int>::iterator needtoerase);
+    void erase(int key);
+    bool empty();
 
     bool operator==(const Factor& other)const;
+    ///@}
+
 };
 
-//}
+};
 
 
 #endif // FACTOR_H_INCLUDED
