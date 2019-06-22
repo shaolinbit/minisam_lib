@@ -91,16 +91,16 @@ set(HEAD_FILES_symbolic
 	./symbolic/SymbolicConditional.h
  )
 
-install(FILES ${HEAD_FILES_root} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include)
-install(FILES ${HEAD_FILES_3rdparty} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/3rdparty)
-install(FILES ${HEAD_FILES_base} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/base)
-install(FILES ${HEAD_FILES_geometry} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/geometry)
-install(FILES ${HEAD_FILES_inference} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/inference)
-install(FILES ${HEAD_FILES_linear} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/linear)
-install(FILES ${HEAD_FILES_navigation} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/navigation)
-install(FILES ${HEAD_FILES_nolinear} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/nolinear)
-install(FILES ${HEAD_FILES_slam} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/slam)
-install(FILES ${HEAD_FILES_symbolic} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/include/symbolic)
+install(FILES ${HEAD_FILES_root} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam)
+install(FILES ${HEAD_FILES_3rdparty} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/3rdparty)
+install(FILES ${HEAD_FILES_base} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/base)
+install(FILES ${HEAD_FILES_geometry} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/geometry)
+install(FILES ${HEAD_FILES_inference} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/inference)
+install(FILES ${HEAD_FILES_linear} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/linear)
+install(FILES ${HEAD_FILES_navigation} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/navigation)
+install(FILES ${HEAD_FILES_nonlinear} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/nonlinear)
+install(FILES ${HEAD_FILES_slam} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/slam)
+install(FILES ${HEAD_FILES_symbolic} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/symbolic)
 install(FILES libminisam.so DESTINATION /usr/lib)
 
 
