@@ -27,11 +27,15 @@ Thanks for the gtsam's authors. We only keep the core functions and classes in g
 
 2. run the commands: 
 
+```
   cd minisam_lib
   mkdir build
   cd build
   cmake ..
   sudo make install
+```
+
+
 
 ## Platforms:
 
