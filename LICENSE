@@ -1,0 +1,20 @@
+This software is free for research. For comerical uses, please contact with the authors.
+We derived this software a lot from GTSAM. Thus, gtsam license is contained.
+GTSAM is released under the simplified BSD license, reproduced in the file 
+GTSAMLICENSE.BSD in this directory.
+
+GTSAM contains two third party libraries, with documentation of licensing and 
+modifications as follows:
+
+- CCOLAMD 2.9.3: Tim Davis' constrained column approximate minimum degree 
+ordering library
+    - Included unmodified in gtsam/3rdparty/CCOLAMD and gtsam/3rdparty/UFconfig
+    - http://faculty.cse.tamu.edu/davis/suitesparse.html
+    - Licenced under BSD-3, provided in gtsam/3rdparty/CCOLAMD/Doc/License.txt
+- Eigen 3.2:  General C++ matrix and linear algebra library
+    - Modified with 3 patches that have been contributed back to the Eigen team:
+        - http://eigen.tuxfamily.org/bz/show_bug.cgi?id=704 (Householder QR MKL selection)
+        - http://eigen.tuxfamily.org/bz/show_bug.cgi?id=705 (Fix MKL LLT return code)
+        - http://eigen.tuxfamily.org/bz/show_bug.cgi?id=716 (Improved comma initialization)
+    - Licenced under MPL2, provided in gtsam/3rdparty/Eigen/COPYING.README 
+    - Some code that is 3rd-party to Eigen is BSD and LGPL
