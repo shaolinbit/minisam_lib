@@ -13,11 +13,11 @@ Thanks for the gtsam's authors. We only keep the core functions and classes in g
 
 ## Requirements:
 
-      1. gcc compiler version:5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.11)
+1. gcc compiler version:5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.11)
 
-​      2. Cmake above version 2.6
+2. Cmake above version 2.6
 
-​      3. eigen3 
+3. eigen3 
 
 ## Install:
 
