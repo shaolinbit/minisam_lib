@@ -81,6 +81,7 @@ public:
     /// @name Component Access
     /// @{
 
+
     const Rot3& attitude(Eigen::MatrixXd*  H = NULL) const;
     const Eigen::Vector3d & position(Eigen::MatrixXd* H = NULL) const;
     const Eigen::Vector3d & velocity(Eigen::MatrixXd* H = NULL) const;
@@ -178,7 +179,7 @@ public:
                                Eigen::Vector3d omegaCoriolis, bool use2ndOrderCoriolis =
                                    false, Eigen::MatrixXd* H1 = NULL,
                                Eigen::MatrixXd* H2 =NULL) const;
-
+    NavState& operator=(const NavState &rObj);
 };
 };
 

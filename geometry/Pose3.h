@@ -238,6 +238,8 @@ public:
     /// get translation
     const Eigen::Vector3d& translation() const;
     const Eigen::Vector3d& translation(Eigen::MatrixXd*  H) const;
+
+    const Eigen::Vector3d& translationP(Eigen::MatrixXd&  H) const;
     /// get x
     double x() const;
 

@@ -85,6 +85,9 @@ public:
     /** subtraction */
     ConstantBias operator-(const ConstantBias& b) const;
 
+    /**equal**/
+     ConstantBias operator=(const ConstantBias& b) const;
+
     /// @}
 
     /// @name Deprecated
