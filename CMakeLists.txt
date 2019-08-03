@@ -15,7 +15,6 @@ set(HEAD_FILES_root
 )
 
 set(HEAD_FILES_3rdparty
-	gmfconfig.h
 	./3rdparty/ccolamd.h
 	./3rdparty/SuiteSparse_config.h
 )
@@ -40,7 +39,10 @@ set(HEAD_FILES_geometry
 	./geometry/Unit3.h
 )
 set(HEAD_FILES_inference
+	./inference/BayesTree.h
+        ./inference/BayesTreeCliqueBase.h
 	./inference/ClusterTree.h
+        ./inference/EliminateableFactorGraph.h
 	./inference/EliminationTree.h
 	./inference/Factor.h
 	./inference/FactorGraph.h
@@ -51,6 +53,7 @@ set(HEAD_FILES_inference
 	./inference/VariableSlots.h
 )
 set(HEAD_FILES_linear
+	./linear/GaussianBayesNet.h
 	./linear/GaussianConditional.h
 	./linear/GaussianFactorGraph.h
 	./linear/HessianFactor.h
@@ -70,13 +73,23 @@ set(HEAD_FILES_navigation
 	./navigation/TangentPreintegration.h
 )
 set(HEAD_FILES_nonlinear
+	./nonlinear/DoglegOptimizer.h
+        ./nonlinear/DoglegOptimizerImpl.h
 	./nonlinear/ISAM2.h
 	./nonlinear/ISAM2Clique.h
 	./nonlinear/ISAM2-impl.h
 	./nonlinear/ISAM2JunctionTree.h
 	./nonlinear/ISAM2Params.h
+        ./nonlinear/LevenbergMarquardtOptimizer.h
+        ./nonlinear/LevenbergMarquardtParams.h
+        ./nonlinear/LevenbergMarquardtState.h
+        ./nonlinear/Marginals.h
 	./nonlinear/NonlinearFactor.h
 	./nonlinear/NonlinearFactorGraph.h
+        ./nonlinear/NonlinearOptimizer.h
+        ./nonlinear/NonlinearOptimizerParams.h
+        ./nonlinear/NonlinearOptimizerState.h
+
 )
 set(HEAD_FILES_slam
 	./slam/BetweenFactor.h
@@ -86,6 +99,7 @@ set(HEAD_FILES_slam
 	./slam/PriorFactorPose2.h
 	./slam/PriorFactorPose3.h
 	./slam/ProjectionFactor.h
+        ./slam/UnaryFactor.h
 )
 set(HEAD_FILES_symbolic
 	./symbolic/SymbolicConditional.h

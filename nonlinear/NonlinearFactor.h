@@ -274,7 +274,7 @@ public:
     }
     virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x) const
     {
-        cout<<keys()[0]<<endl;
+       // cout<<keys()[0]<<endl;
         std::map<int, Pose2>::const_iterator xbegin = x.find(keys_[0]);
         const Pose2& x1 = xbegin->second;
         return evaluateError(x1);
@@ -413,7 +413,7 @@ public:
 }; // \class NoiseModelFactor2
 
 /* ************************************************************************* */
-static void check(SharedNoiseModel *noiseModel, int m);
+void check(SharedNoiseModel *noiseModel, int m);
 
 };
 #endif // NONLINEARFACTOR_H

@@ -82,6 +82,7 @@ public:
      * GaussianFactorGraph::jacobian and GaussianFactorGraph::sparseJacobian.
      */
     Eigen::MatrixXd augmentedJacobian();
+    Eigen::MatrixXd information() const;
 
     /// Access the factor's involved variable keys
     const std::vector<int>& keys() const;
@@ -104,6 +105,14 @@ public:
     ///S
     void updateHessian(const std::vector<int> &keys,
                        SVBlockMatrix* info) const;
+
+    std::map<int, Eigen::VectorXd> hessianDiagonal() const;
+
+
+    void transposeMultiplyAdd(double alpha, const Eigen::VectorXd &e,
+        std::map<int, Eigen::VectorXd> &x) const;
+
+    std::map<int, Eigen::VectorXd> gradientAtZero() const;
 
 
     /** Test whether the factor is empty */

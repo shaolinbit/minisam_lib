@@ -21,6 +21,7 @@
 #include <utility>
 #include "../linear/GaussianFactorGraph.h"
 #include "../linear/RealGaussianFactor.h"
+#include "../linear/GaussianBayesNet.h"
 
 
 namespace minisam
@@ -53,6 +54,9 @@ struct ETNode
     std::vector<int> factorsindex; ///< factors associated with root
     std::vector<int> childrenindex;
     int problemSize_;
+     RealGaussianFactor* eliminate(GaussianBayesNet* output,
+                                  const int  Eliminatefunction,
+                                  const std::vector<RealGaussianFactor*>& childrenFactors,const GaussianFactorGraph& gf);
 };
 
 class EliminationTree
@@ -98,6 +102,16 @@ public:
     /// @}
 
 public:
+
+       /** Eliminate the factors to a Bayes net and remaining factor graph
+    * @param function The function to use to eliminate, see the namespace functions
+    * in GaussianFactorGraph.h
+    * @return The Bayes net and factor graph resulting from elimination
+    */
+    std::pair<GaussianBayesNet*, GaussianFactorGraph*>
+    eliminate(const int Eliminatefunction,const GaussianFactorGraph& gf) const;
+
+
     /// @name Testable
     /// @{
 
@@ -122,6 +136,53 @@ protected:
     EliminationTree() {}
 
 };
+struct ETEliminationDataChildrenFactors
+{
+    int parentindex_;
+    int currentindex_;
+    std::vector<RealGaussianFactor*> childFactors;
+    ETEliminationDataChildrenFactors(
+        int pIndex,int cindex,int nChildren):
+        parentindex_(pIndex),currentindex_(cindex)
+    {
+        childFactors.reserve(nChildren);
+    }
+    ~ETEliminationDataChildrenFactors()
+    {
+     for(RealGaussianFactor* bf:childFactors)
+     {
+         if(bf!=NULL)
+        {
+         if(bf->model_!=NULL)
+              {
+                delete bf->model_;
+              }
+        delete bf;
+        bf=NULL;
+        }
 
+     }
+
+    }
+};
+
+struct ETTraversalNode
+{
+    bool expanded;
+    ETNode* treeNode;
+    int parentindex;
+
+    ETTraversalNode(ETNode* _treeNode, int _parentindex) :
+        expanded(false), treeNode(_treeNode), parentindex(_parentindex)
+    {
+    }
+};
+
+std::vector<RealGaussianFactor*>
+inferenceEliminateTree(GaussianBayesNet* result, const EliminationTree& tree, const int Eliminatefunction,
+                              const GaussianFactorGraph& gf);
+void ETDepthFirstForestBN(GaussianBayesNet* BNresult,
+                                 const int elimationtype,const EliminationTree& forest,
+                                 ETEliminationDataChildrenFactors* rootData,const GaussianFactorGraph& gf);
 };
 #endif // ELIMINATIONTREE_H_INCLUDED

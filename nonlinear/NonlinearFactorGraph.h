@@ -1,5 +1,5 @@
-#ifndef NONLINEARFACTORPOINTERGRAPH_H
-#define NONLINEARFACTORPOINTERGRAPH_H
+#ifndef NONLINEARFACTORGRAPH_H
+#define NONLINEARFACTORGRAPH_H
 
 /* ----------------------------------------------------------------------------
 
@@ -94,11 +94,11 @@ public:
 #endif // GMF_Using_Pose3
 
     /// Linearize a nonlinear factor graph
-    int linearize(const std::map<int,Eigen::VectorXd>& linearizationPoint,GaussianFactorGraph& lng,int factorization) const;
+    int linearize(const std::map<int,Eigen::VectorXd>& linearizationPoint,GaussianFactorGraph& lng,int factorization=0) const;
 
 #ifdef GMF_Using_Pose3
     int linearize(const std::map<int,Eigen::VectorXd>& linearizationPoint,const std::map<int,Pose3>& linearizationpose,
-                         GaussianFactorGraph& lng,int factorization) const;
+                         GaussianFactorGraph& lng,int factorization=0) const;
 #else
     int linearize(const std::map<int,Eigen::VectorXd>& linearizationPoint,const std::map<int,Pose2>& linearizationpose,
                          GaussianFactorGraph& lng,int factorization) const;

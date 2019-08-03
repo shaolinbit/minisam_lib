@@ -1,5 +1,5 @@
-#ifndef JUNCTIONTREEPOINTER_H_INCLUDED
-#define JUNCTIONTREEPOINTER_H_INCLUDED
+#ifndef JUNCTIONTREE_H_INCLUDED
+#define JUNCTIONTREE_H_INCLUDED
 
 /* ----------------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ private:
 };
 
 // Pre-order visitor function
-static int ConstructorTraversalVisitorPre(
+int ConstructorTraversalVisitorPre(
     const ETNode& node,
     int parentDataindex,int increment,ConstructorTraversalDataChildFactors& myData);
 // Post-order visitor function
@@ -100,4 +100,4 @@ EliminateSymbolic(const FactorGraph<Factor>& factors, const Ordering& keys);
 };
 
 
-#endif // JUNCTIONTREEPOINTER_H_INCLUDED
+#endif // JUNCTIONTREE_H_INCLUDED

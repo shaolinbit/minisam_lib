@@ -1,5 +1,5 @@
-#ifndef GAUSSIANFACTORPOINTERGRAPH_H_INCLUDED
-#define GAUSSIANFACTORPOINTERGRAPH_H_INCLUDED
+#ifndef GAUSSIANFACTORGRAPH_H_INCLUDED
+#define GAUSSIANFACTORGRAPH_H_INCLUDED
 
 /* ----------------------------------------------------------------------------
 
@@ -72,6 +72,12 @@ public:
 
     /** unnormalized error */
     double error(const std::map<int,Eigen::VectorXd>& x) const;
+    std::map<int,Eigen::VectorXd> optimizeGradientSearch() const;
+   // std::map<int,Eigen::VectorXd> gradient(const std::map<int,Eigen::VectorXd>& x0) const;
+    std::map<int,Eigen::VectorXd> gradientAtZero() const;
+    std::list<Eigen::VectorXd> operator*(const std::map<int,Eigen::VectorXd>& x) const;
+    std::map<int,Eigen::VectorXd> optimize(Ordering& ordering, const int Eliminatekind) const;
+    std::map<int,Eigen::VectorXd> hessianDiagonal() const;
 
 };
 
@@ -92,4 +98,4 @@ const JacobianFactor* convertToJacobianFactorPtr(const RealGaussianFactor* gf);
 
 };
 
-#endif // GAUSSIANFACTORPOINTERGRAPH_H_INCLUDED
+#endif // GAUSSIANFACTORGRAPH_H_INCLUDED

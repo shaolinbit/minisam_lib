@@ -1,5 +1,5 @@
-#ifndef CLUSTERTREEPOINTER_H_INCLUDED
-#define CLUSTERTREEPOINTER_H_INCLUDED
+#ifndef CLUSTERTREE_H_INCLUDED
+#define CLUSTERTREE_H_INCLUDED
 
 
 ///This file was modified a lot from clustertree.h in gtsam.
@@ -16,6 +16,7 @@
 #include "../inference/Ordering.h"
 #include "../linear/GaussianFactorGraph.h"
 #include "../nonlinear/ISAM2.h"
+#include "../inference/BayesTree.h"
 #include "../symbolic/SymbolicConditional.h"
 
 namespace minisam
@@ -178,6 +179,8 @@ public:
      */
     std::pair<ISAM2*, GaussianFactorGraph*> eliminateISAM2(const
             int Eliminatetype,std::list<ISAM2Clique*>* orphancliques,const GaussianFactorGraph& gf);
+    std::pair<BayesTree*, GaussianFactorGraph*> eliminate(const int Eliminatefunction,
+        std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
 
     /// @}
     /// @name Advanced Interface
@@ -204,8 +207,56 @@ protected:
 
     /// @}
 };
-//}
+struct EliminationDatachildFactors
+{
 
+    int myIndexInParent;
+    std::vector<RealGaussianFactor*> childFactors;
+
+
+    BayesTreeCliqueBase* bayesTreeNode;
+    EliminationDatachildFactors* parentdata_;
+
+    EliminationDatachildFactors(EliminationDatachildFactors* parentData):
+        parentdata_(parentData)
+    {
+        bayesTreeNode=new BayesTreeCliqueBase();
+        childFactors.clear();
+         if (parentData!=NULL) {
+      myIndexInParent = parentData->childFactors.size();
+      parentData->childFactors.push_back(new RealGaussianFactor());
+    } else {
+      myIndexInParent = 0;
+    }
+    // Set up BayesTree parent and child pointers
+    if (parentData!=NULL) {
+      if (parentData->parentdata_!=NULL) // If our parent is not the dummy node
+        bayesTreeNode->parent_ = parentData->bayesTreeNode;
+      parentData->bayesTreeNode->children_->push_back(bayesTreeNode);
+    }
+    }
+    ~EliminationDatachildFactors()
+    {
+    if(childFactors.size()>0)
+     for(RealGaussianFactor* bf:childFactors)
+     {
+         if(bf!=NULL)
+        {
+         if(bf->model_!=NULL)
+              {
+                delete bf->model_;
+              }
+        if(bf!=NULL)
+        {
+         delete bf;
+        bf=NULL;
+        }
+        }
+
+     }
+     }
+
+};
 struct EliminationDataISAM2childFactors
 {
 
@@ -241,10 +292,25 @@ struct EliminationDataISAM2childFactors
 void InitEliminationDataISAM2childFactors(EliminationDataISAM2childFactors *currentdata,
                                                  EliminationDataISAM2childFactors *parentdata);
 
+RealGaussianFactor* EliminationPostOrderVisitor(Cluster* node, EliminationDatachildFactors* myData,
+        BayesTree* result,int Eliminatetype, std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
 
 RealGaussianFactor* I2EliminationPostOrderVisitor(Cluster* node,
         EliminationDataISAM2childFactors* myData,
         ISAM2* result,int Eliminatetype, std::list<ISAM2Clique*>* orphans,const GaussianFactorGraph& gf);
+
+struct CTTraversalNode
+{
+    bool expanded;
+    Cluster* treeNode;
+    EliminationDatachildFactors* parentdata_;
+    std::list<EliminationDatachildFactors>::iterator dataPointer;
+
+    CTTraversalNode(Cluster* _treeNode, EliminationDatachildFactors* parentdata, BayesTreeCliqueBase* parentclique) :
+        expanded(false), treeNode(_treeNode), parentdata_(parentdata)//,parentclique_(parentclique)
+    {
+    }
+};
 
 struct CTTraversalNodeISAM2
 {
@@ -262,6 +328,10 @@ struct CTTraversalNodeISAM2
 int I2ClusterTreeDepthFirstForest(EliminatableClusterTree* forest,
         EliminationDataISAM2childFactors* rootData,
         ISAM2* result,int EFunction, std::list<ISAM2Clique*>* orphans,const GaussianFactorGraph& gf);
+int ClusterTreeDepthFirstForest(EliminatableClusterTree* forest,
+                                       EliminationDatachildFactors* rootData,
+                                       BayesTree* result,int Eliminatetype,
+                                       std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
 
 class ConstructorTraversalDataChildFactors
 {
@@ -296,4 +366,4 @@ public:
 };
 };
 
-#endif // CLUSTERTREEPOINTER_H_INCLUDED
+#endif // CLUSTERTREE_H_INCLUDED

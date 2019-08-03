@@ -43,7 +43,8 @@ int main()
   // and type of linear solver. For this example, we we set the relinearization threshold small so the iSAM2 result
   // will approach the batch result.
   ISAM2Params parameters;
-  parameters.optimizationParamsGaussNewton=new ISAM2GaussNewtonParams;
+  //parameters.optimizationParamsGaussNewton=new ISAM2GaussNewtonParams;
+  parameters.optimizationParamsDogleg=new ISAM2DoglegParams();
   parameters.relinearizeThresholdDouble = 0.01;
   parameters.relinearizeSkip = 1;
   ISAM2 isam(parameters);
@@ -201,7 +202,9 @@ int main()
 
 
 
-  delete parameters.optimizationParamsGaussNewton;
+  delete parameters.optimizationParamsDogleg;
   delete K;
     return 0;
 }
+
+

@@ -73,7 +73,7 @@ public:
 
     Eigen::VectorXd evaluateError(const Pose2& p2) const
     {
-        Pose2 h=p2->inverse()*measured();
+        Pose2 h=p2.inverse()*measured();
         Eigen::VectorXd v(3);
         v=-Pose2::ChartAtOrigin::Local(h);
         return v;
@@ -114,17 +114,18 @@ public:
     Eigen::VectorXd
     evaluateError(const Pose2& X1, const Pose2& X2, Eigen::MatrixXd& H1,Eigen::MatrixXd& H2 ) const
     {
-        Pose2 hx = X1->between(X2, H1, H2); // h(x)
-        tx1=measured();
-        return X1->LocalCoordinates(hx);
+        Pose2 hx = X1.between(X2, H1, H2); // h(x)
+        //tx1=measured();
+        //return X1->LocalCoordinates(hx);
+        return measured().LocalCoordinates(hx);
     }
 
     Eigen::VectorXd
     evaluateError(const Pose2& X1, const Pose2& X2) const
     {
         Pose2 hx = X1.between(X2); // h(x)
-        tx1=measured();
-        return tx1.LocalCoordinates(hx);
+       // tx1=measured();
+        return measured().LocalCoordinates(hx);
     }
 
     virtual NonlinearFactor* clone()const

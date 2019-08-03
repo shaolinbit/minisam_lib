@@ -162,7 +162,16 @@ bool internaloptimizeWildfireNode(ISAM2Clique* clique,double threshold,
 int optimizeWildfireNonRecursive(std::vector<ISAM2Clique*>* roots,
                                         double threshold, const std::set<int>& replaced, std::map<int,Eigen::VectorXd>* delta);
 
-/// calculate the number of non-zero entries for the tree starting at clique (use root for complete matrix)
+/**
+ * Compute the gradient-search point.  Only used in Dogleg.
+ */
+std::map<int,Eigen::VectorXd> ISAM2ImplComputeGradientSearch(std::map<int,Eigen::VectorXd>& gradAtZero,
+        const std::map<int,Eigen::VectorXd>& RgProd);
+
+
+int ISAM2ImplUpdateRgProd(std::vector<ISAM2Clique*>& roots,
+                                 const std::set<int>& replacedKeys,
+                                 const  std::map<int,Eigen::VectorXd>& gradAtZero, std::map<int,Eigen::VectorXd>& RgProd);
 };
 
 

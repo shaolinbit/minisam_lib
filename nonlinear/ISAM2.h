@@ -85,7 +85,8 @@ public:
 protected:
 
     int update_count_; ///< Counter incremented every update(), used to determine periodic relinearization
-
+    /** The current Dogleg Delta (trust region radius) */
+    mutable double doglegDelta_;
 public:
 
     /** Create an empty ISAM2 instance */
@@ -185,6 +186,8 @@ public:
     /** Access the current delta, computed during the last call to update */
     std::map<int,Eigen::VectorXd>& getDelta(ISAM2Data& isam2data);
 
+    std::map<int,Eigen::VectorXd> gradientAtZero() const;
+
     /** Compute the linear error */
     double error(const std::map<int,Eigen::VectorXd>& x) const;
     mutable int lastBacksubVariableCount;
@@ -272,4 +275,4 @@ protected: //functions from BayesTree
 
 }; // ISAM2
 };
-#endif // ISAM2POINTER_H_INCLUDED
+#endif // ISAM2_H_INCLUDED

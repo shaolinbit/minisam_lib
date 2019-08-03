@@ -98,6 +98,10 @@ public:
     JacobianFactor(const std::vector<std::pair<int, Eigen::MatrixXd>> &terms,
                    const Eigen::VectorXd &b, DiagonalNoiseModel *model =new DiagonalNoiseModel());
 
+    JacobianFactor(int i1, const Eigen::MatrixXd &A1,
+                               const Eigen::VectorXd &b,
+                                DiagonalNoiseModel *model);
+
     /** Constructor with arbitrary number keys, and where the augmented matrix is given all together
      *  instead of in block terms.  Note that only the active view of the provided augmented matrix
      *  is used, and that the matrix data is copied into a newly-allocated matrix in the constructed

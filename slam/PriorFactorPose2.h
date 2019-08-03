@@ -39,7 +39,7 @@ public:
     virtual Eigen::VectorXd evaluateError(const Pose2& x) const
     {
         // Pose2 h=x.inverse()*prior_;
-        Pose2 h=x->inverse()*prior_;
+        Pose2 h=x.inverse()*prior_;
         Eigen::VectorXd v(3);
         v=-Pose2::ChartAtOrigin::Local(h);
         return v;
@@ -49,7 +49,7 @@ public:
     {
         H=Eigen::MatrixXd::Identity(3,3);
         //Pose2 h=x.inverse()*prior_;
-        Pose2 h=x->inverse()*prior_;
+        Pose2 h=x.inverse()*prior_;
         Eigen::VectorXd v(3);
         v=-Pose2::ChartAtOrigin::Local(h);
         return v;

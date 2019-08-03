@@ -20,11 +20,11 @@ int main(int argc, char* argv[])
 {
     double AccelerometerSigma,GyroscopeSigma,IntegrationSigma,AccelerometerBiasSigma,GyroscopeBiasSigma, AverageDeltaT;
     int BodyPtx, BodyPty, BodyPtz, BodyPrx, BodyPry, BodyPrz;
-    FILE *kittimetadatafile = fopen("data/KittiEquivBiasedImu_metadata.txt", "r");
-    FILE *kittiIMU=fopen("data/KittiEquivBiasedImu.txt", "r");
-    FILE *KittiGps=fopen("data/KittiGps_converted.txt", "r");
-    FILE *fpstate=fopen("data/isam2Wholeresult.txt","w+");
-    FILE *fprealtime=fopen("data/isam2realtimeb.txt","w+");
+    FILE *kittimetadatafile = fopen("examples/imugpskitti/data/KittiEquivBiasedImu_metadata.txt", "r");
+    FILE *kittiIMU=fopen("examples/imugpskitti/data/KittiEquivBiasedImu.txt", "r");
+    FILE *KittiGps=fopen("examples/imugpskitti/data/KittiGps_converted.txt", "r");
+    FILE *fpstate=fopen("examples/imugpskitti/data/isam2Wholeresult.txt","w+");
+    FILE *fprealtime=fopen("examples/imugpskitti/data/isam2realtimeb.txt","w+");
     double GPSTime,GPSX,GPSY,GPSZ;
     double IMUTime, IMUdt, IMUaccelX,IMUaccelY,IMUaccelZ,IMUomegaX,IMUomegaY,IMUomegaZ;
     int kittiindex=0;
@@ -74,12 +74,13 @@ int main(int argc, char* argv[])
         fscanf(KittiGps,"%[^\n]",kittimetadatabuf);
     }
 
+    //noiseModelGPS = noiseModel.Diagonal.Precisions([ [0;0;0]; 1.0/0.07 * [1;1;1] ]);
     Eigen::VectorXd GPSPrecisions(6);
     GPSPrecisions<<0.001,0.001,0.001,1.0/0.07,1.0/0.07,1.0/0.07;
     int firstGPSPose = 2;
     Pose3 currentPoseGlobal;//(Rot3(),firstGPSPosition);
     // Get initial conditions for the estimated trajectory
-    // initial pose is the reference frame (navigation frame)
+    //currentPoseGlobal = Pose3(Rot3, GPS_data(firstGPSPose).Position); // initial pose is the reference frame (navigation frame)
     Eigen::VectorXd currentVelocityGlobal(3);
     currentVelocityGlobal=Eigen::VectorXd::Zero(3);
     Eigen::VectorXd currentBias(6);
@@ -104,8 +105,9 @@ int main(int argc, char* argv[])
     IMU_params.setOmegaCoriolis(w_coriolis);
 
     ISAM2Params parameters;
-    parameters.optimizationParamsGaussNewton=new ISAM2GaussNewtonParams;
+    parameters.optimizationParamsDogleg=new ISAM2DoglegParams();
     parameters.setFactorization("CHOLESKY");
+    //parameters.relinearizeThresholdDouble = 0.01;
     parameters.relinearizeSkip = 1;
     ISAM2 isam(parameters);
     ISAM2Data isam2data;
@@ -125,8 +127,11 @@ int main(int argc, char* argv[])
     while((!feof(KittiGps))&&(!feof(kittiIMU)))
     {
         fscanf(KittiGps, "%lf,%lf,%lf,%lf\n",&GPSTime,&GPSX, &GPSY, &GPSZ);
+        //currentPoseKey=kittigpsindex+PoseConst;
         currentPoseKey=Symbol('p',kittigpsindex).key();
+        //currentVelKey=kittigpsindex+VelConst;
         currentVelKey=Symbol('v',kittigpsindex).key();
+        //currentBiasKey=kittigpsindex+BiasConst;
         currentBiasKey=Symbol('b',kittigpsindex).key();
 
         nowtime=GPSTime;
@@ -187,8 +192,29 @@ int main(int argc, char* argv[])
             newValuesV.insert(std::make_pair(currentBiasKey, currentBias));
             if (kittigpsindex > (firstGPSPose + 2*GPSskip))
             {
+                if(DEBUGSTATE)
+                    cout<<newFactors.size()<<endl;
                 updatecount++;
+                if(updatecount>105)
+                {
+                    cout<<endl;
+                }
+                if(kittigpsindex>=30)
+                {
 
+
+                /*
+                isam.clearall();
+                isam2data.clearpose();
+                isam2data.clearfactors();
+                delete parameters.optimizationParamsGaussNewton;
+                return 0;*/
+                //for(auto& ipair:*isam.nodesbtc)
+               // {
+               //   cout<<ipair.first<<endl;
+               // }
+               // cout<<endl;
+                }
 
                 isam.updatetimefortune=kittigpsindex;
                 isam.update(newFactors, newValuesV,newValuesP,isam2data);
@@ -198,11 +224,18 @@ int main(int argc, char* argv[])
                 newValuesV.clear();
                 newValuesP.clear();
 
+              //  isamtime1=clock();
 
                 resultV = isam.calculateEstimate(isam2data,&resultP);
+               // isamtime2=clock();
+              //  cout<<"calculateEstimate costs "<<(double)(isamtime2-isamtime1)/CLOCKS_PER_SEC<<" seconds"<<endl;
+
                 currentPoseGlobal = resultP.at(currentPoseKey);
                 currentVelocityGlobal = resultV.at(currentVelKey);
                 currentBias = resultV.at(currentBiasKey);
+
+                //resultP.clear();
+                //resultV.clear();
                 cout<<"isam.lastBacksubVariableCount: "<<isam.lastBacksubVariableCount<<endl;;
                 fprintf(fprealtime,"%d %.15f %.15f %.15f %.15f %.15f %.15f %d\n",
                         kittigpsindex, currentPoseGlobal.translation()(0), currentPoseGlobal.translation()(1),
@@ -219,6 +252,18 @@ int main(int argc, char* argv[])
             }
             if(kittigpsindex%10==0)
             {
+                //    cout<<kittigpsindex<<"seconds has passed."<<endl;
+                //    cout<<"GPSTime is "<<GPSTime<<endl;
+
+                //    cout<<currentPoseGlobal<<endl;
+                //    cout<<currentVelocityGlobal<<endl;
+                //    cout<<endl;
+                if(kittigpsindex==50)
+                {
+                 //   isam.clearall();
+            //   delete parameters.optimizationParamsGaussNewton;
+              //      return 0;
+                }
                 if(kittigpsindex==470)
                 {
                     int PoseKeyindex;
@@ -254,7 +299,7 @@ int main(int argc, char* argv[])
     isam.clearall();
     isam2data.clearpose();
     isam2data.clearfactors();
-    delete parameters.optimizationParamsGaussNewton;
+    delete parameters.optimizationParamsDogleg;
     return 0;
 }
 

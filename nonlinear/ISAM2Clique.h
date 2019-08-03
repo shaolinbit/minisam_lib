@@ -40,6 +40,7 @@ public:
     int problemSize_;
 
     RealGaussianFactor* cachedFactor_;
+    Eigen::VectorXd* gradientContribution_;
     std::map<int, std::map<int,Eigen::VectorXd>::iterator>* solnPointers_;
 
     bool setErased;
@@ -56,6 +57,7 @@ public:
         assignedkeys(other.assignedkeys),
         problemSize_(other.problemSize_),
         children_(other.children_),
+        gradientContribution_(other.gradientContribution_),
         cachedSeparatorMarginal_(other.cachedSeparatorMarginal_), cachedFactor_(other.cachedFactor_),//  gradientContribution_(other.gradientContribution_),
         solnPointers_(other.solnPointers_),
         setErased(other.setErased) {}
@@ -90,6 +92,9 @@ public:
 
     /** Access the cached factor */
     RealGaussianFactor* cachedFactor();
+
+       /** Access the gradient contribution */
+    const Eigen::VectorXd gradientContribution() const;
 
     /// @}
     /// @name Advanced Interface
