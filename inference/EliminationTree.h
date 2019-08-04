@@ -51,9 +51,29 @@ class GaussianFactorGraph;
 struct ETNode
 {
     int key; ///< key associated with root
-    std::vector<int> factorsindex; ///< factors associated with root
-    std::vector<int> childrenindex;
+    std::vector<int>* factorsindex; ///< factors associated with root
+    std::vector<int>* childrenindex;
     int problemSize_;
+    ETNode()
+    {
+        factorsindex=new std::vector<int>();
+        childrenindex=new std::vector<int>();
+    }
+    ~ETNode()
+    {
+        if(factorsindex!=NULL)
+        {
+            factorsindex->resize(0);
+            delete factorsindex;
+            factorsindex=NULL;
+        }
+        if(childrenindex!=NULL)
+        {
+            childrenindex->resize(0);
+            delete childrenindex;
+            childrenindex=NULL;
+        }
+    }
      RealGaussianFactor* eliminate(GaussianBayesNet* output,
                                   const int  Eliminatefunction,
                                   const std::vector<RealGaussianFactor*>& childrenFactors,const GaussianFactorGraph& gf);
@@ -62,9 +82,9 @@ struct ETNode
 class EliminationTree
 {
 public:
-    std::vector<int> roots_;
-    std::vector<ETNode*> nodes;
-    std::vector<int> remainingFactorsindex_;
+    std::vector<int>* roots_;
+    std::vector<ETNode*>* nodes;
+    std::vector<int>* remainingFactorsindex_;
 
     /// @name Standard Constructors
     /// @{

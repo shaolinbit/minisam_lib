@@ -26,19 +26,19 @@ namespace minisam
 class Cluster
 {
 public:
-    std::vector<int> childrenclusterindex;
+    std::vector<int>* childrenclusterindex;
     int clusterindex;
-    Ordering orderedFrontalKeys;  ///< Frontal keys of this node
-    std::vector<int> factorsindex;  ///< Factors associated with this node
+    Ordering* orderedFrontalKeys;  ///< Frontal keys of this node
+    std::vector<int>* factorsindex;  ///< Factors associated with this node
     int problemSize_;
 
-    Cluster() : problemSize_(0),clusterindex(0) {}
+    Cluster(); //: problemSize_(0),clusterindex(0) {}
 
-    virtual ~Cluster() {}
+    virtual ~Cluster();// {}
 
     const int& operator[](int i) const
     {
-        return childrenclusterindex[i];
+        return childrenclusterindex->at(i);//)[i];
     }
 
     /// Construct from factors associated with a single key
@@ -56,9 +56,9 @@ public:
 
     int nrChildren() const;
 
-    int nrFactors() const;
+   // int nrFactors() const;
 
-    int nrFrontals() const;
+    //int nrFrontals() const;
 
     int problemSize() const;
     /// Return a vector with nrFrontal keys for each child
@@ -80,8 +80,8 @@ public:
 class ClusterTree
 {
 public:
-    std::vector<int> roots_;
-    std::vector<Cluster*> ctlist;
+    std::vector<int>* roots_;
+    std::vector<Cluster*>* ctlist;
 
     /// @name Standard Constructors
     /// @{
@@ -93,33 +93,25 @@ public:
         *this = other;
     }
 
-    ~ClusterTree()
-    {
-        for(std::vector<Cluster*>::iterator bbi=ctlist.begin(); bbi!=ctlist.end(); bbi++)
-        {
-            delete *bbi;
-            *bbi=NULL;
-        }
-    }
+    ~ClusterTree();
 
     /// @}
 
 public:
 
     /// Default constructor
-    ClusterTree() {}
-
+    ClusterTree();
     /// @name Advanced Interface
     /// @{
 
     void addRoot(const int& cluster)
     {
-        roots_.push_back(cluster);
+        roots_->push_back(cluster);
     }
 
     void addChildrenAsRoots(const Cluster* cluster)
     {
-        for(int cindex:cluster->childrenclusterindex)
+        for(int cindex:*(cluster->childrenclusterindex))
         {
             this->addRoot(cindex);
         }
@@ -127,13 +119,13 @@ public:
 
     int nrRoots() const
     {
-        return roots_.size();
+        return roots_->size();
     }
 
     /** Return the set of roots (one for a tree, multiple for a forest) */
     const std::vector<int>& roots() const
     {
-        return roots_;
+        return *roots_;
     }
 
     /// @}
