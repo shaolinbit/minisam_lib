@@ -53,7 +53,6 @@ struct ETNode
     int key; ///< key associated with root
     std::vector<int>* factorsindex; ///< factors associated with root
     std::vector<int>* childrenindex;
-    int problemSize_;
     ETNode()
     {
         factorsindex=new std::vector<int>();
