@@ -8,8 +8,6 @@
  */
 
 #include <iomanip>
-
-#include "../inference/Ordering.h"
 #include "../nonlinear/NonlinearFactorGraph.h"
 #include "../inference/BayesTree.h"
 #include "../linear/GaussianBayesNet.h"

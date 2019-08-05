@@ -34,7 +34,6 @@ namespace minisam
 
 // Forward declarations
 class GaussianFactorGraph;
-class Ordering;
 
 /**
    * A Gaussian factor in the squared-error form.
@@ -119,9 +118,9 @@ public:
     explicit JacobianFactor(const GaussianFactorGraph& graph);
 
     explicit JacobianFactor(const GaussianFactorGraph& graph,
-                            const Ordering &ordering);
-    explicit JacobianFactor(const std::vector<const RealGaussianFactor*>& graph,
-                            const Ordering &ordering);
+                            const std::vector<int>& ordering);
+     explicit JacobianFactor(const std::vector<const RealGaussianFactor*>& graph,
+                            const std::vector<int>& ordering);
     /** destructor */
     virtual ~JacobianFactor();
 

@@ -64,18 +64,14 @@ public:
      */
 #ifdef GMF_Using_Pose3
     Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose3>& sposes_,
-              Ordering ordering, Factorization factorization = CHOLESKY);
+              const std::map<int,Pose3>& sposes_,const std::vector<int>& ordering,const Factorization& factorization= CHOLESKY);
     Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose3>& sposes_,
-              Factorization factorization = CHOLESKY);
+              const std::map<int,Pose3>& sposes_,const Factorization& factorization= CHOLESKY);
 #else
     Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose2>& sposes_,
-              Ordering ordering, Factorization factorization = CHOLESKY);
+              const std::map<int,Pose2>& sposes_,const std::vector<int>& ordering,const Factorization& factorization= CHOLESKY);
     Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose2>& sposes_,
-              Factorization factorization = CHOLESKY);
+              const std::map<int,Pose2>& sposes_,const Factorization& factorization= CHOLESKY);
 #endif // GMF_Using_Pose3
 
     /** Compute the marginal factor of a single variable */

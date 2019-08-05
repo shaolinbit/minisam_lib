@@ -33,7 +33,6 @@ namespace minisam
 {
 
 // Forward declarations
-class Ordering;
 class GaussianFactorGraph;
 class HessianFactor;
 class Scatter;
@@ -107,8 +106,8 @@ public:
 
 };
 
-Scatter scatterFromValues(const std::map<int,Eigen::VectorXd>& values, Ordering& ordering);
-Scatter scatterFromValues(const std::map<int,Eigen::VectorXd>& values);
+Scatter& scatterFromValues(const std::map<int,Eigen::VectorXd>& values, std::vector<int>& ordering);
+Scatter& scatterFromValues(const std::map<int,Eigen::VectorXd>& values);
 std::map<int,Eigen::Vector2d> values_vectorXd_vector2d(const std::map<int,Eigen::VectorXd>& valuesxd);
 void graphvizgetXY(Eigen::Vector2d* xygot,Eigen::Vector2d* valuev2,Pose2* valuep2,
                    Eigen::Vector3d* valuev3,Pose3* valuep3,  const GraphvizFormatting& graphvizFormatting);

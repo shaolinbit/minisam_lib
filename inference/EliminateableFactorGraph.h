@@ -25,8 +25,7 @@
 namespace minisam
 {
 
-
-GaussianBayesNet* eliminateSequential(const GaussianFactorGraph& gf,const Ordering& ordering,const int ElimateType);
+GaussianBayesNet* eliminateSequential(const GaussianFactorGraph& gf,const std::vector<int>& ordering,const int ElimateType);
 
 GaussianBayesNet* eliminateSequential(const GaussianFactorGraph& gf,const int ElimateType);
 
@@ -41,9 +40,8 @@ std::pair<GaussianBayesNet*, GaussianFactorGraph*> eliminatePartialSequential(co
         const GaussianFactorGraph& gf, int EliminationFunctionType,const VariableIndex& variableIndex) ;
 
 
-std::pair<GaussianBayesNet*, GaussianFactorGraph*>  eliminatePartialSequential(
-    const Ordering& ordering, const GaussianFactorGraph& gf,int EliminationFunctionType, const VariableIndex& variableIndex);
-
+std::pair<GaussianBayesNet*, GaussianFactorGraph*>  eliminatePartialSequentialOrdering(
+    const std::vector<int>& ordering, const GaussianFactorGraph& gf,int EliminationFunctionType, const VariableIndex& variableIndex);
 /** Do multifrontal elimination of all variables to produce a Bayes tree.  If an ordering is not
     *  provided, the ordering will be computed using either COLAMD or METIS, dependeing on
     *  the parameter orderingType (Ordering::COLAMD or Ordering::METIS)
@@ -66,12 +64,12 @@ std::pair<GaussianBayesNet*, GaussianFactorGraph*>  eliminatePartialSequential(
     *  \endcode
     *  */
 BayesTree* eliminateMultifrontal(
-    Ordering& ordering,
+   const std::vector<int>& ordering,
     const int Eliminatefunction,
     VariableIndex& variableIndex,const GaussianFactorGraph& gf);//0:QR,1:precholesky
 
 BayesTree* eliminateMultifrontal(
-    Ordering& ordering,
+    const std::vector<int>& ordering,
     const int Eliminatefunction,
     const GaussianFactorGraph& gf);
 
@@ -90,10 +88,10 @@ BayesTree* eliminateMultifrontal(
   *         used.
   *  @param variableIndex Optional pre-computed VariableIndex for the factor graph, if not
   *         provided one will be computed. */
-GaussianBayesNet* marginalMultifrontalBayesNet(const GaussianFactorGraph& gf,
-        Ordering& variables,
-        const int Eliminatefunction);
 
+GaussianBayesNet* marginalMultifrontalBayesNet(const GaussianFactorGraph& gf,
+        std::vector<int>& variables,
+        const int Eliminatefunction);
 /** Compute the marginal factor graph of the requested variables. */
 GaussianFactorGraph* marginal(
     const std::vector<int>& variables,
@@ -112,15 +110,16 @@ eliminatePartialMultifrontalKey(const std::vector<int>& variables,
 std::pair<BayesTree*, GaussianFactorGraph*>
 eliminatePartialMultifrontalKey(
     const std::vector<int>& variables, const int Eliminatefunction,const GaussianFactorGraph& gf) ;
-Ordering OrderingColamdConstrainedFirst(const GaussianFactorGraph& graph,
+
+std::vector<int> OrderingColamdConstrainedFirst(const GaussianFactorGraph& graph,
         const std::vector<int>& constrainFirst, bool forceOrder=false);
 
 std::pair<BayesTree*, GaussianFactorGraph*>
-eliminatePartialMultifrontal(const Ordering& ordering,
+eliminatePartialMultifrontal(const std::vector<int>& ordering,
                              const int Eliminatefunction,const VariableIndex& variableIndex,const GaussianFactorGraph& gf);
 
 std::pair<BayesTree*, GaussianFactorGraph*>
-eliminatePartialMultifrontal(const Ordering& ordering,
+eliminatePartialMultifrontal(const std::vector<int>& ordering,
                              const int Eliminatefunction,const GaussianFactorGraph& gf);
 
 

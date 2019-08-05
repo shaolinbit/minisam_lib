@@ -24,7 +24,6 @@ namespace minisam
 {
 
 // Forward declarations
-class Ordering;
 class GaussianFactorGraph;
 class Scatter;
 

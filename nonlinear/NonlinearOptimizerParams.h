@@ -35,7 +35,7 @@ public:
     double absoluteErrorTol; ///< The maximum absolute error decrease to stop iterating (default 1e-5)
     double errorTol; ///< The maximum total error to stop iterating (default 0.0)
     Verbosity verbosity; ///< The printing verbosity during optimization (default SILENT)
-    Ordering::OrderingType orderingType; ///< The method of ordering use during variable elimination (default COLAMD)
+    Ordering_OrderingType orderingType;//Ordering::OrderingType orderingType; ///< The method of ordering use during variable elimination (default COLAMD)
 
     NonlinearOptimizerParams();
     virtual ~NonlinearOptimizerParams();
@@ -73,8 +73,7 @@ public:
     };
 
     LinearSolverType linearSolverType; ///< The type of linear solver to use in the nonlinear optimizer
-    Ordering ordering; ///< The variable elimination ordering, or empty to use COLAMD (default: empty)
-
+    std::vector<int> ordering; ///< The variable elimination ordering, or empty to use COLAMD (default: empty)
    // IterativeOptimizationParameters* iterativeParams; ///< The container for iterativeOptimization parameters. used in CG Solvers.
 
     NonlinearOptimizerParams& operator=(const NonlinearOptimizerParams& rObj);
@@ -102,7 +101,7 @@ public:
 
     void setLinearSolverType(const std::string& solver);
 
-    void setOrdering(const Ordering& ordering);
+    void setOrdering(const std::vector<int>& ordering);
     std::string getOrderingType();
 
     // Note that if you want to use a custom ordering, you must set the ordering directly, this will switch to custom type
@@ -114,10 +113,9 @@ private:
     LinearSolverType linearSolverTranslator(const std::string& linearSolverType) const;
 
 
-    std::string orderingTypeTranslator(Ordering::OrderingType type);
+    std::string orderingTypeTranslator(Ordering_OrderingType type);
 
-    Ordering::OrderingType orderingTypeTranslator(const std::string& type) const;
-
+Ordering_OrderingType orderingTypeTranslator(const std::string& type) const;
 };
 
 

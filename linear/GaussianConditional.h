@@ -134,7 +134,7 @@ inline GaussianConditional &GaussianConditional::operator=(const GaussianConditi
    * Returns a conditional on those keys, and a new factor on the separator.
    */
 std::pair<GaussianConditional*, JacobianFactor*> EliminateQR(const std::vector<const RealGaussianFactor*> &factors,
-        const Ordering &keys);
+        const std::vector<int>& keys);
 /**
 *   Densely partially eliminate with Cholesky factorization.  JacobianFactors are
 *   left-multiplied with their transpose to form the Hessian using the conversion constructor
@@ -152,12 +152,13 @@ std::pair<GaussianConditional*, JacobianFactor*> EliminateQR(const std::vector<c
 *
 *   \addtogroup LinearSolving */
 
-std::pair<GaussianConditional*, HessianFactor*> EliminateCholesky(const std::vector<const RealGaussianFactor*>&factors, const Ordering &keys);
+std::pair<GaussianConditional*, HessianFactor*> EliminateCholesky(const std::vector<const RealGaussianFactor*>&factors,
+                                                                   const std::vector<int>& keys);
 /**
      *  In-place elimination that returns a conditional on (ordered) keys specified, and leaves
      *  this factor to be on the remaining keys (separator) only. Does dense partial Cholesky.
      */
-GaussianConditional* HFeliminateCholesky(const Ordering &keys, HessianFactor *HessianFactor);
+GaussianConditional* HFeliminateCholesky(const std::vector<int>& keys, HessianFactor *HessianFactor);
 GaussianConditional* splitConditional(JacobianFactor* jb, int nrFrontals);
 /**
 *   Densely partially eliminate with Cholesky factorization.  JacobianFactors are
@@ -176,7 +177,7 @@ GaussianConditional* splitConditional(JacobianFactor* jb, int nrFrontals);
 *   \addtogroup LinearSolving */
 
 std::pair<GaussianConditional*, RealGaussianFactor*>
-EliminatePreferCholesky(const std::vector<const RealGaussianFactor*> &factors, const Ordering &keys);
+EliminatePreferCholesky(const std::vector<const RealGaussianFactor*> &factors, const std::vector<int> &keys);
 };
 
 #endif // GAUSSIANCONDITIONAL_H

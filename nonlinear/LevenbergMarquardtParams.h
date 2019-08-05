@@ -139,18 +139,14 @@ public:
     {
         if (!params->ordering.size()>0)
         {
-            Ordering nor;
-            params->ordering = nor.Create(params->orderingType, graph);
+            params->ordering = Ordering_Create(params->orderingType, graph);
         }
-
-        //return *params;
     }
 
     static void ReplaceOrdering(LevenbergMarquardtParams* params,
-                                const Ordering& ordering)
+                                const std::vector<int>& ordering)// Ordering& ordering)
     {
         params->ordering = ordering;
-        //return *params;
     }
 
     virtual ~LevenbergMarquardtParams() {}

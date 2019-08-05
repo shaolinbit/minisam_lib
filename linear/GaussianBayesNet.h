@@ -21,7 +21,6 @@
 
 #include "../linear/GaussianConditional.h"
 #include "../inference/FactorGraph.h"
-#include "../inference/Ordering.h"
 #include <Eigen/Core>
 namespace minisam
 {

@@ -26,9 +26,7 @@
 
 namespace minisam
 {
-
 class VariableIndex;
-class Ordering;
 class GaussianFactorGraph;
 
 /**
@@ -97,16 +95,14 @@ public:
     * @return The elimination tree
     */
 public:
-    EliminationTree(const GaussianFactorGraph& factorGraph,
-                    const VariableIndex& structure, const Ordering& order);
-
+  EliminationTree(const GaussianFactorGraph& factorGraph,
+                    const VariableIndex& structure, const std::vector<int>& order);
     /** Build the elimination tree of a factor graph.  Note that this has to compute the column
     * structure as a VariableIndex, so if you already have this precomputed, use the other
     * constructor instead.
     * @param factorGraph The factor graph for which to build the elimination tree
     */
-    EliminationTree(const GaussianFactorGraph& factorGraph, const Ordering& order);
-
+    EliminationTree(const GaussianFactorGraph& factorGraph, const std::vector<int>& order);
     /** Copy constructor - makes a deep copy of the tree structure, but only pointers to factors are
      *  copied, factors are not cloned. */
     EliminationTree(const EliminationTree& other);

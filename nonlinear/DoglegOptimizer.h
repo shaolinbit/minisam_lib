@@ -87,12 +87,10 @@ public:
      */
 #ifdef GMF_Using_Pose3
     DoglegOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                    const std::map<int,Pose3>& initialPoses,
-                    const Ordering& ordering);
+                    const std::map<int,Pose3>& initialPoses,const std::vector<int>& ordering);
 #else
     DoglegOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                    const std::map<int,Pose2>& initialPoses,
-                    const Ordering& ordering);
+                    const std::map<int,Pose2>& initialPoses,const std::vector<int>& ordering);
 #endif
 
     /// @}

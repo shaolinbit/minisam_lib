@@ -20,14 +20,12 @@
  * @date    June 2015
  */
 
-#include "../inference/Ordering.h"
 #include "../linear/GaussianFactorGraph.h"
 
 namespace minisam
 {
 
 class GaussianFactorGraph;
-class Ordering;
 
 /// One SlotEntry stores the slot index for a variable, as well its dim.
 struct  SlotEntry
@@ -60,8 +58,8 @@ public:
 
     // Construct from gaussian factor graph, with optional (partial or complete) ordering
     Scatter(const GaussianFactorGraph& gfg,
-            const Ordering& ordering);
-    Scatter(const std::vector<const RealGaussianFactor*>&factors, const Ordering& ordering);
+            const std::vector<int>& ordering);
+    Scatter(const std::vector<const RealGaussianFactor*>&factors, const std::vector<int>& ordering);
     Scatter(const GaussianFactorGraph& gfg);
     /// Add a key/dim pair
     void add(int key, int dim);

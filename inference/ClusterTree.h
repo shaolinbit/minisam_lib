@@ -13,7 +13,6 @@
  * @brief Collects factorgraph fragments defined on variable clusters, arranged in a tree
  */
 
-#include "../inference/Ordering.h"
 #include "../linear/GaussianFactorGraph.h"
 #include "../nonlinear/ISAM2.h"
 #include "../inference/BayesTree.h"
@@ -28,7 +27,7 @@ class Cluster
 public:
     std::vector<int>* childrenclusterindex;
     int clusterindex;
-    Ordering* orderedFrontalKeys;  ///< Frontal keys of this node
+    std::vector<int>* orderedFrontalKeys;  ///< Frontal keys of this node
     std::vector<int>* factorsindex;  ///< Factors associated with this node
     int problemSize_;
 
@@ -55,10 +54,6 @@ public:
     void addChild(const Cluster* cluster);
 
     int nrChildren() const;
-
-   // int nrFactors() const;
-
-    //int nrFrontals() const;
 
     int problemSize() const;
     /// Return a vector with nrFrontal keys for each child

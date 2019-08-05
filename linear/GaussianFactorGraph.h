@@ -27,7 +27,6 @@
 #include "../linear/RealGaussianFactor.h"
 #include "../linear/JacobianFactor.h"
 #include "../linear/HessianFactor.h"
-#include "../inference/Ordering.h"
 #include <list>
 #include <Eigen/Core>
 #include <map>
@@ -35,7 +34,6 @@ namespace minisam
 {
 
 class JacobianFactor;
-class Ordering;
 /* ************************************************************************* */
 /**
  * A Linear Factor Graph is a factor graph where all factors are Gaussian, i.e.
@@ -73,10 +71,9 @@ public:
     /** unnormalized error */
     double error(const std::map<int,Eigen::VectorXd>& x) const;
     std::map<int,Eigen::VectorXd> optimizeGradientSearch() const;
-   // std::map<int,Eigen::VectorXd> gradient(const std::map<int,Eigen::VectorXd>& x0) const;
     std::map<int,Eigen::VectorXd> gradientAtZero() const;
     std::list<Eigen::VectorXd> operator*(const std::map<int,Eigen::VectorXd>& x) const;
-    std::map<int,Eigen::VectorXd> optimize(Ordering& ordering, const int Eliminatekind) const;
+    std::map<int,Eigen::VectorXd> optimize(std::vector<int>& ordering, const int Eliminatekind) const;
     std::map<int,Eigen::VectorXd> hessianDiagonal() const;
 
 };
