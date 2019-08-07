@@ -27,7 +27,10 @@ namespace minisam
 {
 struct CachedModel
 {
-    CachedModel() {model=NULL;}  // default int makes zero-size matrices
+    CachedModel()
+    {
+        model=NULL;   // default int makes zero-size matrices
+    }
     CachedModel(int dim, double sigma)
         : A(Eigen::MatrixXd::Identity(dim, dim)),
           b(Eigen::VectorXd::Zero(dim)),
@@ -41,11 +44,11 @@ struct CachedModel
     DiagonalNoiseModel* model;
     ~CachedModel()
     {
-      if(model!=NULL)
-      {
-         delete model;
-         model=NULL;
-      }
+        if(model!=NULL)
+        {
+            delete model;
+            model=NULL;
+        }
     }
 };
 

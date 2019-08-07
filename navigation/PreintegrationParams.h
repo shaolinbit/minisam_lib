@@ -34,7 +34,7 @@ struct PreintegrationParams: PreintegratedRotationParams
 
     /// The Params constructor insists on getting the navigation frame gravity vector
     /// For convenience, two commonly used conventions are provided by named constructors below
-     PreintegrationParams(const Eigen::Vector3d& n_gravity)
+    PreintegrationParams(const Eigen::Vector3d& n_gravity)
         :PreintegratedRotationParams(PreintegratedRotationParams()), accelerometerCovariance(Eigen::MatrixXd::Identity(3,3)),
          integrationCovariance(Eigen::MatrixXd::Identity(3,3)),
          use2ndOrderCoriolis(false),
@@ -54,20 +54,20 @@ struct PreintegrationParams: PreintegratedRotationParams
 
 
 
-     void setAccelerometerCovariance(const Eigen::Matrix3d& cov)
+    void setAccelerometerCovariance(const Eigen::Matrix3d& cov)
     {
         accelerometerCovariance = cov;
     }
-     void setIntegrationCovariance(const Eigen::Matrix3d& cov)
+    void setIntegrationCovariance(const Eigen::Matrix3d& cov)
     {
         integrationCovariance = cov;
     }
-     void setUse2ndOrderCoriolis(bool flag)
+    void setUse2ndOrderCoriolis(bool flag)
     {
         use2ndOrderCoriolis = flag;
     }
 
-     const Eigen::Matrix3d& getAccelerometerCovariance() const
+    const Eigen::Matrix3d& getAccelerometerCovariance() const
     {
         return accelerometerCovariance;
     }
@@ -75,7 +75,7 @@ struct PreintegrationParams: PreintegratedRotationParams
     {
         return integrationCovariance;
     }
-     bool           getUse2ndOrderCoriolis()     const
+    bool           getUse2ndOrderCoriolis()     const
     {
         return use2ndOrderCoriolis;
     }

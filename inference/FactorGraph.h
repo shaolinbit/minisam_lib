@@ -55,7 +55,7 @@ public:
     FactorGraph(const FactorGraph&) = default;
 
     /** Constructor from iterator over factors (shared_ptr or plain objects) */
-     FactorGraph(iterator firstFactor, iterator lastFactor)
+    FactorGraph(iterator firstFactor, iterator lastFactor)
     {
         push_back(firstFactor, lastFactor);
     }
@@ -78,7 +78,7 @@ public:
         }
     }
 
-     FactorGraph(FactorGraph& FG):FactorGraph(FG.factors_) {}
+    FactorGraph(FactorGraph& FG):FactorGraph(FG.factors_) {}
 
     /// @}
     /// @name Advanced Constructors
@@ -99,12 +99,12 @@ public:
 
     /** Add a factor directly using a shared_ptr */
 
-     void push_back(const TPFactor* factor)
+    void push_back(const TPFactor* factor)
     {
         factors_.push_back(factor);
     }
 
-     void push_back(TPFactor* factor)
+    void push_back(TPFactor* factor)
     {
         factors_.push_back(factor);
     }
@@ -174,13 +174,13 @@ public:
     }
 
     /** Iterator to beginning of factors. */
-     const_iterator begin() const
+    const_iterator begin() const
     {
         return factors_.begin();
     }
 
     /** Iterator to end of factors. */
-     const_iterator end()   const
+    const_iterator end()   const
     {
         return factors_.end();
     }

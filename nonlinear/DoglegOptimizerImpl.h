@@ -93,12 +93,12 @@ struct  DoglegOptimizerImpl
         const std::map<int,Eigen::VectorXd>& dx_n,
         const BayesTree& Rd, const NonlinearFactorGraph& f, const std::map<int,Eigen::VectorXd>& x0,
         const std::map<int,Pose3>& xpose0,const double f_error, const bool verbose=false);
-   static IterationResult Iterate(
+    static IterationResult Iterate(
         double delta, TrustRegionAdaptationMode mode, const std::map<int,Eigen::VectorXd>& dx_u,
         const std::map<int,Eigen::VectorXd>& dx_n,
         const GaussianBayesNet& Rd, const NonlinearFactorGraph& f, const std::map<int,Eigen::VectorXd>& x0,
         const std::map<int,Pose3>& xpose0, const double f_error, const bool verbose=false);
-     static IterationResult Iterate(
+    static IterationResult Iterate(
         double delta, TrustRegionAdaptationMode mode, const std::map<int,Eigen::VectorXd>& dx_u,
         const std::map<int,Eigen::VectorXd>& dx_n,
         const ISAM2& Rd, const NonlinearFactorGraph& f, const std::map<int,Eigen::VectorXd>& x0,
@@ -120,7 +120,7 @@ struct  DoglegOptimizerImpl
     static IterationResult Iterate(
         double delta, TrustRegionAdaptationMode mode, const std::map<int,Eigen::VectorXd>& dx_u,
         const std::map<int,Eigen::VectorXd>& dx_n,
-         const ISAM2& Rd, const NonlinearFactorGraph& f, const std::map<int,Eigen::VectorXd>& x0,
+        const ISAM2& Rd, const NonlinearFactorGraph& f, const std::map<int,Eigen::VectorXd>& x0,
         const std::map<int,Pose2>& xpose0, const double f_error, const bool verbose=false);
 #endif
     /**

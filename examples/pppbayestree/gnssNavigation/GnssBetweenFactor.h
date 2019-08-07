@@ -18,7 +18,7 @@ class  GnssBetweenFactor: public NoiseModelFactor2
 public:
 
 
-  GnssBetweenFactor(int state1, int state2, SharedNoiseModel* model):
+  GnssBetweenFactor(int state1, int state2, GaussianNoiseModel* model):
     NoiseModelFactor2(model, state1, state2) { }
 
  virtual NonlinearFactor* clone() const

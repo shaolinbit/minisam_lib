@@ -100,7 +100,7 @@ public:
     /** project a point from world coordinate to the image
      *  @param pw is a point at infinity in the world coordinates
      */
-     Eigen::Vector2d projectUnit(const Unit3& pw)
+    Eigen::Vector2d projectUnit(const Unit3& pw)
     {
         const Unit3 pc = pose().rotation().unrotateUnit(pw); // convert to camera frame
         const Eigen::Vector2d pn = PinholeBase::ProjectUnit(pc); // project to normalized coordinates
@@ -159,7 +159,7 @@ public:
     }
 
     /// project a 3D point from world coordinates into the image
-     Eigen::Vector2d projectPoint(const Eigen::Vector3d& pw,Eigen::MatrixXd* Dpose,
+    Eigen::Vector2d projectPoint(const Eigen::Vector3d& pw,Eigen::MatrixXd* Dpose,
                                  Eigen::MatrixXd* Dpoint,
                                  Eigen::MatrixXd* Dcal)
     {
@@ -333,7 +333,7 @@ public:
 
     /// Init from Vector and calibration
     PinholePoseCal3S2(const Eigen::VectorXd  &v, const Eigen::VectorXd &K) :
-    PinholeBaseKCal3S2(v), K_(new Cal3_S2(K))
+        PinholeBaseKCal3S2(v), K_(new Cal3_S2(K))
     {
     }
 

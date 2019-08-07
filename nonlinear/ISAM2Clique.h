@@ -93,7 +93,7 @@ public:
     /** Access the cached factor */
     RealGaussianFactor* cachedFactor();
 
-       /** Access the gradient contribution */
+    /** Access the gradient contribution */
     const Eigen::VectorXd gradientContribution() const;
 
     /// @}

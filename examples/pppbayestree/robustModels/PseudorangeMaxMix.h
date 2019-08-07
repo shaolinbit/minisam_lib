@@ -23,7 +23,7 @@ private:
   typedef NoiseModelFactor1  Base;
   double measured_, w_, hyp_;
   gnssStateVec h_;
-  SharedNoiseModel* nullHypothesisModel_;
+  GaussianNoiseModel* nullHypothesisModel_;
 
 
 public:
@@ -54,14 +54,14 @@ double w()
 double hyp()
 {return hyp_;}
 
-SharedNoiseModel* noiseModel2()
+GaussianNoiseModel* noiseModel2()
 {
   return nullHypothesisModel_;
 }
 
 
    PseudorangeMaxMix(int key, const double deltaObs, const Eigen::VectorXd& obsMap,
-    SharedNoiseModel* model1, SharedNoiseModel* model2,
+    GaussianNoiseModel* model1, GaussianNoiseModel* model2,
     const double& hypNoise, double weight): NoiseModelFactor1(model1, key),
     measured_(deltaObs), h_(obsMap), w_(weight), hyp_(hypNoise),
     nullHypothesisModel_(model2) {  };

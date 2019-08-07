@@ -93,7 +93,7 @@ struct JTTraversalNode
 };
 
 void JTDepthFirstForest(const EliminationTree& forest, ConstructorTraversalDataChildFactors* rootData,
-                               std::vector<Cluster*>& ctlist,const GaussianFactorGraph& gf);
+                        std::vector<Cluster*>& ctlist,const GaussianFactorGraph& gf);
 
 std::pair<SymbolicConditional*, Factor*>
 EliminateSymbolic(const FactorGraph<Factor>& factors, const std::vector<int>& keys);

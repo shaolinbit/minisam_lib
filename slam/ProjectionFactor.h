@@ -47,7 +47,7 @@ protected:
 public:
 
     /// Default constructor
-     GenericProjectionFactor() :
+    GenericProjectionFactor() :
         measured_(0, 0), throwCheirality_(false), verboseCheirality_(false),NoiseModelFactor2(2)
     {
     }
@@ -62,7 +62,7 @@ public:
      * @param K  pointer to the constant calibration
      * @param body_P_sensor is the transform from body to sensor frame (default identity)
      */
-     GenericProjectionFactor(const Eigen::Vector2d& measured, SharedNoiseModel* model,
+    GenericProjectionFactor(const Eigen::Vector2d& measured, GaussianNoiseModel* model,
                             int poseKey, int pointKey,  Cal3_S2* K,
                             Pose3* body_P_sensor=NULL) :
         NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor),
@@ -80,7 +80,7 @@ public:
      * @param verboseCheirality determines whether exceptions are printed for Cheirality
      * @param body_P_sensor is the transform from body to sensor frame  (default identity)
      */
-     GenericProjectionFactor(const  Eigen::Vector2d& measured, SharedNoiseModel* model,
+    GenericProjectionFactor(const  Eigen::Vector2d& measured, GaussianNoiseModel* model,
                             int poseKey, int pointKey,  Cal3_S2* K,
                             bool throwCheirality, bool verboseCheirality,
                             Pose3*  body_P_sensor) :

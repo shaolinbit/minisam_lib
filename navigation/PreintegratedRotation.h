@@ -39,32 +39,32 @@ struct PreintegratedRotationParams
     Eigen::Vector3d omegaCoriolis;  ///< Coriolis constant
     Pose3* body_P_sensor;    ///< The pose of the sensor in the body frame
 
-     PreintegratedRotationParams() : gyroscopeCovariance(Eigen::MatrixXd::Identity(3,3)),omegaCoriolis(Eigen::Vector3d::Zero(3)),body_P_sensor(NULL) {}
+    PreintegratedRotationParams() : gyroscopeCovariance(Eigen::MatrixXd::Identity(3,3)),omegaCoriolis(Eigen::Vector3d::Zero(3)),body_P_sensor(NULL) {}
 
     virtual ~PreintegratedRotationParams() {}
 
-     void setGyroscopeCovariance(const Eigen::MatrixXd& cov)
+    void setGyroscopeCovariance(const Eigen::MatrixXd& cov)
     {
         gyroscopeCovariance = cov;
     }
-      void setOmegaCoriolis(const Eigen::VectorXd& omega)
+    void setOmegaCoriolis(const Eigen::VectorXd& omega)
     {
         omegaCoriolis=omega;
     }
-     void setBodyPSensor(const Pose3& pose)
+    void setBodyPSensor(const Pose3& pose)
     {
         *body_P_sensor=pose;
     }
 
-     const Eigen::MatrixXd& getGyroscopeCovariance()     const
+    const Eigen::MatrixXd& getGyroscopeCovariance()     const
     {
         return gyroscopeCovariance;
     }
-     Eigen::Vector3d getOmegaCoriolis() const
+    Eigen::Vector3d getOmegaCoriolis() const
     {
         return omegaCoriolis;
     }
-     Pose3*   getBodyPSensor()   const
+    Pose3*   getBodyPSensor()   const
     {
         return body_P_sensor;
     }

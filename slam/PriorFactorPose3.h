@@ -18,20 +18,20 @@ private:
 public:
 
     /** default constructor - only use for serialization */
-     PriorFactorPose3():NoiseModelFactor1(1) {}
+    PriorFactorPose3():NoiseModelFactor1(1) {}
 
     virtual ~PriorFactorPose3() {}
 
     /** Constructor */
-     PriorFactorPose3(int key, const Pose3& prior,
-                     SharedNoiseModel* model) :
+    PriorFactorPose3(int key, const Pose3& prior,
+                     GaussianNoiseModel* model) :
         NoiseModelFactor1(model, key,1), prior_(prior)
     {
     }
 
     /** Convenience constructor Pose3 takes a full covariance argument */
-     PriorFactorPose3(int key, const Pose3& prior, const Eigen::MatrixXd& covariance) :
-        NoiseModelFactor1(newGaussianNoiseModelCovariance(covariance), key,1), prior_(prior)
+    PriorFactorPose3(int key, const Pose3& prior, const Eigen::MatrixXd& covariance) :
+        NoiseModelFactor1(GaussianNoiseModel_Covariance(covariance), key,1), prior_(prior)
     {
     }
 

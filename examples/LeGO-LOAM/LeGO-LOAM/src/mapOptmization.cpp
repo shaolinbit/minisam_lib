@@ -350,8 +350,8 @@ public:
         Eigen::VectorXd Vector6(6);
         Vector6 << 1e-6, 1e-6, 1e-6, 1e-8, 1e-8, 1e-6;
         //priorNoise = noiseModel::Diagonal::Variances(Vector6);
-        priorNoise = DiagonalNoiseModel::VariancesPointer(Vector6);
-        odometryNoise = DiagonalNoiseModel::VariancesPointer(Vector6);
+        priorNoise = DiagonalNoiseModel::Variances(Vector6);
+        odometryNoise = DiagonalNoiseModel::Variances(Vector6);
 
         matA0 = cv::Mat (5, 3, CV_32F, cv::Scalar::all(0));
         matB0 = cv::Mat (5, 1, CV_32F, cv::Scalar::all(-1));
@@ -880,7 +880,7 @@ public:
         Eigen::VectorXd Vector6(6);
         float noiseScore = icp.getFitnessScore();
         Vector6 << noiseScore, noiseScore, noiseScore, noiseScore, noiseScore, noiseScore;
-        constraintNoise = DiagonalNoiseModel::VariancesPointer(Vector6);
+        constraintNoise = DiagonalNoiseModel::Variances(Vector6);
 
         std::lock_guard<std::mutex> lock(mtx);
 

@@ -52,7 +52,7 @@ class  NonlinearFactorGraph: public FactorGraph<NonlinearFactor>
 
 public:
     /** Default constructor */
-     NonlinearFactorGraph() {}
+    NonlinearFactorGraph() {}
 
     /** Construct from iterator over factors */
     template<typename ITERATOR>
@@ -97,10 +97,10 @@ public:
 
 #ifdef GMF_Using_Pose3
     int linearize(const std::map<int,Eigen::VectorXd>& linearizationPoint,const std::map<int,Pose3>& linearizationpose,
-                         GaussianFactorGraph& lng,int factorization=0) const;
+                  GaussianFactorGraph& lng,int factorization=0) const;
 #else
     int linearize(const std::map<int,Eigen::VectorXd>& linearizationPoint,const std::map<int,Pose2>& linearizationpose,
-                         GaussianFactorGraph& lng,int factorization) const;
+                  GaussianFactorGraph& lng,int factorization) const;
 #endif // GMF_Using_Pose3
 
 

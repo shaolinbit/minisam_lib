@@ -68,26 +68,26 @@ public:
         MULTIFRONTAL_QR,
         SEQUENTIAL_CHOLESKY,
         SEQUENTIAL_QR,
-       // Iterative, /* Experimental Flag */
+        // Iterative, /* Experimental Flag */
         CHOLMOD, /* Experimental Flag */
     };
 
     LinearSolverType linearSolverType; ///< The type of linear solver to use in the nonlinear optimizer
     std::vector<int> ordering; ///< The variable elimination ordering, or empty to use COLAMD (default: empty)
-   // IterativeOptimizationParameters* iterativeParams; ///< The container for iterativeOptimization parameters. used in CG Solvers.
+    // IterativeOptimizationParameters* iterativeParams; ///< The container for iterativeOptimization parameters. used in CG Solvers.
 
     NonlinearOptimizerParams& operator=(const NonlinearOptimizerParams& rObj);
 
     inline bool isMultifrontal() const
     {
         return (linearSolverType == MULTIFRONTAL_CHOLESKY)
-                || (linearSolverType == MULTIFRONTAL_QR);
+               || (linearSolverType == MULTIFRONTAL_QR);
     }
 
     inline bool isSequential() const
     {
         return (linearSolverType == SEQUENTIAL_CHOLESKY)
-                || (linearSolverType == SEQUENTIAL_QR);
+               || (linearSolverType == SEQUENTIAL_QR);
     }
 
     inline bool isCholmod() const
@@ -115,7 +115,7 @@ private:
 
     std::string orderingTypeTranslator(Ordering_OrderingType type);
 
-Ordering_OrderingType orderingTypeTranslator(const std::string& type) const;
+    Ordering_OrderingType orderingTypeTranslator(const std::string& type) const;
 };
 
 

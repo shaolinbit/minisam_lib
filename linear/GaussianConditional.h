@@ -153,7 +153,7 @@ std::pair<GaussianConditional*, JacobianFactor*> EliminateQR(const std::vector<c
 *   \addtogroup LinearSolving */
 
 std::pair<GaussianConditional*, HessianFactor*> EliminateCholesky(const std::vector<const RealGaussianFactor*>&factors,
-                                                                   const std::vector<int>& keys);
+        const std::vector<int>& keys);
 /**
      *  In-place elimination that returns a conditional on (ordered) keys specified, and leaves
      *  this factor to be on the remaining keys (separator) only. Does dense partial Cholesky.

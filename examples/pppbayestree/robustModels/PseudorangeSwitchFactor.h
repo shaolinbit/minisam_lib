@@ -46,7 +46,7 @@ Eigen::VectorXd h()
 }
 
 
-  PseudorangeSwitchFactor(int j, int k, const double deltaObs, const Eigen::VectorXd& obsMap, SharedNoiseModel* model):
+  PseudorangeSwitchFactor(int j, int k, const double deltaObs, const Eigen::VectorXd& obsMap, GaussianNoiseModel* model):
     Base(model, j,k), measured_(deltaObs) {h_=gnssStateVec(obsMap);}
 
   virtual NonlinearFactor* clone()  {

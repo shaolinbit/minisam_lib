@@ -16,7 +16,6 @@
 
 using namespace std;
 
-
 //// rotate from ECI to ECEF
 Eigen::Vector3d inertialToECEF( const Eigen::Vector3d& inertialPosition, const double t, const double t0);
 
@@ -87,5 +86,4 @@ double tropDry(const Eigen::Vector3d& p1);
 
 //// time difference carrier-phase observations
 double dopplerObs(const Eigen::Vector3d& p1, double tdcp1, const Eigen::Vector3d& p2, double tdcp2);
-
 

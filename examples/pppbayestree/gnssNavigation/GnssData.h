@@ -23,7 +23,7 @@ using namespace boost;
 
 
 
-/// Read GNSS data in the format
+/// Read GNSS data in the rnxToGtsam.cpp format
 /// Data = { Week, Sow, Epoch, SVN, SatXYZ, Rho, P.C., L.C., Break_Flag}
 typedef boost::tuple<double, int, int, Eigen::Vector3d, double, double, double, int> rnxData;
 vector<rnxData> readGNSS(const std::string& fileLoc);

@@ -98,8 +98,8 @@ public:
                    const Eigen::VectorXd &b, DiagonalNoiseModel *model =new DiagonalNoiseModel());
 
     JacobianFactor(int i1, const Eigen::MatrixXd &A1,
-                               const Eigen::VectorXd &b,
-                                DiagonalNoiseModel *model);
+                   const Eigen::VectorXd &b,
+                   DiagonalNoiseModel *model);
 
     /** Constructor with arbitrary number keys, and where the augmented matrix is given all together
      *  instead of in block terms.  Note that only the active view of the provided augmented matrix
@@ -119,7 +119,7 @@ public:
 
     explicit JacobianFactor(const GaussianFactorGraph& graph,
                             const std::vector<int>& ordering);
-     explicit JacobianFactor(const std::vector<const RealGaussianFactor*>& graph,
+    explicit JacobianFactor(const std::vector<const RealGaussianFactor*>& graph,
                             const std::vector<int>& ordering);
     /** destructor */
     virtual ~JacobianFactor();
@@ -180,7 +180,7 @@ public:
 
 
     /** Return a whitened version of the factor, i.e. with unit diagonal noise model. */
-    JacobianFactor& whiten() const;
+    //JacobianFactor& whiten() const;
 
     /** set noiseModel correctly */
     void setModel(bool anyConstrained, const Eigen::VectorXd &sigmas);

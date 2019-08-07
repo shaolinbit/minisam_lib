@@ -46,19 +46,19 @@ public:
     /// @{
 
     /** Default constructor is origin */
-     Pose3();
+    Pose3();
 
     /** Copy constructor */
-     Pose3(const Pose3& pose);
+    Pose3(const Pose3& pose);
 
     /** Construct from R,t */
-     Pose3(const Rot3& R, const Eigen::Vector3d& t);
+    Pose3(const Rot3& R, const Eigen::Vector3d& t);
 
     /** Construct from Pose2 */
-     explicit Pose3(const Pose2& pose2);
+    explicit Pose3(const Pose2& pose2);
 
     /** Constructor from 4*4 matrix */
-     Pose3(const Eigen::Matrix3d &T);
+    Pose3(const Eigen::Matrix3d &T);
 
     /// Named constructor with derivatives
     static Pose3 Create(const Rot3& R, const Eigen::Vector3d& t);
@@ -88,7 +88,7 @@ public:
     Pose3 inverse() const;
 
     /// compose syntactic sugar
-     Pose3 operator*(const Pose3& T) const
+    Pose3 operator*(const Pose3& T) const
     {
         return Pose3(R_ * T.R_, t_ + R_ * T.t_);
     }
@@ -209,7 +209,7 @@ public:
                                    Eigen::Matrix3d* Dpoint) const;
 
     /** syntactic sugar for transform_from */
-     inline Eigen::Vector3d operator*(const Eigen::Vector3d& p) const
+    inline Eigen::Vector3d operator*(const Eigen::Vector3d& p) const
     {
         return transform_from(p);
     }
@@ -323,7 +323,7 @@ public:
 
     /// Output stream operator
 
-     friend std::ostream &operator<<(std::ostream &os, const Pose3& p);
+    friend std::ostream &operator<<(std::ostream &os, const Pose3& p);
     /// @}
 
 };

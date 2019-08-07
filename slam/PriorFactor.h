@@ -40,14 +40,14 @@ public:
     virtual ~PriorFactor() {}
 
     /** Constructor */
-     PriorFactor(int key, const Eigen::VectorXd& prior, SharedNoiseModel* model) :
+     PriorFactor(int key, const Eigen::VectorXd& prior, GaussianNoiseModel* model) :
         NoiseModelFactor1(model, key), prior_(prior)
     {
     }
 
     /** Convenience constructor that takes a full covariance argument */
      PriorFactor(int key, const Eigen::VectorXd& prior, const Eigen::MatrixXd& covariance) :
-        NoiseModelFactor1(newGaussianNoiseModelCovariance(covariance), key), prior_(prior)
+        NoiseModelFactor1(GaussianNoiseModel_Covariance(covariance), key), prior_(prior)
     {}
 
 

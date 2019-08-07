@@ -110,7 +110,7 @@ public:
 
 
     void transposeMultiplyAdd(double alpha, const Eigen::VectorXd &e,
-        std::map<int, Eigen::VectorXd> &x) const;
+                              std::map<int, Eigen::VectorXd> &x) const;
 
     std::map<int, Eigen::VectorXd> gradientAtZero() const;
 

@@ -11,11 +11,11 @@
 namespace minisam
 {
 
-    /**
- * A class for a measurement predicted by "between(config[key1],config[key2])"
- * @tparam VALUE the Pose3 Value type
- * @addtogroup SLAM
- */
+/**
+* A class for a measurement predicted by "between(config[key1],config[key2])"
+* @tparam VALUE the Pose3 Value type
+* @addtogroup SLAM
+*/
 class BetweenFactorPose3: public NoiseModelFactor2
 {
 
@@ -26,11 +26,11 @@ public:
 
 
     /** default constructor - only use for serialization */
-     BetweenFactorPose3() {}
+    BetweenFactorPose3() {}
 
     /** Constructor */
-     BetweenFactorPose3(int key1, int key2, const Pose3& measured,
-                       SharedNoiseModel* model) :
+    BetweenFactorPose3(int key1, int key2, const Pose3& measured,
+                       GaussianNoiseModel* model) :
         NoiseModelFactor2(model, key1, key2), measured_(measured)
     {
     }

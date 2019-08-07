@@ -27,7 +27,7 @@
  * @addtogroup geometry
  * \nosubgrouping
  */
- namespace minisam
+namespace minisam
 {
 
 class Rot2

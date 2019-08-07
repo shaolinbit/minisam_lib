@@ -146,7 +146,7 @@ public:
 
     void augment(const FactorGraph<NonlinearFactor>& factors);
 
-   // void augment(const GaussianFactorGraph* factors);
+    // void augment(const GaussianFactorGraph* factors);
 
     void augment(const NonlinearFactorGraph& factors);
 

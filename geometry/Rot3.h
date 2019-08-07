@@ -74,7 +74,7 @@ public:
     /// @{
 
     /** default constructor, unit rotation */
-     Rot3();
+    Rot3();
 
     /**
      * Constructor from *columns*
@@ -82,10 +82,10 @@ public:
      * @param r2 Y-axis of rotated frame
      * @param r3 Z-axis of rotated frame
      */
-     Rot3(const Eigen::Vector3d& col1, const Eigen::Vector3d& col2, const Eigen::Vector3d& col3);
+    Rot3(const Eigen::Vector3d& col1, const Eigen::Vector3d& col2, const Eigen::Vector3d& col3);
 
     /** constructor from a rotation matrix, as doubles in *row-major* order !!! */
-     Rot3(double R11, double R12, double R13,
+    Rot3(double R11, double R12, double R13,
          double R21, double R22, double R23,
          double R31, double R32, double R33);
 
@@ -97,7 +97,7 @@ public:
      * See: http://stackoverflow.com/questions/27094132/cannot-understand-if-this-is-circular-dependency-or-clang#tab-top
      */
 
-     inline explicit Rot3(const Eigen::Matrix3d& R)
+    inline explicit Rot3(const Eigen::Matrix3d& R)
     {
 #ifdef USE_QUATERNIONS
         quaternion_=QQuaternion(R);
@@ -129,10 +129,10 @@ public:
     static Rot3 Rz(double t);
 
     /// Rotations around Z, Y, then X axes as in http://en.wikipedia.org/wiki/Rotation_matrix, counterclockwise when looking from unchanging axis.
-     static Rot3 RzRyRx(double x, double y, double z);
+    static Rot3 RzRyRx(double x, double y, double z);
 
     /// Rotations around Z, Y, then X axes as in http://en.wikipedia.org/wiki/Rotation_matrix, counterclockwise when looking from unchanging axis.
-     inline static Rot3 RzRyRx(const Eigen::VectorXd& xyz)
+    inline static Rot3 RzRyRx(const Eigen::VectorXd& xyz)
     {
         assert(xyz.size() == 3);
         return RzRyRx(xyz(0), xyz(1), xyz(2));

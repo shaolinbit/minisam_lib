@@ -12,7 +12,7 @@
 
 
 /**
- * A vector of size 5 with multiple methods
+ * A vector of size 5 with multiple methods needed for GTSAM
  * @addtogroup geometry
  * \nosubgrouping
  */

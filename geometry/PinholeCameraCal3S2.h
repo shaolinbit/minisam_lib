@@ -329,7 +329,7 @@ public:
         return range(camera.pose(), Dcamera, Dother);
     }
 
-     ///@}
+    ///@}
 
 };
 };

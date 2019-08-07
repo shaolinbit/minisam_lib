@@ -18,7 +18,7 @@
 
 namespace minisam
 {
-    struct NonlinearOptimizerState;
+struct NonlinearOptimizerState;
 /**
  * This is the abstract interface for classes that can optimize for the
  * maximum-likelihood estimate of a NonlinearFactorGraph.

@@ -167,7 +167,7 @@ public:
     std::pair<ISAM2*, GaussianFactorGraph*> eliminateISAM2(const
             int Eliminatetype,std::list<ISAM2Clique*>* orphancliques,const GaussianFactorGraph& gf);
     std::pair<BayesTree*, GaussianFactorGraph*> eliminate(const int Eliminatefunction,
-        std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
+            std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
 
     /// @}
     /// @name Advanced Interface
@@ -209,39 +209,43 @@ struct EliminationDatachildFactors
     {
         bayesTreeNode=new BayesTreeCliqueBase();
         childFactors.clear();
-         if (parentData!=NULL) {
-      myIndexInParent = parentData->childFactors.size();
-      parentData->childFactors.push_back(new RealGaussianFactor());
-    } else {
-      myIndexInParent = 0;
-    }
-    // Set up BayesTree parent and child pointers
-    if (parentData!=NULL) {
-      if (parentData->parentdata_!=NULL) // If our parent is not the dummy node
-        bayesTreeNode->parent_ = parentData->bayesTreeNode;
-      parentData->bayesTreeNode->children_->push_back(bayesTreeNode);
-    }
+        if (parentData!=NULL)
+        {
+            myIndexInParent = parentData->childFactors.size();
+            parentData->childFactors.push_back(new RealGaussianFactor());
+        }
+        else
+        {
+            myIndexInParent = 0;
+        }
+        // Set up BayesTree parent and child pointers
+        if (parentData!=NULL)
+        {
+            if (parentData->parentdata_!=NULL) // If our parent is not the dummy node
+                bayesTreeNode->parent_ = parentData->bayesTreeNode;
+            parentData->bayesTreeNode->children_->push_back(bayesTreeNode);
+        }
     }
     ~EliminationDatachildFactors()
     {
-    if(childFactors.size()>0)
-     for(RealGaussianFactor* bf:childFactors)
-     {
-         if(bf!=NULL)
-        {
-         if(bf->model_!=NULL)
-              {
-                delete bf->model_;
-              }
-        if(bf!=NULL)
-        {
-         delete bf;
-        bf=NULL;
-        }
-        }
+        if(childFactors.size()>0)
+            for(RealGaussianFactor* bf:childFactors)
+            {
+                if(bf!=NULL)
+                {
+                    if(bf->model_!=NULL)
+                    {
+                        delete bf->model_;
+                    }
+                    if(bf!=NULL)
+                    {
+                        delete bf;
+                        bf=NULL;
+                    }
+                }
 
-     }
-     }
+            }
+    }
 
 };
 struct EliminationDataISAM2childFactors
@@ -277,7 +281,7 @@ struct EliminationDataISAM2childFactors
 };
 
 void InitEliminationDataISAM2childFactors(EliminationDataISAM2childFactors *currentdata,
-                                                 EliminationDataISAM2childFactors *parentdata);
+        EliminationDataISAM2childFactors *parentdata);
 
 RealGaussianFactor* EliminationPostOrderVisitor(Cluster* node, EliminationDatachildFactors* myData,
         BayesTree* result,int Eliminatetype, std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
@@ -313,12 +317,12 @@ struct CTTraversalNodeISAM2
 };
 
 int I2ClusterTreeDepthFirstForest(EliminatableClusterTree* forest,
-        EliminationDataISAM2childFactors* rootData,
-        ISAM2* result,int EFunction, std::list<ISAM2Clique*>* orphans,const GaussianFactorGraph& gf);
+                                  EliminationDataISAM2childFactors* rootData,
+                                  ISAM2* result,int EFunction, std::list<ISAM2Clique*>* orphans,const GaussianFactorGraph& gf);
 int ClusterTreeDepthFirstForest(EliminatableClusterTree* forest,
-                                       EliminationDatachildFactors* rootData,
-                                       BayesTree* result,int Eliminatetype,
-                                       std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
+                                EliminationDatachildFactors* rootData,
+                                BayesTree* result,int Eliminatetype,
+                                std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
 
 class ConstructorTraversalDataChildFactors
 {

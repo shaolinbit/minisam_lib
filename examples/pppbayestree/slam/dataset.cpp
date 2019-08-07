@@ -23,14 +23,24 @@
 using namespace std;
 using namespace boost;
 namespace fs = boost::filesystem;
+//using namespace gtsam::symbol_shorthand;
 
+#define LINESIZE 81920
 
+//namespace gtsam {
+
+//#ifndef MATLAB_MEX_FILE
+/* *************************************************************************/
+//this function should be deleted. No use.
 string findExampleDataFile(const string& name)
 {
   // Search source tree and installed location
   std::vector<string> rootsToSearch;
-  rootsToSearch.push_back("pppbayestree\\data");//windows setting.
-  rootsToSearch.push_back("pppbayestree/data");//ubuntu setting.
+
+  // Constants below are defined by CMake, see gtsam/gtsam/CMakeLists.txt
+  //rootsToSearch.push_back(GTSAM_SOURCE_TREE_DATASET_DIR);
+  rootsToSearch.push_back("examples_tuning\\data");//windows setting.
+  rootsToSearch.push_back("examples_tuning/data");//ubuntu setting.
 
   // Search for filename as given, and with .graph and .txt extensions
   std::vector<string> namesToSearch;
@@ -50,6 +60,6 @@ string findExampleDataFile(const string& name)
 
   // If we did not return already, then we did not find the file
   throw invalid_argument(
-      "findExampleDataFile could not find a matching file in ../pppbayestree/data");
+      "gtsam::findExampleDataFile could not find a matching file in ../examples_tuning/data");
 }
 

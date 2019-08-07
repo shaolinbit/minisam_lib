@@ -6,6 +6,7 @@
 
 #pragma once
 
+//namespace gtsam {
 
 const int GNSS_speedOfLight = 299792458;   // [m/s]
 const int GNSS_gravity = 9.80665;   // [m/s*s]
@@ -18,3 +19,4 @@ const double GNSS_earthRot = 7.292115e-5;     // Earth's rotation rate [rad/sec]
 const int GNSS_stdPressure = 1013;   // Std Atmosphere Pressure [mbar]
 const double GNSS_stdTemp = 288.15;    // Std Atmosphere Temp. [Kelvin]
 
+//}

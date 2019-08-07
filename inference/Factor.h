@@ -61,20 +61,20 @@ public:
     /// @{
 
     /** Default constructor for I/O */
-     Factor();
+    Factor();
     virtual ~Factor();
 
     /** Construct factor from container of keys.  This constructor is used internally from derived factor
     *  constructors, either from a container of keys or from a boost::assign::list_of. */
-     explicit Factor(const std::vector<int> keys) : keys_(keys.begin(), keys.end()) {}
+    explicit Factor(const std::vector<int> keys) : keys_(keys.begin(), keys.end()) {}
 
-     Factor(const int& key);
+    Factor(const int& key);
 
-     Factor(const Factor& fc);
+    Factor(const Factor& fc);
     /** Construct factor from iterator keys.  This constructor may be used internally from derived
     *  factor constructors, although our code currently does not use this. */
-     Factor(std::vector<int>::iterator first, std::vector<int>::iterator last);
-     Factor(std::vector<int>::const_iterator first, std::vector<int>::const_iterator last);
+    Factor(std::vector<int>::iterator first, std::vector<int>::iterator last);
+    Factor(std::vector<int>::const_iterator first, std::vector<int>::const_iterator last);
     /** Construct factor from container of keys.  This is called internally from derived factor static
     *  factor methods, as a workaround for not being able to call the protected constructors above. */
     static Factor FromKeys(const std::vector<int>& keys);

@@ -62,7 +62,7 @@ public:
 #ifdef GMF_Using_Pose3
     LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
                                 const std::map<int,Pose3>& initialPoses,
-                               const std::vector<int>& ordering,
+                                const std::vector<int>& ordering,
                                 const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
 #else
     LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,

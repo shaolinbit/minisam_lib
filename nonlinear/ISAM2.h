@@ -66,11 +66,11 @@ public:
     /** Set of variables that are involved with linear factors from marginalized
      * variables and thus cannot have their linearization points changed. */
     std::set<int> fixedVariables_;
-     ISAM2Data();
+    ISAM2Data();
     ~ISAM2Data();
 
-     void clearfactors();
-     void clearpose();
+    void clearfactors();
+    void clearpose();
 };
 
 
@@ -90,20 +90,20 @@ protected:
 public:
 
     /** Create an empty ISAM2 instance */
-     ISAM2(const ISAM2Params& params);
+    ISAM2(const ISAM2Params& params);
 
     /** Create an empty ISAM2 instance using the default set of parameters (see ISAM2Params) */
-     ISAM2();
+    ISAM2();
 
     /** default virtual destructor */
     ~ISAM2();
 
 
-     ISAM2(const ISAM2& other);
+    ISAM2(const ISAM2& other);
 
     ISAM2& operator=(const ISAM2& other);
 
-     int updatetimefortune;
+    int updatetimefortune;
 
     /**
      * Add new factors, updating the solution and relinearizing as needed.
@@ -134,36 +134,36 @@ public:
      * @return An ISAM2Result struct containing information about the update*/
 
 #ifdef GMF_Using_Pose3
-     ISAM2Result update(NonlinearFactorGraph& newFactors,
-                                  const std::map<int,Eigen::VectorXd>& newTheta,
-                                  const std::map<int,Pose3>& newposetheta,
-                                  ISAM2Data& isam2data,
-                                  std::vector<int>* removeFactorIndices=NULL,
-                                  std::map<int,int> *constrainedKeys=NULL,//const boost::optional<FastMap<Key,int> >& constrainedKeys = boost::none,
-                                  std::list<int> *noRelinKeys=NULL,//const boost::optional<FastList<Key> >& noRelinKeys = boost::none,
-                                  std::list<int> *extraReelimKeys=NULL,//const boost::optional<FastList<Key> >& extraReelimKeys = boost::none,
-                                  bool force_relinearize = false);
+    ISAM2Result update(NonlinearFactorGraph& newFactors,
+                       const std::map<int,Eigen::VectorXd>& newTheta,
+                       const std::map<int,Pose3>& newposetheta,
+                       ISAM2Data& isam2data,
+                       std::vector<int>* removeFactorIndices=NULL,
+                       std::map<int,int> *constrainedKeys=NULL,//const boost::optional<FastMap<Key,int> >& constrainedKeys = boost::none,
+                       std::list<int> *noRelinKeys=NULL,//const boost::optional<FastList<Key> >& noRelinKeys = boost::none,
+                       std::list<int> *extraReelimKeys=NULL,//const boost::optional<FastList<Key> >& extraReelimKeys = boost::none,
+                       bool force_relinearize = false);
 #else
-     ISAM2Result update(NonlinearFactorGraph& newFactors,
-                                  const std::map<int,Eigen::VectorXd>& newTheta,
-                                  const std::map<int,Pose2>& newposetheta,
-                                  ISAM2Data& isam2data,
-                                  std::vector<int>* removeFactorIndices=NULL,
-                                  std::map<int,int> *constrainedKeys=NULL,//const boost::optional<FastMap<Key,int> >& constrainedKeys = boost::none,
-                                  std::list<int> *noRelinKeys=NULL,//const boost::optional<FastList<Key> >& noRelinKeys = boost::none,
-                                  std::list<int> *extraReelimKeys=NULL,//const boost::optional<FastList<Key> >& extraReelimKeys = boost::none,
-                                  bool force_relinearize = false);
+    ISAM2Result update(NonlinearFactorGraph& newFactors,
+                       const std::map<int,Eigen::VectorXd>& newTheta,
+                       const std::map<int,Pose2>& newposetheta,
+                       ISAM2Data& isam2data,
+                       std::vector<int>* removeFactorIndices=NULL,
+                       std::map<int,int> *constrainedKeys=NULL,//const boost::optional<FastMap<Key,int> >& constrainedKeys = boost::none,
+                       std::list<int> *noRelinKeys=NULL,//const boost::optional<FastList<Key> >& noRelinKeys = boost::none,
+                       std::list<int> *extraReelimKeys=NULL,//const boost::optional<FastList<Key> >& extraReelimKeys = boost::none,
+                       bool force_relinearize = false);
 #endif // GMF_Using_Pose3
     /** Compute an estimate from the incomplete linear delta computed during the last update.
      * This delta is incomplete because it was not updated below wildfire_threshold.  If only
      * a single variable is needed, it is faster to call calculateEstimate(const KEY&).
      */
-     std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data);
+    std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data);
 
 #ifdef GMF_Using_Pose3
-     std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data,std::map<int,Pose3>* pose3lin);
+    std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data,std::map<int,Pose3>* pose3lin);
 #else
-     std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data,std::map<int,Pose2>* pose2lin);
+    std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data,std::map<int,Pose2>* pose2lin);
 #endif
 
     /** Compute an estimate for a single variable using its incomplete linear delta computed
@@ -172,7 +172,7 @@ public:
      * @param key
      * @return
      */
-     Eigen::VectorXd calculateEstimate(ISAM2Data& isam2data,int key);
+    Eigen::VectorXd calculateEstimate(ISAM2Data& isam2data,int key);
 #ifdef GMF_Using_Pose3
     Pose3 calculateEstimatePose(ISAM2Data& isam2data,int key);
 #else

@@ -96,9 +96,10 @@ public:
 
     /** is this the root of a Bayes tree ? */
 
-    inline bool isRoot() const {
-         return parent_==NULL;
-          }
+    inline bool isRoot() const
+    {
+        return parent_==NULL;
+    }
 
 
 
@@ -116,7 +117,7 @@ public:
 
     /** return the conditional P(S|Root) on the separator given the root */
     GaussianBayesNet* shortcut(const BayesTreeCliqueBase* root,
-                                      int EliminationFunctionType) const;
+                               int EliminationFunctionType) const;
 
     /** return the marginal P(S) on the separator */
     GaussianFactorGraph* separatorMarginal(int EliminationFunctionType);
@@ -130,7 +131,7 @@ public:
      */
     void deleteCachedShortcuts();
 
-  int numCachedSeparatorMarginals() const;
+    int numCachedSeparatorMarginals() const;
 
     friend class BayesTree;
 

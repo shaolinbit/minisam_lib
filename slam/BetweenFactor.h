@@ -23,11 +23,11 @@ private:
 public:
 
     /** default constructor - only use for serialization */
-     BetweenFactor() {}
+    BetweenFactor() {}
 
     /** Constructor */
-     BetweenFactor(int key1, int key2, const Eigen::VectorXd measured,
-                  SharedNoiseModel* model) :
+    BetweenFactor(int key1, int key2, const Eigen::VectorXd measured,
+                  GaussianNoiseModel* model) :
         NoiseModelFactor2(model, key1, key2), measured_(measured)
     {
     }

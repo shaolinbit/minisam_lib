@@ -10,7 +10,8 @@
 #include "../navigation/NavState.h"
 #include "../geometry/Pose3.h"
 
-namespace minisam {
+namespace minisam
+{
 /**
  * Prior on position in a Cartesian frame.
  * Possibilities include:
@@ -43,7 +44,7 @@ public:
      * @param gpsIn measurement already in correct coordinates
      * @param model Gaussian noise model
      */
-    GPSFactor(int key, const Eigen::Vector3d& gpsIn,  SharedNoiseModel* model) :
+    GPSFactor(int key, const Eigen::Vector3d& gpsIn,  GaussianNoiseModel* model) :
         NoiseModelFactor1(model, key,1), nT_(gpsIn)
     {
     }
@@ -59,7 +60,7 @@ public:
     virtual Eigen::VectorXd evaluateError(const Pose3& p) const;
 
     virtual Eigen::VectorXd evaluateError(const Pose3& p,
-                                  Eigen::MatrixXd& H) const;
+                                          Eigen::MatrixXd& H) const;
 
     inline const Eigen::Vector3d & measurementIn() const
     {
@@ -107,7 +108,7 @@ public:
     virtual ~GPSFactor2() {}
 
     /// Constructor from a measurement in a Cartesian frame.
-    GPSFactor2(int key, const Eigen::Vector3d& gpsIn, SharedNoiseModel*  model) :
+    GPSFactor2(int key, const Eigen::Vector3d& gpsIn, GaussianNoiseModel*  model) :
         NoiseModelFactor1(model, key), nT_(gpsIn)
     {
     }

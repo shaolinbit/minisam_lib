@@ -33,16 +33,16 @@ struct  ISAM2GaussNewtonParams
     double wildfireThreshold; ///< Continue updating the linear delta only when changes are above this threshold (default: 0.001)
 
     /** Specify parameters as constructor arguments */
-      ISAM2GaussNewtonParams(
+    ISAM2GaussNewtonParams(
         double _wildfireThreshold = 0.001 ///< see ISAM2GaussNewtonParams public variables, ISAM2GaussNewtonParams::wildfireThreshold
     ) : wildfireThreshold(_wildfireThreshold) {}
 
 
-      double getWildfireThreshold() const
+    double getWildfireThreshold() const
     {
         return wildfireThreshold;
     }
-      void setWildfireThreshold(double wildfireThreshold)
+    void setWildfireThreshold(double wildfireThreshold)
     {
         this->wildfireThreshold = wildfireThreshold;
     }
@@ -115,8 +115,8 @@ struct  ISAM2Params
      * with the specified parameters, and in the latter Powell's dog-leg
      * algorithm will be used with the specified parameters.
      */
-     ISAM2GaussNewtonParams *optimizationParamsGaussNewton;
-     ISAM2DoglegParams *optimizationParamsDogleg;
+    ISAM2GaussNewtonParams *optimizationParamsGaussNewton;
+    ISAM2DoglegParams *optimizationParamsDogleg;
 
     /** Only relinearize variables whose linear delta magnitude is greater than
      * this threshold (default: 0.1).  If this is a FastMap<char,Vector> instead
@@ -134,20 +134,20 @@ struct  ISAM2Params
        \endcode
      */
 
-     double relinearizeThresholdDouble;
+    double relinearizeThresholdDouble;
 
     std::map<char,Eigen::VectorXd> *relinearizeThresholdMap;
 
 
-     int relinearizeSkip; ///< Only relinearize any variables every relinearizeSkip calls to ISAM2::update (default: 10)
+    int relinearizeSkip; ///< Only relinearize any variables every relinearizeSkip calls to ISAM2::update (default: 10)
 
     bool enableRelinearization; ///< Controls whether ISAM2 will ever relinearize any variables (default: true)
 
     bool evaluateNonlinearError; ///< Whether to evaluate the nonlinear error before and after the update, to return in ISAM2Result from update()
 
-     enum Factorization { CHOLESKY, QR };
+    enum Factorization { CHOLESKY, QR };
 
-     Factorization factorization;
+    Factorization factorization;
 
     /** Whether to cache linear factors (default: true).
      * This can improve performance if linearization is expensive, but can hurt
@@ -171,7 +171,7 @@ struct  ISAM2Params
     bool findUnusedFactorSlots;
 
     /** Specify parameters as constructor arguments */
-     ISAM2Params(
+    ISAM2Params(
         ISAM2DoglegParams *_optimizationParamsDog=NULL, ///< see ISAM2Params::optimizationParams
         ISAM2GaussNewtonParams *_optimizationParamsGaussNewton=NULL,
         double _relinearizeThresholdDouble = 0.1, ///< see ISAM2Params::relinearizeThreshold
@@ -194,7 +194,7 @@ struct  ISAM2Params
     /// @name Getters and Setters for all properties
     /// @{
 
-     ISAM2DoglegParams getOptimizationParamsDogleg() const
+    ISAM2DoglegParams getOptimizationParamsDogleg() const
     {
         return *optimizationParamsDogleg;
     }
@@ -275,7 +275,7 @@ struct  ISAM2Params
     {
         this->evaluateNonlinearError = evaluateNonlinearError;
     }
-     void setFactorization(const std::string& factorization)
+    void setFactorization(const std::string& factorization)
     {
         this->factorization = factorizationTranslator(factorization);
     }

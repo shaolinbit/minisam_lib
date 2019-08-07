@@ -86,7 +86,7 @@ public:
     ConstantBias operator-(const ConstantBias& b) const;
 
     /**equal**/
-     ConstantBias operator=(const ConstantBias& b) const;
+    ConstantBias operator=(const ConstantBias& b) const;
 
     /// @}
 

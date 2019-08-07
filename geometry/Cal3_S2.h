@@ -34,7 +34,7 @@
 #include <Eigen/Cholesky>
 
 
- namespace minisam
+namespace minisam
 {
 
 class Cal3_S2
@@ -49,13 +49,13 @@ public:
     /// @{
 
     /// Create a default calibration that leaves coordinates unchanged
-     Cal3_S2() :
+    Cal3_S2() :
         fx_(1), fy_(1), s_(0), u0_(0), v0_(0)
     {
     }
 
     /// constructor from doubles
-     Cal3_S2(double fx, double fy, double s, double u0, double v0) :
+    Cal3_S2(double fx, double fy, double s, double u0, double v0) :
         fx_(fx), fy_(fy), s_(s), u0_(u0), v0_(v0)
     {
     }
@@ -194,7 +194,7 @@ public:
 
     /// Unretraction for the calibration
     Eigen::VectorXd localCoordinates(const Cal3_S2& T2) const;
-      /// @}
+    /// @}
 
 };
 };

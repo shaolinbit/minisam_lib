@@ -25,7 +25,7 @@ public:
 
     /** Constructor */
     BetweenFactorPose2(int key1, int key2, const Pose2& measured,
-                       SharedNoiseModel* model) :
+                       GaussianNoiseModel* model) :
         NoiseModelFactor2(model, key1, key2), measured_(measured)
     {
     }
@@ -124,7 +124,7 @@ public:
     evaluateError(const Pose2& X1, const Pose2& X2) const
     {
         Pose2 hx = X1.between(X2); // h(x)
-       // tx1=measured();
+        // tx1=measured();
         return measured().LocalCoordinates(hx);
     }
 

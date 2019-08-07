@@ -51,7 +51,7 @@ double measured()
 }
 
 PhaseFactor(int deltaStates, int bias, const double measurement,
-            const Eigen::Vector3d& satXYZ, const Eigen::Vector3d& nomXYZ,SharedNoiseModel* model) :
+            const Eigen::Vector3d& satXYZ, const Eigen::Vector3d& nomXYZ,GaussianNoiseModel* model) :
         Base(model, deltaStates, bias), measured_(measurement)
 {
         satXYZ_=satXYZ;

@@ -52,7 +52,7 @@ double measured()
 
 
 PseudorangeFactor(int key, const double deltaObs, const Eigen::Vector3d& satXYZ,
-const Eigen::Vector3d& nomXYZ, SharedNoiseModel* model) :
+const Eigen::Vector3d& nomXYZ, GaussianNoiseModel* model) :
         Base(model, key), measured_(deltaObs), satXYZ_(satXYZ) {
         nomXYZ_=nomXYZ;
 }

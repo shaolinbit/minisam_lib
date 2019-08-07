@@ -52,11 +52,11 @@ public:
     /// @{
 
     /** Default constructor for I/O only */
-     NonlinearFactor(int factort = 0);
+    NonlinearFactor(int factort = 0);
     /**
     * Constructor from a collection of the keys involved in this factor
     */
-     NonlinearFactor(const std::vector<int>& keys, int factort = 0);
+    NonlinearFactor(const std::vector<int>& keys, int factort = 0);
 
     /** Destructor */
     ~NonlinearFactor();
@@ -127,30 +127,30 @@ class NoiseModelFactor : public NonlinearFactor
 {
 
 protected:
-    SharedNoiseModel *noiseModel_; /** Noise model */
+    GaussianNoiseModel *noiseModel_; /** Noise model */
 
 public:
     /** Default constructor for I/O only */
-     NoiseModelFactor(int factort = 0);
+    NoiseModelFactor(int factort = 0);
     /** Destructor */
     virtual ~NoiseModelFactor();
 
     /**
     * Constructor
     */
-     NoiseModelFactor(SharedNoiseModel *noiseModel, const std::vector<int>& keys, int factort = 0);
+    NoiseModelFactor(GaussianNoiseModel *noiseModel, const std::vector<int>& keys, int factort = 0);
 
 protected:
     /**
     * Constructor - only for subclasses, as this does not set keys.
     */
-    NoiseModelFactor(SharedNoiseModel *noiseModel, int factort = 0);
+    NoiseModelFactor(GaussianNoiseModel *noiseModel, int factort = 0);
 
 public:
     /** get the dimension of the factor (number of rows on linearization) */
     virtual int dim() const;
     /// access to the noise model
-    SharedNoiseModel *noiseModel() const;
+    GaussianNoiseModel *noiseModel() const;
 
     /**
     * Error function *without* the NoiseModel, \f$ z-h(x) \f$.
@@ -236,7 +236,7 @@ class NoiseModelFactor1 : public NoiseModelFactor
 
 public:
     /** Default constructor for I/O only */
-     NoiseModelFactor1(int factort = 0) : NoiseModelFactor(factort) {}
+    NoiseModelFactor1(int factort = 0) : NoiseModelFactor(factort) {}
 
     virtual ~NoiseModelFactor1() {}
 
@@ -250,7 +250,7 @@ public:
     *  @param noiseModel  pointer to noise model
     *  @param key1 by which to look up X value in Values
     */
-     NoiseModelFactor1(SharedNoiseModel *noiseModel, int key1, int factort = 0) : NoiseModelFactor(noiseModel, factort)
+    NoiseModelFactor1(GaussianNoiseModel *noiseModel, int key1, int factort = 0) : NoiseModelFactor(noiseModel, factort)
     {
         std::vector<int> key;
         keys_.push_back(key1);
@@ -274,7 +274,7 @@ public:
     }
     virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x) const
     {
-       // cout<<keys()[0]<<endl;
+        // cout<<keys()[0]<<endl;
         std::map<int, Pose2>::const_iterator xbegin = x.find(keys_[0]);
         const Pose2& x1 = xbegin->second;
         return evaluateError(x1);
@@ -347,7 +347,7 @@ public:
     /**
     * Default Constructor for I/O
     */
-     NoiseModelFactor2(int factort = 2) : NoiseModelFactor(factort) {}
+    NoiseModelFactor2(int factort = 2) : NoiseModelFactor(factort) {}
 
     /**
     * Constructor
@@ -355,7 +355,7 @@ public:
     * @param j1 key of the first variable
     * @param j2 key of the second variable
     */
-     NoiseModelFactor2(SharedNoiseModel *noiseModel, int j1, int j2, int factort = 2) : NoiseModelFactor(noiseModel, factort)
+    NoiseModelFactor2(GaussianNoiseModel *noiseModel, int j1, int j2, int factort = 2) : NoiseModelFactor(noiseModel, factort)
     {
         keys_.reserve(2);
         keys_.push_back(j1);
@@ -413,7 +413,7 @@ public:
 }; // \class NoiseModelFactor2
 
 /* ************************************************************************* */
-void check(SharedNoiseModel *noiseModel, int m);
+void check(GaussianNoiseModel *noiseModel, int m);
 
 };
 #endif // NONLINEARFACTOR_H

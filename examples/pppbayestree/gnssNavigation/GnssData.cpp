@@ -16,7 +16,7 @@ vector<rnxData> readGNSS(const std::string &fileLoc) {
            inputs ::
            fileLoc ---> path to data file
            output ::
-           data ---> gnss data in  format
+           data ---> gnss data in gtsam format
                            { epoch, svn, satXYZ, computed_range, rangeLC, phaseLC }
          */
         vector<rnxData> data;

@@ -34,23 +34,23 @@ namespace minisam
   */
 
 void ISAM2ImplAddVariables(const std::map<int,Eigen::VectorXd>& newTheta,
-                                  const std::map<int,Pose3>& newThetaPose,
-                                  std::map<int,Eigen::VectorXd>& theta,
-                                  std::map<int,Pose3>& ThetaPose,
-                                  std::map<int,Eigen::VectorXd>& delta,
-                                  std::map<int,Eigen::VectorXd>& deltaNewton, std::map<int,Eigen::VectorXd>& RgProd);
+                           const std::map<int,Pose3>& newThetaPose,
+                           std::map<int,Eigen::VectorXd>& theta,
+                           std::map<int,Pose3>& ThetaPose,
+                           std::map<int,Eigen::VectorXd>& delta,
+                           std::map<int,Eigen::VectorXd>& deltaNewton, std::map<int,Eigen::VectorXd>& RgProd);
 void ISAM2ImplAddVariables(const std::map<int,Eigen::VectorXd>& newTheta,
-                                  const std::map<int,Pose2>& newThetaPose,
-                                  std::map<int,Eigen::VectorXd>& theta,
-                                  std::map<int,Pose2>& ThetaPose,
-                                  std::map<int,Eigen::VectorXd>& delta,
-                                  std::map<int,Eigen::VectorXd>& deltaNewton, std::map<int,Eigen::VectorXd>& RgProd);
+                           const std::map<int,Pose2>& newThetaPose,
+                           std::map<int,Eigen::VectorXd>& theta,
+                           std::map<int,Pose2>& ThetaPose,
+                           std::map<int,Eigen::VectorXd>& delta,
+                           std::map<int,Eigen::VectorXd>& deltaNewton, std::map<int,Eigen::VectorXd>& RgProd);
 
 /// Perform the first part of the bookkeeping updates for adding new factors.  Adds them to the
 /// complete list of nonlinear factors, and populates the list of new factor indices, both
 /// optionally finding and reusing empty factor slots.
 void ISAM2ImplAddFactorsStep1(NonlinearFactorGraph& newFactors, bool useUnusedSlots,
-                                     NonlinearFactorGraph& nonlinearFactors, std::vector<int>& newFactorIndices);
+                              NonlinearFactorGraph& nonlinearFactors, std::vector<int>& newFactorIndices);
 
 /**
  * Remove variables from the ISAM2 system.
@@ -58,18 +58,18 @@ void ISAM2ImplAddFactorsStep1(NonlinearFactorGraph& newFactors, bool useUnusedSl
 
 #ifdef GMF_Using_Pose3
 void ISAM2ImplRemoveVariables(std::set<int>& unusedKeys,
-                                     std::map<int,Eigen::VectorXd>& theta,std::map<int,Pose3>& thetaPose3, VariableIndex& variableIndex, std::map<int,Eigen::VectorXd>& delta,
-                                     std::map<int,Eigen::VectorXd>& deltaNewton,
-                                     std::map<int,Eigen::VectorXd>& RgProd, std::set<int>& replacedKeys,
-                                     std::map<int,ISAM2Clique*>& nodesbtc, //Base::Nodes& nodes,
-                                     std::set<int>& fixedVariables);
+                              std::map<int,Eigen::VectorXd>& theta,std::map<int,Pose3>& thetaPose3, VariableIndex& variableIndex, std::map<int,Eigen::VectorXd>& delta,
+                              std::map<int,Eigen::VectorXd>& deltaNewton,
+                              std::map<int,Eigen::VectorXd>& RgProd, std::set<int>& replacedKeys,
+                              std::map<int,ISAM2Clique*>& nodesbtc, //Base::Nodes& nodes,
+                              std::set<int>& fixedVariables);
 #else
 void ISAM2ImplRemoveVariables(std::set<int>& unusedKeys,
-                                     std::map<int,Eigen::VectorXd>& theta,std::map<int,Pose2>& thetaPose2, VariableIndex& variableIndex, std::map<int,Eigen::VectorXd>& delta,
-                                     std::map<int,Eigen::VectorXd>& deltaNewton,
-                                     std::map<int,Eigen::VectorXd>& RgProd, std::set<int>& replacedKeys,
-                                     std::map<int,ISAM2Clique*>& nodesbtc, //Base::Nodes& nodes,
-                                     std::set<int>& fixedVariables);
+                              std::map<int,Eigen::VectorXd>& theta,std::map<int,Pose2>& thetaPose2, VariableIndex& variableIndex, std::map<int,Eigen::VectorXd>& delta,
+                              std::map<int,Eigen::VectorXd>& deltaNewton,
+                              std::map<int,Eigen::VectorXd>& RgProd, std::set<int>& replacedKeys,
+                              std::map<int,ISAM2Clique*>& nodesbtc, //Base::Nodes& nodes,
+                              std::set<int>& fixedVariables);
 
 #endif
 
@@ -117,7 +117,7 @@ std::set<int> ISAM2ImplCheckRelinearizationPartial(const std::vector<ISAM2Clique
  * Alternatively could we trace up towards the root for each variable here?
  */
 void ISAM2ImplFindAll(const ISAM2Clique* clique,
-                             std::set<int>& keys, const std::set<int>& markedMask);
+                      std::set<int>& keys, const std::set<int>& markedMask);
 
 /**
  * Apply expmap to the given values, but only for indices appearing in
@@ -141,11 +141,11 @@ void ISAM2ImplExpmapMasked(std::map<int,Eigen::VectorXd>& vectorvalues,std::map<
  * Update the Newton's method step point, using wildfire
  */
 int ISAM2ImplUpdateGaussNewtonDelta(std::vector<ISAM2Clique*>* roots,
-        const std::set<int>& replacedKeys, std::map<int,Eigen::VectorXd>* delta, double wildfireThreshold);
+                                    const std::set<int>& replacedKeys, std::map<int,Eigen::VectorXd>* delta, double wildfireThreshold);
 
 
 bool internaloptimizeWildfireNode(ISAM2Clique* clique,double threshold,
-        std::set<int>& changed, const std::set<int>& replaced, std::map<int,Eigen::VectorXd>* delta, int* count);
+                                  std::set<int>& changed, const std::set<int>& replaced, std::map<int,Eigen::VectorXd>* delta, int* count);
 /// traits
 /// Optimize the BayesTree, starting from the root.
 /// @param replaced Needs to contain
@@ -160,7 +160,7 @@ bool internaloptimizeWildfireNode(ISAM2Clique* clique,double threshold,
 /// @return The number of variables that were solved for
 
 int optimizeWildfireNonRecursive(std::vector<ISAM2Clique*>* roots,
-                                        double threshold, const std::set<int>& replaced, std::map<int,Eigen::VectorXd>* delta);
+                                 double threshold, const std::set<int>& replaced, std::map<int,Eigen::VectorXd>* delta);
 
 /**
  * Compute the gradient-search point.  Only used in Dogleg.
@@ -170,8 +170,8 @@ std::map<int,Eigen::VectorXd> ISAM2ImplComputeGradientSearch(std::map<int,Eigen:
 
 
 int ISAM2ImplUpdateRgProd(std::vector<ISAM2Clique*>& roots,
-                                 const std::set<int>& replacedKeys,
-                                 const  std::map<int,Eigen::VectorXd>& gradAtZero, std::map<int,Eigen::VectorXd>& RgProd);
+                          const std::set<int>& replacedKeys,
+                          const  std::map<int,Eigen::VectorXd>& gradAtZero, std::map<int,Eigen::VectorXd>& RgProd);
 };
 
 

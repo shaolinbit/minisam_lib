@@ -42,28 +42,28 @@ public:
 public:
 
     /** Default constructor */
-     Symbol() :
+    Symbol() :
         c_(0), j_(0)
     {
     }
 
     /** Copy constructor */
-     Symbol(const Symbol& key) :
+    Symbol(const Symbol& key) :
         c_(key.c_), j_(key.j_)
     {
     }
 
     /** Constructor */
-     Symbol(unsigned char c, int j) :
+    Symbol(unsigned char c, int j) :
         c_(c), j_(j)
     {
     }
 
     /** Constructor that decodes an integer Key */
-     Symbol(int key);
+    Symbol(int key);
 
     /** return Key (integer) representation */
-     int key() const;
+    int key() const;
 
     /** Cast to integer */
     int Key() const

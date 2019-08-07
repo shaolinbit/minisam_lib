@@ -153,7 +153,7 @@ public:
     {
         return T2.vector() - vector();
     }
-        /// @}
+    /// @}
 
 
 };

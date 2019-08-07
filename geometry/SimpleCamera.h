@@ -38,19 +38,19 @@ public:
     /// @{
 
     /** default constructor */
-     SimpleCamera() :
+    SimpleCamera() :
         PinholeCameraCal3S2()
     {
     }
 
     /** constructor with pose */
-     explicit SimpleCamera(const Pose3& pose) :
+    explicit SimpleCamera(const Pose3& pose) :
         PinholeCameraCal3S2(pose)
     {
     }
 
     /** constructor with pose and calibration */
-     SimpleCamera(const Pose3& pose, const Cal3_S2& K) :
+    SimpleCamera(const Pose3& pose, const Cal3_S2& K) :
         PinholeCameraCal3S2(pose, K)
     {
     }

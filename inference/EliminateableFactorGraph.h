@@ -64,7 +64,7 @@ std::pair<GaussianBayesNet*, GaussianFactorGraph*>  eliminatePartialSequentialOr
     *  \endcode
     *  */
 BayesTree* eliminateMultifrontal(
-   const std::vector<int>& ordering,
+    const std::vector<int>& ordering,
     const int Eliminatefunction,
     VariableIndex& variableIndex,const GaussianFactorGraph& gf);//0:QR,1:precholesky
 
@@ -100,8 +100,8 @@ GaussianFactorGraph* marginal(
 
 /** Compute the marginal factor graph of the requested variables. */
 GaussianFactorGraph* marginalgf(const GaussianFactorGraph& gf,
-                                       const std::vector<int>& variables,
-                                       const  int EliminatefunctionType);
+                                const std::vector<int>& variables,
+                                const  int EliminatefunctionType);
 
 std::pair<BayesTree*, GaussianFactorGraph*>
 eliminatePartialMultifrontalKey(const std::vector<int>& variables,

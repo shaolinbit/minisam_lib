@@ -25,14 +25,14 @@ public:
 
     /** Constructor */
     PriorFactorPose2(int key, const Pose2& prior,
-                     SharedNoiseModel* model) :
+                     GaussianNoiseModel* model) :
         NoiseModelFactor1(model, key,1), prior_(prior)
     {
     }
 
     /** Convenience constructor Pose3 takes a full covariance argument */
     PriorFactorPose2(int key, const Pose2& prior, const Eigen::MatrixXd& covariance) :
-        NoiseModelFactor1(newGaussianNoiseModelCovariance(covariance), key,1), prior_(prior)
+        NoiseModelFactor1(GaussianNoiseModel_Covariance(covariance), key,1), prior_(prior)
     {
     }
 

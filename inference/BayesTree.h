@@ -102,7 +102,7 @@ public:
     BayesTreeCliqueData getCliqueData() const;
 
     /** Collect number of cliques with cached separator marginals */
-      int numCachedSeparatorMarginals() const;
+    int numCachedSeparatorMarginals() const;
 
     /** Return marginal on any variable.  Note that this actually returns a conditional, for which a
      *  solution may be directly obtained by calling .solve() on the returned object.
@@ -155,7 +155,7 @@ public:
      * plus a list of orphaned subtree roots. Used in removeTop below.
      */
     void removePath(BayesTreeCliqueBase* clique, FactorGraph<GaussianConditional>* bn,
-                                std::list<BayesTreeCliqueBase*> *orphans);
+                    std::list<BayesTreeCliqueBase*> *orphans);
     /**
      * Given a list of indices, turn "contaminated" part of the tree back into a factor graph.
      * Factors and orphans are added to the in/out arguments.
@@ -242,7 +242,7 @@ protected:
     int removeClique(BayesTreeCliqueBase* clique);
 
     /** Fill the nodes index for a subtree */
-     void fillNodesIndex(BayesTreeCliqueBase* subtree);
+    void fillNodesIndex(BayesTreeCliqueBase* subtree);
 
     // Friend JunctionTree because it directly fills roots and nodes index.
     friend class EliminatableClusterTree;
@@ -289,10 +289,10 @@ struct BayesTreeTraversalNodeDPointer
 
 struct OptimizeData
 {
-     OptimizeData* parentData_;
+    OptimizeData* parentData_;
     std::map<int, std::map<int,Eigen::VectorXd>::const_iterator> cliqueResults;
     OptimizeData(OptimizeData* bparentData,std::map<int, std::map<int,Eigen::VectorXd>::const_iterator>
-                        bcliqueResults):parentData_(bparentData),cliqueResults(bcliqueResults) {}
+                 bcliqueResults):parentData_(bparentData),cliqueResults(bcliqueResults) {}
     OptimizeData(const OptimizeData& opti):parentData_(opti.parentData_),cliqueResults(opti.cliqueResults) {}
 
 };
@@ -310,7 +310,7 @@ struct BT_LATraversalNode
 };
 
 OptimizeData OptimizeClique(std::map<int,Eigen::VectorXd>& collectedResult,const BayesTreeCliqueBase* clique,
-        OptimizeData* parentData);
+                            OptimizeData* parentData);
 
 void BayesTreeDepthFirstForestINT(const BayesTree& forest, int* rootData,GaussianFactorGraph& graph);
 
@@ -320,6 +320,6 @@ void GBayesTreeDepthFirstForestdouble(const BayesTree& forest, double* rootData)
 std::map<int,Eigen::VectorXd> optimizeBayesTree(const BayesTree& bayesTree);
 
 double internallogDeterminant(BayesTreeCliqueBase* clique, double* parentSum);
-    };
+};
 
 #endif // BAYESTREE_H_INCLUDED
