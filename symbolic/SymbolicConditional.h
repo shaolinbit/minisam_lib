@@ -32,8 +32,8 @@ namespace minisam
 class  SymbolicConditional :public Factor
 {
 public:
-    Factor* nrFrontals_;
-    Factor* nrParents_;
+    int Frontalsize_;
+    int Parentsize_;
 public:
 
     /// @name Standard Constructors
@@ -43,42 +43,13 @@ public:
     SymbolicConditional();// {}
 
     /** No parents */
-    SymbolicConditional(const Factor& fFactor) : Factor(fFactor), nrFrontals_(new Factor(fFactor)),nrParents_(new Factor()) {}
+    SymbolicConditional(const Factor& fFactor);// : Factor(fFactor), nrFrontals_(new Factor(fFactor)),nrParents_(new Factor()) {}
 
     SymbolicConditional(const Factor& fFactor,int sizeFrontal);
 
     SymbolicConditional(const SymbolicConditional& other);
 
-    ~SymbolicConditional();// {}
-    int getsizenrFrontals() const
-    {
-        return nrFrontals_->size();
-    }
-
-    int getsizenrParents() const
-    {
-        return nrParents_->size();
-    }
-
-    std::vector<int>::const_iterator cbeginFrontals()
-    const;
-
-    std::vector<int>::const_iterator cendFrontals()
-    const;
-
-    std::vector<int>::const_iterator cbeginParents()
-    const;
-
-    std::vector<int>::const_iterator cendParents()
-    const;
-
-    /// @}
-    /// @name Advanced Interface
-    /// @{
-
-    Factor* nrFrontals() const;
-    Factor* nrParents() const;
-
+    ~SymbolicConditional();
 
     /// @}
 };

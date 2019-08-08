@@ -66,7 +66,7 @@ public:
 
     /** Construct factor from container of keys.  This constructor is used internally from derived factor
     *  constructors, either from a container of keys or from a boost::assign::list_of. */
-    explicit Factor(const std::vector<int> keys) : keys_(keys.begin(), keys.end()) {}
+    explicit Factor(const std::vector<int>& keys) : keys_(keys.begin(), keys.end()) {}
 
     Factor(const int& key);
 

@@ -233,10 +233,6 @@ struct EliminationDatachildFactors
             {
                 if(bf!=NULL)
                 {
-                    if(bf->model_!=NULL)
-                    {
-                        delete bf->model_;
-                    }
                     if(bf!=NULL)
                     {
                         delete bf;
@@ -345,6 +341,15 @@ public:
 
         for(std::vector<SymbolicConditional*>::iterator bbi=childSymbolicConditionals.begin();
                 bbi!=childSymbolicConditionals.end(); bbi++)
+        {
+            if(*bbi!=NULL)
+            {
+                delete *bbi;
+                *bbi=NULL;
+            }
+        }
+         for(std::vector<Factor*>::iterator bbi=childSymbolicFactors.begin();
+                bbi!=childSymbolicFactors.end(); bbi++)
         {
             if(*bbi!=NULL)
             {

@@ -96,7 +96,7 @@ void JTDepthFirstForest(const EliminationTree& forest, ConstructorTraversalDataC
                         std::vector<Cluster*>& ctlist,const GaussianFactorGraph& gf);
 
 std::pair<SymbolicConditional*, Factor*>
-EliminateSymbolic(const FactorGraph<Factor>& factors, const std::vector<int>& keys);
+EliminateSymbolic(const std::set<int>& factors, const std::vector<int>& keys);
 };
 
 

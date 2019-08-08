@@ -92,10 +92,13 @@ public:
      * @tparam TERMS A container whose value type is std::pair<Key, Matrix>, specifying the
      *         collection of keys and matrices making up the factor. */
     JacobianFactor(const std::map<int, Eigen::MatrixXd> &terms, const Eigen::VectorXd &b,
-                   DiagonalNoiseModel *model =new DiagonalNoiseModel());
+                   DiagonalNoiseModel *model =NULL);
+                 //  DiagonalNoiseModel *model =new DiagonalNoiseModel());
 
     JacobianFactor(const std::vector<std::pair<int, Eigen::MatrixXd>> &terms,
-                   const Eigen::VectorXd &b, DiagonalNoiseModel *model =new DiagonalNoiseModel());
+                   const Eigen::VectorXd &b,
+                    DiagonalNoiseModel *model =NULL);
+                  // DiagonalNoiseModel *model =new DiagonalNoiseModel());
 
     JacobianFactor(int i1, const Eigen::MatrixXd &A1,
                    const Eigen::VectorXd &b,
@@ -106,7 +109,9 @@ public:
      *  is used, and that the matrix data is copied into a newly-allocated matrix in the constructed
      *  factor. */
     JacobianFactor(
-        const std::vector<int> &keys, const SVBlockMatrix& augmentedMatrix,  DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
+        const std::vector<int> &keys, const SVBlockMatrix& augmentedMatrix,
+        DiagonalNoiseModel *sigmas =NULL);
+       //  DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
 
     /**
      * Build a dense joint factor from all the factors in a factor graph.  If a VariableSlots
@@ -178,10 +183,6 @@ public:
     /** Return A*x */
     Eigen::VectorXd operator*(const std::map<int, Eigen::VectorXd> &x) const;
 
-
-    /** Return a whitened version of the factor, i.e. with unit diagonal noise model. */
-    //JacobianFactor& whiten() const;
-
     /** set noiseModel correctly */
     void setModel(bool anyConstrained, const Eigen::VectorXd &sigmas);
 
@@ -195,13 +196,15 @@ protected:
 
 public:
     JacobianFactor(const std::vector<int>& keys,const std::vector<int>& dims, int m,
-                   DiagonalNoiseModel* model =new DiagonalNoiseModel()) : RealGaussianFactor(keys,SVBlockMatrix(dims.begin(), dims.end(), m, true, false), model, 0)
+                  DiagonalNoiseModel* model =NULL) ://  DiagonalNoiseModel* model =new DiagonalNoiseModel()) :
+                        RealGaussianFactor(keys,SVBlockMatrix(dims.begin(), dims.end(), m, true, false), model, 0)
     {
     }
 
     friend class NonlinearFactor;
 }; // JacobianFactor
 std::vector<int> JFgetvectorint_fromiterator(const Factor &nrParents_);
+
 
 std::vector<JacobianFactor*> _convertOrCastToJacobians(
     const GaussianFactorGraph &factors);

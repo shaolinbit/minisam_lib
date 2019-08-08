@@ -35,8 +35,8 @@ namespace minisam
 class GaussianConditional : public JacobianFactor
 {
 public:
-    Factor* nrFrontals_;
-    Factor* nrParents_;
+    int Frontalsize_;
+    int Parentsize_;
 public:
     /** default constructor needed for serialization */
     GaussianConditional(); // {}
@@ -44,23 +44,26 @@ public:
     GaussianConditional(const GaussianConditional &rObj);
 
     /** constructor with no parents |Rx-d| */
-    GaussianConditional(int key, const Eigen::VectorXd &d, const Eigen::MatrixXd &R,
-                        DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
+    /*GaussianConditional(int key, const Eigen::VectorXd &d, const Eigen::MatrixXd &R,
+                        DiagonalNoiseModel *sigmas =NULL);
+                      ///  DiagonalNoiseModel *sigmas =new DiagonalNoiseModel()); */
 
     /** Constructor with arbitrary number of frontals and parents.
     *   @tparam TERMS A container whose value type is std::pair<Key, Matrix>, specifying the
-    *           collection of keys and matrices making up the conditional. */
+    *           collection of keys and matrices making up the conditional.
     GaussianConditional(const std::pair<int, Eigen::MatrixXd> &terms,
                         const JacobianFactor &nrFrontals, const JacobianFactor &nrParents, const Eigen::VectorXd &d,
-                        DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
-
+                        DiagonalNoiseModel *sigmas =NULL);
+                        //DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
+   */
     /** Constructor with arbitrary number keys, and where the augmented matrix is given all together
      *  instead of in block terms.  Note that only the active view of the provided augmented matrix
      *  is used, and that the matrix data is copied into a newly-allocated matrix in the constructed
      *  factor. */
     GaussianConditional(
         const std::vector<int> &keys, int nrFrontalssize,const SVBlockMatrix& augmentedMatrix,
-        DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
+        DiagonalNoiseModel *sigmas =NULL);
+        //DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
 
     /** Return a view of the upper-triangular R block of the conditional */
     Eigen::Block<const Eigen::MatrixXd> get_R() const;
@@ -94,9 +97,6 @@ public:
     GaussianConditional &operator=(const GaussianConditional &rObj);
     bool operator==(const GaussianConditional& other) const;
 
-    int getsizenrFrontals() const;
-    int getsizenrParents() const;
-
     std::vector<int>::const_iterator cbeginFrontals()
     const;
     std::vector<int>::const_iterator cendFrontals()
@@ -123,8 +123,10 @@ public:
 inline GaussianConditional &GaussianConditional::operator=(const GaussianConditional &rObj)
 {
     JacobianFactor::operator=(rObj);
-    nrFrontals_ =new Factor(*rObj.nrFrontals_);
-    nrParents_ =new Factor(*rObj.nrParents_);
+  //  nrFrontals_ =new Factor(*rObj.nrFrontals_);
+  //  nrParents_ =new Factor(*rObj.nrParents_);
+    Frontalsize_=rObj.Frontalsize_;
+  Parentsize_=rObj.Parentsize_;
     return *this;
 }
 

@@ -168,10 +168,6 @@ struct ETEliminationDataChildrenFactors
         {
             if(bf!=NULL)
             {
-                if(bf->model_!=NULL)
-                {
-                    delete bf->model_;
-                }
                 delete bf;
                 bf=NULL;
             }

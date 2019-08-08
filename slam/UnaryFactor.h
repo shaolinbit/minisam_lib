@@ -20,7 +20,7 @@ public:
     //typedef boost::shared_ptr<UnaryFactor> shared_ptr;
 
     // The constructor requires the variable key, the (X, Y) measurement value, and the noise model
-    UnaryFactor(int j, double x, double y, SharedNoiseModel* model):
+    UnaryFactor(int j, double x, double y, GaussianNoiseModel* model):
         NoiseModelFactor1(model, j,1), mx_(x), my_(y) {}
 
     virtual ~UnaryFactor() {}
