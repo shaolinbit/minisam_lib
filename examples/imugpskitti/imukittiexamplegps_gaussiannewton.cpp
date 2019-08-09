@@ -20,11 +20,11 @@ int main(int argc, char* argv[])
 {
     double AccelerometerSigma,GyroscopeSigma,IntegrationSigma,AccelerometerBiasSigma,GyroscopeBiasSigma, AverageDeltaT;
     int BodyPtx, BodyPty, BodyPtz, BodyPrx, BodyPry, BodyPrz;
-    FILE *kittimetadatafile = fopen("examples/imugpskitti/data/KittiEquivBiasedImu_metadata.txt", "r");
-    FILE *kittiIMU=fopen("examples/imugpskitti/data/KittiEquivBiasedImu.txt", "r");
-    FILE *KittiGps=fopen("examples/imugpskitti/data/KittiGps_converted.txt", "r");
-    FILE *fpstate=fopen("examples/imugpskitti/data/isam2Wholeresult.txt","w+");
-    FILE *fprealtime=fopen("examples/imugpskitti/data/isam2realtimeb.txt","w+");
+    FILE *kittimetadatafile = fopen("examples_tuning/data/KittiEquivBiasedImu_metadata.txt", "r");
+    FILE *kittiIMU=fopen("examples_tuning/data/KittiEquivBiasedImu.txt", "r");
+    FILE *KittiGps=fopen("examples_tuning/data/KittiGps_converted.txt", "r");
+    FILE *fpstate=fopen("examples_tuning/data/isam2Wholeresult.txt","w+");
+    FILE *fprealtime=fopen("examples_tuning/data/isam2realtimeb.txt","w+");
     double GPSTime,GPSX,GPSY,GPSZ;
     double IMUTime, IMUdt, IMUaccelX,IMUaccelY,IMUaccelZ,IMUomegaX,IMUomegaY,IMUomegaZ;
     int kittiindex=0;
@@ -302,4 +302,3 @@ int main(int argc, char* argv[])
     delete parameters.optimizationParamsGaussNewton;
     return 0;
 }
-

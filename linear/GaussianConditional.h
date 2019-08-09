@@ -43,11 +43,6 @@ public:
     virtual ~GaussianConditional();
     GaussianConditional(const GaussianConditional &rObj);
 
-    /** constructor with no parents |Rx-d| */
-    /*GaussianConditional(int key, const Eigen::VectorXd &d, const Eigen::MatrixXd &R,
-                        DiagonalNoiseModel *sigmas =NULL);
-                      ///  DiagonalNoiseModel *sigmas =new DiagonalNoiseModel()); */
-
     /** Constructor with arbitrary number of frontals and parents.
     *   @tparam TERMS A container whose value type is std::pair<Key, Matrix>, specifying the
     *           collection of keys and matrices making up the conditional.
@@ -63,7 +58,6 @@ public:
     GaussianConditional(
         const std::vector<int> &keys, int nrFrontalssize,const SVBlockMatrix& augmentedMatrix,
         DiagonalNoiseModel *sigmas =NULL);
-        //DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
 
     /** Return a view of the upper-triangular R block of the conditional */
     Eigen::Block<const Eigen::MatrixXd> get_R() const;
@@ -108,13 +102,6 @@ public:
     const;
 
     /// @}
-    /// @name Advanced Interface
-    /// @{
-
-    Factor* nrFrontals() const;
-    Factor* nrParents() const;
-
-
 
 }; // GaussianConditional
 
@@ -123,10 +110,8 @@ public:
 inline GaussianConditional &GaussianConditional::operator=(const GaussianConditional &rObj)
 {
     JacobianFactor::operator=(rObj);
-  //  nrFrontals_ =new Factor(*rObj.nrFrontals_);
-  //  nrParents_ =new Factor(*rObj.nrParents_);
     Frontalsize_=rObj.Frontalsize_;
-  Parentsize_=rObj.Parentsize_;
+    Parentsize_=rObj.Parentsize_;
     return *this;
 }
 

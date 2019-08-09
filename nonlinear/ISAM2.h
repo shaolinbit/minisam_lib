@@ -239,20 +239,19 @@ public:
      * Remove path from clique to root and return that path as factors
      * plus a list of orphaned subtree roots. Used in removeTop below.
      */
-    void removePath(ISAM2Clique* clique, FactorGraph<GaussianConditional>* bn,
+  void removePath(ISAM2Clique* clique, std::list<int>* affectedkeys,
                     std::list<ISAM2Clique*> *orphans);
-
     /**
      * Given a list of indices, turn "contaminated" part of the tree back into a factor graph.
      * Factors and orphans are added to the in/out arguments.
      */
-    void removeTop(const std::vector<int>& keys, FactorGraph<GaussianConditional>* bn, std::list<ISAM2Clique*> *orphans);
+    void removeTop(const std::vector<int>& keys, std::list<int>* affectedkeys, std::list<ISAM2Clique*> *orphans);
 
 protected:
 
     std::set<int> getAffectedFactors(const std::list<int>& keys,const ISAM2Data& isam2data) const;
     GaussianFactorGraph* relinearizeAffectedFactors(const std::list<int>& affectedKeys,
-            const std::set<int>& relinKeys,const ISAM2Data& isam2data,std::set<int>& cachedlinearized) const;
+            const std::set<int>& relinKeys, ISAM2Data& isam2data,std::set<int>& cachedlinearized) const;
     int getCachedBoundaryFactors(std::list<ISAM2Clique*>* orphans,GaussianFactorGraph& cachedBoundary);
 
     std::set<int> recalculate(NonlinearFactorGraph& newFactors,const std::set<int>& markedKeys, const std::set<int>& relinKeys,

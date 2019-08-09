@@ -94,8 +94,6 @@ public:
     //
     /** linearize to a GaussianFactor*/
 
-    virtual RealGaussianFactor
-    linearizeVector(const std::map<int, Eigen::VectorXd>& c) const;
     virtual RealGaussianFactor*
     linearizeVectorPointer(const std::map<int, Eigen::VectorXd>& c,int factorization) const;
     virtual RealGaussianFactor* linearizePosePointer(const std::map<int, Pose3>& x,int factorization) const;
@@ -210,7 +208,6 @@ public:
     * Hence \f$ b = z - h(x) = - \mathtt{error\_vector}(x) \f$
     */
 
-    virtual RealGaussianFactor linearizeVector(const std::map<int, Eigen::VectorXd>& x) const override;
     virtual RealGaussianFactor* linearizeVectorPointer(const std::map<int, Eigen::VectorXd>& x,int factorizaton) const override;
     virtual RealGaussianFactor* linearizePosePointer(const std::map<int, Pose3>& x,int factorization) const override;
     virtual RealGaussianFactor* linearizePVPointer(const std::map<int, Pose3>& x1,

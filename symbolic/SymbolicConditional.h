@@ -40,10 +40,10 @@ public:
     /// @{
 
     /** Empty Constructor to make serialization possible */
-    SymbolicConditional();// {}
+    SymbolicConditional();
 
     /** No parents */
-    SymbolicConditional(const Factor& fFactor);// : Factor(fFactor), nrFrontals_(new Factor(fFactor)),nrParents_(new Factor()) {}
+    SymbolicConditional(const Factor& fFactor);
 
     SymbolicConditional(const Factor& fFactor,int sizeFrontal);
 
