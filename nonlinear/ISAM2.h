@@ -6,6 +6,7 @@
 #include "../nonlinear/ISAM2Params.h"
 #include "../inference/VariableIndex.h"
 #include "../nonlinear/ISAM2Clique.h"
+#include "../nonlinear/ISAM2Data.h"
 
 
 /**
@@ -42,36 +43,6 @@ namespace minisam
  * estimate of all variables.
  *
  */
-class ISAM2Data
-{
-public:
-    /** The current linearization point */
-    std::map<int,Eigen::VectorXd> theta_;
-
-#ifdef GMF_Using_Pose3
-    std::map<int,Pose3> thetaPose_;
-#else
-    std::map<int,Pose2> thetaPose_;
-#endif // GMF_Using_Pose3
-
-    mutable std::map<int,Eigen::VectorXd> delta_;
-
-    mutable std::map<int,Eigen::VectorXd> deltaNewton_; // Only used when using Dogleg - stores the Gauss-Newton update
-    mutable std::map<int,Eigen::VectorXd> RgProd_; // Only used when using Dogleg - stores R*g and is updated incrementally
-    NonlinearFactorGraph nonlinearFactors_;
-    /** The current linear factors, which are only updated as needed */
-    mutable GaussianFactorGraph linearFactors_;
-    VariableIndex variableIndex_;
-    mutable std::set<int> deltaReplacedMask_; // TODO: Make sure accessed in the right way
-    /** Set of variables that are involved with linear factors from marginalized
-     * variables and thus cannot have their linearization points changed. */
-    std::set<int> fixedVariables_;
-    ISAM2Data();
-    ~ISAM2Data();
-
-    void clearfactors();
-    void clearpose();
-};
 
 
 class  ISAM2
@@ -158,12 +129,11 @@ public:
      * This delta is incomplete because it was not updated below wildfire_threshold.  If only
      * a single variable is needed, it is faster to call calculateEstimate(const KEY&).
      */
-    std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data);
 
 #ifdef GMF_Using_Pose3
-    std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data,std::map<int,Pose3>* pose3lin);
+    void calculateEstimate(ISAM2Data& isam2data);
 #else
-    std::map<int,Eigen::VectorXd> calculateEstimate(ISAM2Data& isam2data,std::map<int,Pose2>* pose2lin);
+    void calculateEstimate(ISAM2Data& isam2data);
 #endif
 
     /** Compute an estimate for a single variable using its incomplete linear delta computed
@@ -184,7 +154,7 @@ public:
     std::map<int,Eigen::VectorXd> calculateBestEstimate() const;
 
     /** Access the current delta, computed during the last call to update */
-    std::map<int,Eigen::VectorXd>& getDelta(ISAM2Data& isam2data);
+    void getDelta(ISAM2Data& isam2data);
 
     std::map<int,Eigen::VectorXd> gradientAtZero() const;
 

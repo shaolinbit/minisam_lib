@@ -14,17 +14,16 @@
 
 using namespace std;
 using namespace minisam;
-
 /* ************************************************************************* */
 int main(int argc, char* argv[])
 {
     double AccelerometerSigma,GyroscopeSigma,IntegrationSigma,AccelerometerBiasSigma,GyroscopeBiasSigma, AverageDeltaT;
     int BodyPtx, BodyPty, BodyPtz, BodyPrx, BodyPry, BodyPrz;
-    FILE *kittimetadatafile = fopen("examples_tuning/data/KittiEquivBiasedImu_metadata.txt", "r");
-    FILE *kittiIMU=fopen("examples_tuning/data/KittiEquivBiasedImu.txt", "r");
-    FILE *KittiGps=fopen("examples_tuning/data/KittiGps_converted.txt", "r");
-    FILE *fpstate=fopen("examples_tuning/data/isam2Wholeresult.txt","w+");
-    FILE *fprealtime=fopen("examples_tuning/data/isam2realtimeb.txt","w+");
+    FILE *kittimetadatafile = fopen("data/KittiEquivBiasedImu_metadata.txt", "r");
+    FILE *kittiIMU=fopen("data/KittiEquivBiasedImu.txt", "r");
+    FILE *KittiGps=fopen("data/KittiGps_converted.txt", "r");
+    FILE *fpstate=fopen("data/isam2Wholeresult.txt","w+");
+    FILE *fprealtime=fopen("data/isam2realtimeb.txt","w+");
     double GPSTime,GPSX,GPSY,GPSZ;
     double IMUTime, IMUdt, IMUaccelX,IMUaccelY,IMUaccelZ,IMUomegaX,IMUomegaY,IMUomegaZ;
     int kittiindex=0;
@@ -105,7 +104,7 @@ int main(int argc, char* argv[])
     IMU_params.setOmegaCoriolis(w_coriolis);
 
     ISAM2Params parameters;
-   parameters.optimizationParamsDogleg=new ISAM2DoglegParams();
+    parameters.optimizationParamsDogleg=new ISAM2DoglegParams();
     parameters.setFactorization("CHOLESKY");
     //parameters.relinearizeThresholdDouble = 0.01;
     parameters.relinearizeSkip = 1;
@@ -116,8 +115,8 @@ int main(int argc, char* argv[])
     int currentPoseKey,currentVelKey,currentBiasKey;
     double nowtime,previoustime;
 
-    std::map<int,Eigen::VectorXd> newValuesV,resultV;
-    std::map<int,Pose3> newValuesP,resultP;
+    std::map<int,Eigen::VectorXd> newValuesV;//,resultV;
+    std::map<int,Pose3> newValuesP;//,resultP;
     NonlinearFactorGraph newFactors;
    // Pose3* GPSPose;
     Eigen::Vector3d accMeas, omegaMeas;
@@ -226,13 +225,14 @@ int main(int argc, char* argv[])
 
               //  isamtime1=clock();
 
-                resultV = isam.calculateEstimate(isam2data,&resultP);
+                //resultV = isam.calculateEstimate(isam2data,&resultP);
+                isam.calculateEstimate(isam2data);
                // isamtime2=clock();
               //  cout<<"calculateEstimate costs "<<(double)(isamtime2-isamtime1)/CLOCKS_PER_SEC<<" seconds"<<endl;
 
-                currentPoseGlobal = resultP.at(currentPoseKey);
-                currentVelocityGlobal = resultV.at(currentVelKey);
-                currentBias = resultV.at(currentBiasKey);
+                currentPoseGlobal = isam2data.resultPose_.at(currentPoseKey);
+                currentVelocityGlobal = isam2data.resulttheta_.at(currentVelKey);
+                currentBias = isam2data.resulttheta_.at(currentBiasKey);
 
                 //resultP.clear();
                 //resultV.clear();
@@ -278,8 +278,8 @@ int main(int argc, char* argv[])
                         PoseKeyindex=Symbol('p',poseindex).key();
                         //VelKeyindex=poseindex+VelConst;
                         VelKeyindex=Symbol('v',poseindex).key();
-                        Posetrjectory=resultP.at(PoseKeyindex);
-                        Veltrjectory=resultV.at(VelKeyindex);
+                        Posetrjectory=isam2data.resultPose_.at(PoseKeyindex);
+                        Veltrjectory=isam2data.resulttheta_.at(VelKeyindex);
 
                         fprintf(fpstate,"%.15f %.15f %.15f %.15f %.15f %.15f\n",
                                 Posetrjectory.translation()(0), Posetrjectory.translation()(1),Posetrjectory.translation()(2),
@@ -292,15 +292,14 @@ int main(int argc, char* argv[])
         }
         previoustime=nowtime;
         kittigpsindex++;
-        resultP.clear();
-        resultV.clear();
+        //resultP.clear();
+        //resultV.clear();
     }
 
     isam.clearall();
     isam2data.clearpose();
     isam2data.clearfactors();
-        delete parameters.optimizationParamsDogleg;
-    parameters.optimizationParamsDogleg=NULL;
-
+    delete parameters.optimizationParamsDogleg;
     return 0;
 }
+

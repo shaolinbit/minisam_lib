@@ -304,6 +304,8 @@ void align(const std::vector<Point2Pair> &pairs, Pose2 *alignresult);
 
 std::map<int, Pose2> Pose2ValuesRetract(const std::map<int, Pose2> &LinPose2,
                                         const std::map<int, Eigen::VectorXd> &vectorvalues2);
+void Pose2ValuesRetract_atmap(const std::map<int, Pose2> &LinPose2,
+                                        const std::map<int, Eigen::VectorXd> &vectorvalues2,std::map<int, Pose2>& resultpose2);
 
 std::map<int, Eigen::VectorXd> Pose2VectorValuesZero(std::map<int, Pose2*> vvz);
 

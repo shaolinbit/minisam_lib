@@ -159,22 +159,18 @@ int main()
        cout<<pv.second<<endl;
    }
    */
-   std::map<int,Pose3> pose3lin;
-      std::map<int,Eigen::VectorXd> currentEstimate = isam.calculateEstimate(isam2data,&pose3lin);
-
+     isam.calculateEstimate(isam2data);
 
        cout<<"Pose map"<<endl;
-   for(auto& pp:pose3lin)
+   for(auto& pp:isam2data.resultPose_)
    {
        cout<<pp.second<<endl;
    }
    cout<<"vector  map"<<endl;
-    for(auto& pv:currentEstimate)
+    for(auto& pv:isam2data.resulttheta_)
    {
        cout<<pv.second<<endl;
    }
-
-     pose3lin.clear();
 
 
       cout << "****************************************************" << endl;

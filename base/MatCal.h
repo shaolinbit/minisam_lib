@@ -83,6 +83,9 @@ std::map<int,Eigen::VectorXd> VectorValuesRetract(const std::map<int,Eigen::Vect
 std::map<int,Eigen::VectorXd> DVectorValuesRetract(const std::map<int,Eigen::VectorXd>& vectorvalues1,
         const std::map<int,Eigen::VectorXd>& vectorvalues2);
 
+void DVectorValuesRetract_atmap(const std::map<int,Eigen::VectorXd>& vectorvalues1,
+        const std::map<int,Eigen::VectorXd>& vectorvalues2,std::map<int,Eigen::VectorXd>& vectorvalues3);
+
 std::map<int,Eigen::VectorXd> VectorValuesSub(const std::map<int,Eigen::VectorXd>& vectorvalues1,
         const std::map<int,Eigen::VectorXd>& vectorvalues2);
 

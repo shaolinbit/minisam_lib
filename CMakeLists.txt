@@ -76,6 +76,7 @@ set(HEAD_FILES_nonlinear
 	./nonlinear/DoglegOptimizer.h
         ./nonlinear/DoglegOptimizerImpl.h
 	./nonlinear/ISAM2.h
+	./nonlinear/ISAM2Data.h
 	./nonlinear/ISAM2Clique.h
 	./nonlinear/ISAM2-impl.h
 	./nonlinear/ISAM2JunctionTree.h

@@ -351,6 +351,8 @@ std::map<int,Pose3> Pose3ValuesRetract(const std::map<int,Pose3>& LinPose3,
                                        const std::map<int,Eigen::VectorXd>& vectorvalues2);
 std::map<int,Pose3> DPose3ValuesRetract(const std::map<int,Pose3>& LinPose3,
                                         const std::map<int,Eigen::VectorXd>& vectorvalues2);
+void DPose3ValuesRetract_atmap(const std::map<int,Pose3>& LinPose3,
+                                        const std::map<int,Eigen::VectorXd>& vectorvalues2,std::map<int,Pose3>& resultp);
 
 std::map<int,Eigen::VectorXd> Pose3VectorValuesZero(std::map<int,Pose3> vvz);
 void Pose3ValuesUpdate(std::map<int,Pose3*>* vectorvalues1,const std::map<int,Pose3*>& vectorvalues2);

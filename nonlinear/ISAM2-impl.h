@@ -21,6 +21,8 @@
 
 #include "../nonlinear/ISAM2Clique.h"
 #include "../nonlinear/NonlinearFactorGraph.h"
+#include "../nonlinear/ISAM2Data.h"
+
 namespace minisam
 {
 /**
@@ -33,19 +35,18 @@ namespace minisam
   * @param keyFormatter Formatter for printing nonlinear keys during debugging
   */
 
+#ifdef GMF_Using_Pose3
+
 void ISAM2ImplAddVariables(const std::map<int,Eigen::VectorXd>& newTheta,
                            const std::map<int,Pose3>& newThetaPose,
-                           std::map<int,Eigen::VectorXd>& theta,
-                           std::map<int,Pose3>& ThetaPose,
-                           std::map<int,Eigen::VectorXd>& delta,
-                           std::map<int,Eigen::VectorXd>& deltaNewton, std::map<int,Eigen::VectorXd>& RgProd);
+                           ISAM2Data& isam2data);
+
+#else
+
 void ISAM2ImplAddVariables(const std::map<int,Eigen::VectorXd>& newTheta,
                            const std::map<int,Pose2>& newThetaPose,
-                           std::map<int,Eigen::VectorXd>& theta,
-                           std::map<int,Pose2>& ThetaPose,
-                           std::map<int,Eigen::VectorXd>& delta,
-                           std::map<int,Eigen::VectorXd>& deltaNewton, std::map<int,Eigen::VectorXd>& RgProd);
-
+                           ISAM2Data& isam2data);
+#endif
 /// Perform the first part of the bookkeeping updates for adding new factors.  Adds them to the
 /// complete list of nonlinear factors, and populates the list of new factor indices, both
 /// optionally finding and reusing empty factor slots.
@@ -55,23 +56,8 @@ void ISAM2ImplAddFactorsStep1(NonlinearFactorGraph& newFactors, bool useUnusedSl
 /**
  * Remove variables from the ISAM2 system.
  */
+void ISAM2ImplRemoveVariables(std::set<int>& unusedKeys,std::map<int,ISAM2Clique*>& nodesbtc,ISAM2Data& isam2data);
 
-#ifdef GMF_Using_Pose3
-void ISAM2ImplRemoveVariables(std::set<int>& unusedKeys,
-                              std::map<int,Eigen::VectorXd>& theta,std::map<int,Pose3>& thetaPose3, VariableIndex& variableIndex, std::map<int,Eigen::VectorXd>& delta,
-                              std::map<int,Eigen::VectorXd>& deltaNewton,
-                              std::map<int,Eigen::VectorXd>& RgProd, std::set<int>& replacedKeys,
-                              std::map<int,ISAM2Clique*>& nodesbtc, //Base::Nodes& nodes,
-                              std::set<int>& fixedVariables);
-#else
-void ISAM2ImplRemoveVariables(std::set<int>& unusedKeys,
-                              std::map<int,Eigen::VectorXd>& theta,std::map<int,Pose2>& thetaPose2, VariableIndex& variableIndex, std::map<int,Eigen::VectorXd>& delta,
-                              std::map<int,Eigen::VectorXd>& deltaNewton,
-                              std::map<int,Eigen::VectorXd>& RgProd, std::set<int>& replacedKeys,
-                              std::map<int,ISAM2Clique*>& nodesbtc, //Base::Nodes& nodes,
-                              std::set<int>& fixedVariables);
-
-#endif
 
 /**
  * Find the set of variables to be relinearized according to relinearizeThreshold.

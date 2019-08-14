@@ -48,7 +48,7 @@ private:
     NonlinearFactorGraph gtSAMgraph;
     NonlinearFactorGraph nullgraph;
    // std::map<int,Eigen::VectorXd> initialEstimateV,isamCurrentEstimateV;
-    std::map<int,Pose3> initialEstimatePose,isamCurrentEstimatePose;
+    std::map<int,Pose3> initialEstimatePose;//,isamCurrentEstimatePose;
     ISAM2 *isam;
     ISAM2Data isam2data;
     std::map<int,Eigen::VectorXd> NULLV;
@@ -1352,8 +1352,9 @@ public:
         PointTypePose thisPose6D;
         Pose3 latestEstimate;
 
-        isam->calculateEstimate(isam2data,&isamCurrentEstimatePose);
-        latestEstimate = isamCurrentEstimatePose.at(isamCurrentEstimatePose.size()-1);
+        //isam->calculateEstimate(isam2data,&isamCurrentEstimatePose);
+        isam->calculateEstimate(isam2data);
+        latestEstimate = isam2data.resultPose_.at(isam2data.resultPose_.size()-1);
 
         thisPose3D.x = latestEstimate.translation().y();
         thisPose3D.y = latestEstimate.translation().z();
@@ -1404,19 +1405,20 @@ public:
             recentSurfCloudKeyFrames.   clear();
             recentOutlierCloudKeyFrames.clear();
 
-            int numPoses = isamCurrentEstimatePose.size();
+            //int numPoses = isamCurrentEstimatePose.size();
+            int numPoses = isam2data.resultPose_.size();
 			for (int i = 0; i < numPoses; ++i)
 			{
-				cloudKeyPoses3D->points[i].x = isamCurrentEstimatePose.at(i).translation().y();
-				cloudKeyPoses3D->points[i].y = isamCurrentEstimatePose.at(i).translation().z();
-				cloudKeyPoses3D->points[i].z = isamCurrentEstimatePose.at(i).translation().x();
+                                cloudKeyPoses3D->points[i].x = isam2data.resultPose_.at(i).translation().y();
+                                cloudKeyPoses3D->points[i].y = isam2data.resultPose_.at(i).translation().z();
+                                cloudKeyPoses3D->points[i].z = isam2data.resultPose_.at(i).translation().x();
 
 				cloudKeyPoses6D->points[i].x = cloudKeyPoses3D->points[i].x;
 	            cloudKeyPoses6D->points[i].y = cloudKeyPoses3D->points[i].y;
 	            cloudKeyPoses6D->points[i].z = cloudKeyPoses3D->points[i].z;
-	            cloudKeyPoses6D->points[i].roll  = isamCurrentEstimatePose.at(i).rotation().pitch();
-	            cloudKeyPoses6D->points[i].pitch = isamCurrentEstimatePose.at(i).rotation().yaw();
-	            cloudKeyPoses6D->points[i].yaw   = isamCurrentEstimatePose.at(i).rotation().roll();
+                    cloudKeyPoses6D->points[i].roll  = isam2data.resultPose_.at(i).rotation().pitch();
+                    cloudKeyPoses6D->points[i].pitch = isam2data.resultPose_.at(i).rotation().yaw();
+                    cloudKeyPoses6D->points[i].yaw   = isam2data.resultPose_.at(i).rotation().roll();
 			}
 
 	    	aLoopIsClosed = false;

@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
     int nThreads(-1), phase_break, break_count(0), nextKey, dec_int, itsBelowThree=0, count=0;
     bool printECEF, printENU, printAmb, printUpdateRate, first_ob(true), usingP1(false);
 
-    FILE *fprealtime=fopen("pppbayestree/data/pppgpsposbackcount.txt","w+");
+    FILE *fprealtime=fopen("examples_tuning/data/pppgpsposbackcount.txt","w+");
 
     cout.precision(12);
 
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
     po::notify(vm);*/
 
     ConfDataReader confReader;
-    confReader.open("pppbayestree/data/phastball.conf");
+    confReader.open("examples_tuning/data/phastball.conf");
     ISAM2Data isam2data;
 
     /*if (confFile.empty() ) {
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
     //ISAM2DoglegParams doglegParams;
     ISAM2Params parameters;
     parameters.optimizationParamsDogleg=new ISAM2DoglegParams;
-    //parameters.optimizationParamsGaussNewton=new ISAM2GaussNewtonParams;
+   // parameters.optimizationParamsGaussNewton=new ISAM2GaussNewtonParams;
     parameters.relinearizeThresholdDouble = 0.1;
     parameters.relinearizeSkip = 10;
     ISAM2 isam(parameters);
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
     std::map<int,Eigen::VectorXd> initial_values;
     std::map<int,Pose3> initial_valuesP;
     //Values result;
-    std::map<int,Eigen::VectorXd> result;
+   // std::map<int,Eigen::VectorXd> result;
 
     Eigen::VectorXd BiasinitNoise(5);
     BiasinitNoise<<10.0, 10.0, 10.0, 3e8, 1e-1;
@@ -500,11 +500,15 @@ int main(int argc, char* argv[])
         }
 
         isam.update(graph, initial_values,initial_valuesP,isam2data);
-        result = isam.calculateEstimate(isam2data);
+        //result = isam.calculateEstimate(isam2data);
+        isam.calculateEstimate(isam2data);
+
         end = std::chrono::steady_clock::now();
 
 
-        prior_nonBias =result.at(Symbol('X',count).key());
+        //prior_nonBias =result.at(Symbol('X',count).key());
+        prior_nonBias =isam2data.resulttheta_.at(Symbol('X',count).key());
+
         Eigen::Vector3d delta_xyz(prior_nonBias(0), prior_nonBias(1), prior_nonBias(2));
         Position deltaPos(prior_nonBias(0), prior_nonBias(1), prior_nonBias(2));
         prop_xyz = nomXYZ - delta_xyz;
@@ -529,7 +533,8 @@ int main(int argc, char* argv[])
             {
                 cout << "amb. " << gpstime.week << " " << gpstime.sow << " ";
                 cout << prn_vec[k] << " ";
-                cout << result.at(Symbol('B',bias_counter[prn_vec[k]]).key()) << endl;
+                //cout << result.at(Symbol('B',bias_counter[prn_vec[k]]).key()) << endl;
+                cout << isam2data.resulttheta_.at(Symbol('B',bias_counter[prn_vec[k]]).key()) << endl;
             }
         }
 
@@ -546,7 +551,7 @@ int main(int argc, char* argv[])
         prn_vec.clear();
         count++;
         initial_values.insert(std::make_pair(Symbol('X',count).key(), prior_nonBias));
-        /*if(count>10)
+       /* if(count>10)
         {
          isam.clearall();
     isam2data.clearpose();
@@ -555,13 +560,13 @@ int main(int argc, char* argv[])
     return 0;
         }*/
     }
-    ofstream bs("pppbayestree/data/gnsstree.dot");
+    ofstream bs("examples_tuning/data/gnsstree.dot");
     isam.saveGraph(bs);
 
     isam.clearall();
     isam2data.clearpose();
     isam2data.clearfactors();
-   // delete parameters.optimizationParamsGaussNewton;
+    //delete parameters.optimizationParamsGaussNewton;
     delete parameters.optimizationParamsDogleg;
     return 0;
 }
