@@ -5,8 +5,8 @@ SET(CMAKE_INSTALL_PREFIX /usr/include)
 SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_CXX_COMPILER g++)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fpic -std=c11")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fpic -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fpic -std=c11 ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fpic -std=c++11 ")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic -fvisibility=hidden -fvisibility-inlines-hidden -O3 -std=c11")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden -fvisibility-inlines-hidden -O3 -std=c++11")
 
@@ -105,6 +105,40 @@ set(HEAD_FILES_slam
 set(HEAD_FILES_symbolic
 	./symbolic/SymbolicConditional.h
  )
+
+file(GLOB imukittiexamplegps_Dogleg "examples/imugpskitti/imukittiexamplegps_Dogleg.cpp")
+file(GLOB imukittiexamplegps_gaussiannewton "examples/imugpskitti/imukittiexamplegps_gaussiannewton.cpp")
+file(GLOB pppbayestree "examples/pppbayestree/pppbayestree.cpp")
+file(GLOB pppbayestree_dogleg "examples/pppbayestree/pppbayestree_dogleg.cpp")
+file(GLOB visualisam2dogleg "examples/visualisam2/visualisam2dogleg.cpp")
+file(GLOB visualisam2_gaussiannewton "examples/visualisam2/visualisam2_gaussiannewton.cpp")
+
+
+aux_source_directory(examples/pppbayestree/configReader configReader)
+aux_source_directory(examples/pppbayestree/gnssNavigation gnssNavigation)
+aux_source_directory(examples/pppbayestree/gpstk gpstk)
+aux_source_directory(examples/pppbayestree/robustModels robustModels)
+aux_source_directory(examples/pppbayestree/slam slam)
+aux_source_directory(examples/pppbayestree/utils utils)
+
+include_directories(/usr/local/include/eigen3/)
+include_directories(.)
+include_directories(${PROJECT_SOURCE_DIR}/examples)
+link_directories(${PROJECT_SOURCE_DIR})
+
+add_executable(imukittiexamplegps_Dogleg ${imukittiexamplegps_Dogleg})
+target_link_libraries(imukittiexamplegps_Dogleg minisam)
+add_executable(imukittiexamplegps_gaussiannewton ${imukittiexamplegps_gaussiannewton})
+target_link_libraries(imukittiexamplegps_gaussiannewton minisam)
+#add_executable(pppbayestree  ${utils} ${configReader} ${gnssNavigation} ${gpstk} ${robustModels} ${slam} ${pppbayestree} )
+#target_link_libraries(pppbayestree minisam)
+#add_executable(pppbayestree_dogleg ${pppbayestree_dogleg} ${utils} ${configReader} ${gnssNavigation} ${gpstk} ${robustModels} ${slam} ${pppbayestree} )
+#target_link_libraries(pppbayestree_dogleg minisam)
+add_executable(visualisam2dogleg ${visualisam2dogleg})
+target_link_libraries(visualisam2dogleg minisam)
+add_executable(visualisam2_gaussiannewton ${visualisam2_gaussiannewton})
+target_link_libraries(visualisam2_gaussiannewton minisam)
+
 
 install(FILES ${HEAD_FILES_root} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam)
 install(FILES ${HEAD_FILES_3rdparty} DESTINATION  ${CMAKE_INSTALL_PREFIX}/minisam/3rdparty)

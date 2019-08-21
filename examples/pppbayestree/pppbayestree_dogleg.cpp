@@ -5,13 +5,13 @@
  */
 
 
-#include "minisam/nonlinear/ISAM2.h"
-#include "minisam/nonlinear/NonlinearFactorGraph.h"
+#include "nonlinear/ISAM2.h"
+#include "nonlinear/NonlinearFactorGraph.h"
 //#include "nonlinear/LevenbergMarquardtOptimizer.h"
-#include "minisam/inference/Symbol.h"
+#include "inference/Symbol.h"
 
-#include "minisam/slam/PriorFactor.h"
-#include "minisam/slam/BetweenFactor.h"
+#include "slam/PriorFactor.h"
+#include "slam/BetweenFactor.h"
 #include "pppbayestree/gnssNavigation/GnssData.h"
 #include "pppbayestree/gnssNavigation/GnssTools.h"
 #include "pppbayestree/gnssNavigation/PhaseFactor.h"

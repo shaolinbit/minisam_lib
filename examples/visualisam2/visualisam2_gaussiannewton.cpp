@@ -1,14 +1,14 @@
 #include <iostream>
 #include <Eigen/Core>
-#include "minisam/linear/NoiseModel.h"
-#include "minisam/nonlinear/NonlinearFactorGraph.h"
-#include "minisam/nonlinear/ISAM2.h"
-#include "minisam/geometry/Cal3_S2Stereo.h"
-#include "minisam/slam/PriorFactor.h"
-#include "minisam/slam/ProjectionFactor.h"
-#include "minisam/slam/PriorFactorPose3.h"
+#include "linear/NoiseModel.h"
+#include "nonlinear/NonlinearFactorGraph.h"
+#include "nonlinear/ISAM2.h"
+#include "geometry/Cal3_S2Stereo.h"
+#include "slam/PriorFactor.h"
+#include "slam/ProjectionFactor.h"
+#include "slam/PriorFactorPose3.h"
 #include "SFMdata.h"
-#include "minisam/gmfconfig.h"
+#include "gmfconfig.h"
 //#define GMF_Using_Pose3
 
 using namespace minisam;
