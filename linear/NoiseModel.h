@@ -66,7 +66,7 @@ class IsotropicNoiseModel;
  */
 class GaussianNoiseModel
 {
-protected:
+public:
     int dim_;
     bool isConstrained_; // default false
     bool isUnit_;        // default false
@@ -143,7 +143,7 @@ GaussianNoiseModel* GaussianNoiseModel_Covariance(
  */
 class DiagonalNoiseModel : public GaussianNoiseModel
 {
-protected:
+public:
     /**
     * Standard deviations (sigmas), their inverse and inverse square
     * (weights/precisions) These are all computed at construction: the idea is to

@@ -93,7 +93,6 @@ public:
     virtual bool active(const std::map<int, Eigen::VectorXd>& c /*c*/) const;
     //
     /** linearize to a GaussianFactor*/
-
     virtual RealGaussianFactor*
     linearizeVectorPointer(const std::map<int, Eigen::VectorXd>& c,int factorization) const;
     virtual RealGaussianFactor* linearizePosePointer(const std::map<int, Pose3>& x,int factorization) const;
