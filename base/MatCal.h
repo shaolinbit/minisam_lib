@@ -102,11 +102,8 @@ std::vector<int> getvectorfrom3keys(int key1,int key2,int key3);
 std::vector<int> getvectorfrom5keys(int key1,int key2,int key3,int key4,int key5);
 std::vector<int> getvectorfrom6keys(int key1,int key2,int key3,int key4,int key5,int key6);
 
-Eigen::VectorXd ComposeTwoVec3(const Eigen::Vector3d& v1,const Eigen::Vector3d& v2);
 
-Eigen::VectorXd Vec3ToVecX3(const Eigen::Vector3d& v);
 
-Eigen::MatrixXd Mat3ToMatX3(const Eigen::Matrix3d& v);
 
 };
 #endif // MATRIX_H_INCLUDED
