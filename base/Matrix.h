@@ -63,7 +63,7 @@ inline Eigen::Matrix3d skewSymmetric(double wx, double wy, double wz)
     return m3d;
 }
 
-inline Eigen::Matrix3d skewSymmetric(const Eigen::Vector3d w)
+inline Eigen::Matrix3d skewSymmetric(const Eigen::Vector3d& w)
 {
     return skewSymmetric(w(0), w(1), w(2));
 }
