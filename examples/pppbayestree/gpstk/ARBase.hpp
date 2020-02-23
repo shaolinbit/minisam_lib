@@ -2,7 +2,7 @@
 
 /**
  * @file ARBase.hpp
- * 
+ *
  */
 
 #ifndef GPSTK_ARBASE_HPP
@@ -35,51 +35,51 @@
 
 namespace gpstk
 {
-      /// New exception for Ambiguity Resolution
-   NEW_EXCEPTION_CLASS(ARException, Exception);
+/// New exception for Ambiguity Resolution
+NEW_EXCEPTION_CLASS(ARException, Exception);
 
 
-      /** This class ...
-       *
-       */
-   class ARBase   
-   {
-   public:
-      
-         /// Default constructor
-      ARBase(){}      
+/** This class ...
+ *
+ */
+class ARBase
+{
+public:
+
+    /// Default constructor
+    ARBase() {}
 
 
-         /// This method to get the convert matrix from SD ambiguity to DD 
-         /// ambiguity
-      virtual Matrix<double> sd2ddMatrix(const size_t& n, const size_t& i)
-         throw(ARException);
-      
+    /// This method to get the convert matrix from SD ambiguity to DD
+    /// ambiguity
+    virtual Matrix<double> sd2ddMatrix(const size_t& n, const size_t& i)
+    throw(ARException);
 
-         /// Compute float ambiguity by selection of the parameter weight method
-      virtual void computeFloatAmbiguity(const Matrix<double>& A, 
-                                         const Matrix<double>& B, 
-                                         const Matrix<double>& W,
-                                         const Vector<double>& y, 
-                                         Vector<double>& ambFloat,
-                                         Matrix<double>& ambCov,
-                                         double smFactor = 0.001)
-         throw(ARException);
 
-      
-         /// Integer Ambiguity Resolution method
-      virtual Vector<double> resolveIntegerAmbiguity( 
-                                              const Vector<double>& ambFloat, 
-                                              const Matrix<double>& ambCov ) =0;
-      
-         /// Destractor
-      virtual ~ARBase(){}
-      
-   protected:
-      
-         
-   };   // End of class 'ARBase'
-   
+    /// Compute float ambiguity by selection of the parameter weight method
+    virtual void computeFloatAmbiguity(const Matrix<double>& A,
+                                       const Matrix<double>& B,
+                                       const Matrix<double>& W,
+                                       const Vector<double>& y,
+                                       Vector<double>& ambFloat,
+                                       Matrix<double>& ambCov,
+                                       double smFactor = 0.001)
+    throw(ARException);
+
+
+    /// Integer Ambiguity Resolution method
+    virtual Vector<double> resolveIntegerAmbiguity(
+        const Vector<double>& ambFloat,
+        const Matrix<double>& ambCov ) =0;
+
+    /// Destractor
+    virtual ~ARBase() {}
+
+protected:
+
+
+};   // End of class 'ARBase'
+
 }   // End of namespace gpstk
 
 

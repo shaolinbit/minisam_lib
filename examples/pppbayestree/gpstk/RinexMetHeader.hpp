@@ -53,42 +53,42 @@
 
 namespace gpstk
 {
-  /** @addtogroup RinexMet */
-  //@{
+/** @addtogroup RinexMet */
+//@{
 
-      // forward declarations
-   struct sensorType;
+// forward declarations
+struct sensorType;
 
-   struct sensorPosType;
+struct sensorPosType;
 
-  /**
-   * This class models the RINEX MET header for a RINEX MET file.
-   * When writing data, this class determines what data gets written from
-   * a RinexMetData object to the RinexMetStream.
-   *
-   * @sa rinex_met_read_write.cpp for an example.
-   * @sa rinex_met_test.cpp for an example.
-   * @sa RinexMetHeader::obsTypeList for writing files.
-   * @sa RinexMetData and RinexMetStream.
-   */
-  class RinexMetHeader : public RinexMetBase
-  {
+/**
+ * This class models the RINEX MET header for a RINEX MET file.
+ * When writing data, this class determines what data gets written from
+ * a RinexMetData object to the RinexMetStream.
+ *
+ * @sa rinex_met_read_write.cpp for an example.
+ * @sa rinex_met_test.cpp for an example.
+ * @sa RinexMetHeader::obsTypeList for writing files.
+ * @sa RinexMetData and RinexMetStream.
+ */
+class RinexMetHeader : public RinexMetBase
+{
 
-  public:
+public:
 
     /// Enum for the different types of data in this file.
     enum RinexMetType
     {
-      PR, ///< Pressure (mbar)
-      TD, ///< Dry temperature (deg C)
-      HR, ///< Relative humidity (percent)
-      ZW, ///< Wet zenith path delay (mm)
-      ZD, ///< Dry component of zenith path delay (mm)
-      ZT, ///< Total zenith path delay (mm)
-      WD, ///< Wind azmiuth from where the wind blows (deg)
-      WS, ///< Wind speed (m/s)
-      RI, ///< "Rain increment": Rain accumulation since last measurement (1/10 mm)
-      HI  ///< Hail indicator non-zero: Hail detected since last mesaurement
+        PR, ///< Pressure (mbar)
+        TD, ///< Dry temperature (deg C)
+        HR, ///< Relative humidity (percent)
+        ZW, ///< Wet zenith path delay (mm)
+        ZD, ///< Dry component of zenith path delay (mm)
+        ZT, ///< Total zenith path delay (mm)
+        WD, ///< Wind azmiuth from where the wind blows (deg)
+        WS, ///< Wind speed (m/s)
+        RI, ///< "Rain increment": Rain accumulation since last measurement (1/10 mm)
+        HI  ///< Hail indicator non-zero: Hail detected since last mesaurement
     };
 
     /// Constructor
@@ -99,18 +99,21 @@ namespace gpstk
 
     // The next four lines is our common interface
     /// RinexMetHeader is a "header" so this function always returns true.
-    virtual bool isHeader(void) const {return true;}
+    virtual bool isHeader(void) const
+    {
+        return true;
+    }
 
     /// A debug function that outputs the header to \a s.
     virtual void dump(std::ostream& s) const;
 
     /// sets the obs type array given an obs type line
     static RinexMetType convertObsType(const std::string& oneObs)
-      throw(FFStreamError);
+    throw(FFStreamError);
 
     /// Converts a RinexMetType to its string equivalent.
     static std::string convertObsType(const RinexMetType& oneObs)
-      throw(FFStreamError);
+    throw(FFStreamError);
 
     /// Tell me, Am I valid?
     unsigned long valid;
@@ -118,54 +121,55 @@ namespace gpstk
     /// These are validity bits used in checking the RINEX MET header.
     enum validBits
     {
-      validVersion      = 0x01,   ///< Set if the RINEX version is valid.
-      validRunBy        = 0x02,   ///< Set if the Run-by value is valid.
-      validComment      = 0x04,   ///< Set if the comments are valid. Very subjective...
-      validMarkerName   = 0x08,   ///< Set if the Marker Name is valid.
-      validMarkerNumber = 0x010,  ///< Set if the Marker Number is valid.
-      validObsType      = 0x020,  ///< Set if Num/Types of Obs is valid.
-      validSensorType   = 0x040,  ///< Set if Sensor Mod/Type/Acc is valid.
-      validSensorPos    = 0x080,  ///< Set if Sensor position is valid.
+        validVersion      = 0x01,   ///< Set if the RINEX version is valid.
+        validRunBy        = 0x02,   ///< Set if the Run-by value is valid.
+        validComment      = 0x04,   ///< Set if the comments are valid. Very subjective...
+        validMarkerName   = 0x08,   ///< Set if the Marker Name is valid.
+        validMarkerNumber = 0x010,  ///< Set if the Marker Number is valid.
+        validObsType      = 0x020,  ///< Set if Num/Types of Obs is valid.
+        validSensorType   = 0x040,  ///< Set if Sensor Mod/Type/Acc is valid.
+        validSensorPos    = 0x080,  ///< Set if Sensor position is valid.
 
-      validEoH = 0x080000000,     ///< Set if the end of header is valid.
+        validEoH = 0x080000000,     ///< Set if the end of header is valid.
 
-      /// This bitset checks that all required header items are
-      /// available for a Rinex2.0 file.
-      allValid20  = 0x0800000EB,
-      /// This bitset checks that all required header items are
-      /// available for a Rinex2.1 file.
-      allValid21  = 0x0800000EB,
-      /// This bitset checks that all required header items are
-      /// available for a Rinex2.11 file.
-      allValid211 = 0x0800000EB
+        /// This bitset checks that all required header items are
+        /// available for a Rinex2.0 file.
+        allValid20  = 0x0800000EB,
+        /// This bitset checks that all required header items are
+        /// available for a Rinex2.1 file.
+        allValid21  = 0x0800000EB,
+        /// This bitset checks that all required header items are
+        /// available for a Rinex2.11 file.
+        allValid211 = 0x0800000EB
     };
 
     static inline std::string bitsAsString(validBits b)
     {
-      switch (b)
-      {
+        switch (b)
+        {
         case validVersion:
-          return stringVersion;
+            return stringVersion;
         case validRunBy:
-          return stringRunBy;
+            return stringRunBy;
         case validComment:
-          return stringComment;
+            return stringComment;
         case validMarkerName:
-          return stringMarkerName;
+            return stringMarkerName;
         case validMarkerNumber:
-          return stringMarkerNumber;
+            return stringMarkerNumber;
         case validObsType:
-          return stringObsType;
+            return stringObsType;
         case validSensorType:
-          return stringSensorType;
+            return stringSensorType;
         case validSensorPos:
-          return stringSensorPos;
+            return stringSensorPos;
         case validEoH:
-          return stringEoH;
-		default: break; //NB Determine if additional enumeration values need to be handled
-      }
+            return stringEoH;
+        default:
+            break; //NB Determine if additional enumeration values need to be handled
+        }
 
-      return "*UNKNOWN/INVALID BITS*";
+        return "*UNKNOWN/INVALID BITS*";
     }
 
     /* @return a string composed the RINEX header strings
@@ -221,12 +225,12 @@ namespace gpstk
     static const std::string stringEoH;           ///< "END OF HEADER"
     //@}
 
-  protected:
+protected:
 
-  /// Writes the RINEX Met header to the stream \a s.
+    /// Writes the RINEX Met header to the stream \a s.
     virtual void reallyPutRecord(FFStream& s) const
-      throw(std::exception, FFStreamError,
-            gpstk::StringUtils::StringException);
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException);
 
     /**
      * This function reads the RINEX MET header from the given FFStream.
@@ -238,34 +242,34 @@ namespace gpstk
      *  stream to its pre-read position.
      */
     virtual void reallyGetRecord(FFStream& s)
-      throw(std::exception, FFStreamError,
-            gpstk::StringUtils::StringException);
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException);
 
-  }; // class RinexMetHeader
+}; // class RinexMetHeader
 
-  /// Struct for holding information about a sensor
-   struct sensorType
-   {
-      std::string model;    ///< The manufacturer of the sensor.
-      std::string type;     ///< The specific type of sensor.
-      double accuracy;      ///< The accuracy of the sensor.
-      RinexMetHeader::RinexMetType obsType; ///< The obs type this sensor corresponds to.
-   };
+/// Struct for holding information about a sensor
+struct sensorType
+{
+    std::string model;    ///< The manufacturer of the sensor.
+    std::string type;     ///< The specific type of sensor.
+    double accuracy;      ///< The accuracy of the sensor.
+    RinexMetHeader::RinexMetType obsType; ///< The obs type this sensor corresponds to.
+};
 
-   /// Struct for holding info about a sensor position
-   struct sensorPosType
-   {
-     /**
-      * XYZ and height of sensor coordinates.  Use ITRF or WGS-84 coordinates.
-      */
-      gpstk::Triple position;
-      double height;
-      /// The obs type of the sensor this position corresponds to.
-      RinexMetHeader::RinexMetType obsType;
-   };
+/// Struct for holding info about a sensor position
+struct sensorPosType
+{
+    /**
+     * XYZ and height of sensor coordinates.  Use ITRF or WGS-84 coordinates.
+     */
+    gpstk::Triple position;
+    double height;
+    /// The obs type of the sensor this position corresponds to.
+    RinexMetHeader::RinexMetType obsType;
+};
 
 
-  //@}
+//@}
 
 } // namespace
 

@@ -27,7 +27,7 @@
  * @throw std::invalid_argument if no matching file could be found using the
  * search process described above.
  */
-std::string findExampleDataFile(const std::string& name);
+std::string findExampleDataFile(const std::string& name,const std::string& path=NULL);
 
 
 

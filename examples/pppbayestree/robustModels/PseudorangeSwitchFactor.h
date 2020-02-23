@@ -14,53 +14,60 @@
 
 using namespace std;
 
-namespace minisam {
+namespace minisam
+{
 
 class  PseudorangeSwitchFactor: public NoiseModelFactor2
 {
 private:
-  typedef NoiseModelFactor2  Base;
-  double measured_;
-  gnssStateVec h_;
+    typedef NoiseModelFactor2  Base;
+    double measured_;
+    minivector* h_;
 
 public:
 
-  typedef PseudorangeSwitchFactor This;
+    typedef PseudorangeSwitchFactor This;
 
-  PseudorangeSwitchFactor(): measured_(0) {
-  h_.resize(5);
-  h_<<1,1,1,1,1;
-
-   }
-
-  virtual ~PseudorangeSwitchFactor() {}
-
-  double measured()
-{
-  return measured_;
-}
-
-Eigen::VectorXd h()
-{
-  return h_;
-}
+    PseudorangeSwitchFactor(): measured_(0),h_(new gnssStateVec(1.0,1.0,1.0,1.0,1.0))
+    {
 
 
-  PseudorangeSwitchFactor(int j, int k, const double deltaObs, const Eigen::VectorXd& obsMap, GaussianNoiseModel* model):
-    Base(model, j,k), measured_(deltaObs) {h_=gnssStateVec(obsMap);}
+    }
 
-  virtual NonlinearFactor* clone()  {
-    PseudorangeSwitchFactor* npsf=new PseudorangeSwitchFactor(key1(),key2(),measured(),h(),noiseModel());
-    return npsf;
-}
+    virtual ~PseudorangeSwitchFactor() {
+    delete h_;
+    }
+
+    double measured()
+    {
+        return measured_;
+    }
+
+    minivector* h()
+    {
+        return h_;
+    }
 
 
-  /// vector of errors
+    PseudorangeSwitchFactor(int j, int k, const double deltaObs, minivector* obsMap, GaussianNoiseModel* model):
+        Base(model, j,k), measured_(deltaObs),h_(obsMap)
+    {
+    
+    }
 
-        Eigen::VectorXd evaluateError(const Eigen::VectorXd & q,
-      const Eigen::VectorXd & s) const;//SwitchVariableLinear is a double type.
-        Eigen::VectorXd evaluateError(const Eigen::VectorXd & q,
-      const Eigen::VectorXd & s,Eigen::MatrixXd& H1,Eigen::MatrixXd& H2) const;//SwitchVariableLinear is a double type.
+    virtual NoiseModelFactor* clone()
+    {
+        PseudorangeSwitchFactor* npsf=new PseudorangeSwitchFactor(key1(),key2(),measured(),h(),noiseModel());
+        return npsf;
+    }
+
+
+    /// vector of errors
+
+    virtual minivector evaluateError(const minimatrix* q,
+                             const minimatrix* s) const;//SwitchVariableLinear is a double type.
+    virtual minivector evaluateError(const minimatrix* q,
+                             const minimatrix* s,minimatrix& H1,minimatrix& H2) const;//SwitchVariableLinear is a double type.
 
 
 

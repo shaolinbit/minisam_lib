@@ -2,7 +2,7 @@
 
 /**
  * @file ARSimple.hpp
- * 
+ *
  */
 
 #ifndef GPSTK_ARSIMPLE_HPP
@@ -34,30 +34,30 @@
 
 namespace gpstk
 {
-      /** This class resolve integer ambiguity by simply round  the float 
-       *  ambiguities to the nearest integers.
-       */
-   class ARSimple   
-   {
-   public:
-      
-         /// Default constructor
-      ARSimple(){}      
-      
-         /// Integer Ambiguity Resolution method
-      virtual Vector<double> resolveIntegerAmbiguity( 
-                                               const Vector<double>& ambFloat, 
-                                               const Matrix<double>& ambCov )
-         throw(ARException);
-      
-         /// Destructor
-      virtual ~ARSimple(){}
-      
-   protected:
-      
-         
-   };   // End of class 'ARSimple'
-   
+/** This class resolve integer ambiguity by simply round  the float
+ *  ambiguities to the nearest integers.
+ */
+class ARSimple
+{
+public:
+
+    /// Default constructor
+    ARSimple() {}
+
+    /// Integer Ambiguity Resolution method
+    virtual Vector<double> resolveIntegerAmbiguity(
+        const Vector<double>& ambFloat,
+        const Matrix<double>& ambCov )
+    throw(ARException);
+
+    /// Destructor
+    virtual ~ARSimple() {}
+
+protected:
+
+
+};   // End of class 'ARSimple'
+
 }   // End of namespace gpstk
 
 

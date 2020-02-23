@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -51,52 +51,52 @@ using namespace gpstk::StringUtils;
 using namespace std;
 namespace gpstk
 {
-   //-----------------------------------------------------------------------------
-   //-----------------------------------------------------------------------------
-   void RinexEphemerisStore::loadFile(const std::string& filename)
-      throw(FileMissingException)
-   {
-      try
-      {
-         RinexNavStream strm(filename.c_str());
-	 if (strm.is_open())
-	 {
-	   RinexNavHeader header;
-	   strm >> header;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void RinexEphemerisStore::loadFile(const std::string& filename)
+throw(FileMissingException)
+{
+    try
+    {
+        RinexNavStream strm(filename.c_str());
+        if (strm.is_open())
+        {
+            RinexNavHeader header;
+            strm >> header;
 
-	   addFile(filename, header);
-	   
-	   RinexNavData rec;
-	   while(strm >> rec)
-	     addEphemeris(rec);
+            addFile(filename, header);
 
-	 }
-	 else
-	 {
-	   FileMissingException e("File " + filename + " could not be opened.");
-	   GPSTK_THROW(e);
-	 }
-      }
-      catch (gpstk::Exception& e)
-      {
-	GPSTK_RETHROW(e);
-      }
-   }  // end RinexEphemerisStore::load
+            RinexNavData rec;
+            while(strm >> rec)
+                addEphemeris(rec);
+
+        }
+        else
+        {
+            FileMissingException e("File " + filename + " could not be opened.");
+            GPSTK_THROW(e);
+        }
+    }
+    catch (gpstk::Exception& e)
+    {
+        GPSTK_RETHROW(e);
+    }
+}  // end RinexEphemerisStore::load
 
 
-   //--------------------------------------------------------------------------
-   //--------------------------------------------------------------------------
-   void RinexEphemerisStore::dump(std::ostream& s, short detail)
-      const throw()
-   {
-      s << "Dump of RinexEphemerisStore:" << std::endl;
-      std::vector<std::string> fileNames = getFileNames();
-      std::vector<std::string>::const_iterator f=fileNames.begin();
-      for (f=fileNames.begin(); f!=fileNames.end(); f++)
-         s << *f << std::endl;
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+void RinexEphemerisStore::dump(std::ostream& s, short detail)
+const throw()
+{
+    s << "Dump of RinexEphemerisStore:" << std::endl;
+    std::vector<std::string> fileNames = getFileNames();
+    std::vector<std::string>::const_iterator f=fileNames.begin();
+    for (f=fileNames.begin(); f!=fileNames.end(); f++)
+        s << *f << std::endl;
 
-      GPSEphemerisStore::dump(s, detail);
+    GPSEphemerisStore::dump(s, detail);
 
-   } // end of RinexEphemerisStore::dump
+} // end of RinexEphemerisStore::dump
 
 }  // namespace gpstk

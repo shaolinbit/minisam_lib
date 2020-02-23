@@ -1,25 +1,12 @@
 #ifndef HESSIANFACTOR_H
 #define HESSIANFACTOR_H
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    HessianFactor.h
  * @brief   Contains the HessianFactor class, a general quadratic factor
- * @author  Richard Roberts
- * @date    Dec 8, 2010
  */
 #include "../linear/RealGaussianFactor.h"
 #include "../linear/Scatter.h"
-#include "../base/SVBlockMatrix.h"
+#include "../mat/GaussianBlockMatrix.h"
 namespace minisam
 {
 
@@ -103,15 +90,15 @@ public:
      * error is:
      * 0.5*(f - 2*x'*g + x'*G*x)
      */
-    HessianFactor(int j, const Eigen::MatrixXd& G, const Eigen::VectorXd& g, double f);
+    HessianFactor(int j, const minimatrix& G, const minivector& g, double f);
 
     /** Construct a unary factor, given a mean and covariance matrix.
      * error is 0.5*(x-mu)'*inv(Sigma)*(x-mu)
     */
-    HessianFactor(int j, const Eigen::VectorXd& mu, const Eigen::MatrixXd& Sigma);
+    HessianFactor(int j, const minivector& mu, const minimatrix& Sigma);
 
-    HessianFactor(const std::vector<std::pair<int, Eigen::MatrixXd>> &terms,
-                  const Eigen::VectorXd &b);
+    HessianFactor(const std::vector<std::pair<int, minimatrix>> &terms,
+                  const minivector &b);
 
     /** Combine a set of factors into a single dense HessianFactor */
     explicit HessianFactor(const GaussianFactorGraph& factors,Scatter& scatter);
@@ -139,28 +126,28 @@ public:
      * @param j Which block row to get, as an iterator pointing to the slot in this factor.  You can
      * use, for example, begin() + 2 to get the 3rd variable in this factor.
      * @return The linear term \f$ g \f$ */
-    Eigen::Block<const Eigen::MatrixXd>  linearTerm(std::vector<int>::const_iterator j) const;
+    minivector  linearTerm(std::vector<int>::const_iterator j) const;
 
 
     /** Return the complete linear term \f$ g \f$ as described above.
      * @return The linear term \f$ g \f$ */
-    Eigen::Block<const Eigen::MatrixXd>  linearTerm() const;
+    minivector  linearTerm() const;
     /** Return the complete linear term \f$ g \f$ as described above.
      * @return The linear term \f$ g \f$ */
-    Eigen::Block<Eigen::MatrixXd> linearTerm();
+    minivector& linearTerm();
 
     //S
     /// Return underlying information matrix.
-    const SVBlockMatrix& info() const;
+    //GaussianBlockMatrix info() const;
 
     //S
     /// Return non-const information matrix.
-    SVBlockMatrix& info();
+    GaussianBlockMatrix& info();
     /// Return self-adjoint view onto the information matrix (NOT augmented).
-    Eigen::SelfAdjointView<Eigen::Block<const Eigen::MatrixXd>, Eigen::Upper> informationView() const;
+     minimatrix informationView() const;
 
     /// Solve the system A'*A delta = A'*b in-place, return delta as std::map<int,Eigen::VectorXd>
-    std::map<int,Eigen::VectorXd> solve();
+    std::map<int,minivector> solve();
 
 public:
 
@@ -172,7 +159,7 @@ public:
 
 };
 
-void _FromJacobianHelper(const RealGaussianFactor& jf,SVBlockMatrix& info);
+void _FromJacobianHelper(const RealGaussianFactor& jf,GaussianBlockMatrix& info);
 
 };
 

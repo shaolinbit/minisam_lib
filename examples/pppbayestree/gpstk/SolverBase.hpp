@@ -40,53 +40,55 @@
 namespace gpstk
 {
 
-      /// Thrown when some problem appeared when solving a given
-      /// equation set
-      /// @ingroup exceptiongroup
-   NEW_EXCEPTION_CLASS(InvalidSolver, gpstk::Exception);
+/// Thrown when some problem appeared when solving a given
+/// equation set
+/// @ingroup exceptiongroup
+NEW_EXCEPTION_CLASS(InvalidSolver, gpstk::Exception);
 
 
-      /** @addtogroup GPSsolutions */
-      /// @ingroup math
-      //@{
+/** @addtogroup GPSsolutions */
+/// @ingroup math
+//@{
 
-      /**
-       * Abstract base class for solver algorithms.
-       */
-   class SolverBase
-   {
-   public:
-
-
-         /// Implicit constructor
-      SolverBase() : valid(false) {};
-
-         /// Return validity of results
-      bool isValid(void)
-      { return valid; }
-
-         /// Solution
-      Vector<double> solution;
-
-         /// Postfit-residuals.
-      Vector<double> postfitResiduals;
-
-         /// Covariance matrix
-      Matrix<double> covMatrix;
-
-         /// Destructor
-      virtual ~SolverBase() {};
+/**
+ * Abstract base class for solver algorithms.
+ */
+class SolverBase
+{
+public:
 
 
-   protected:
+    /// Implicit constructor
+    SolverBase() : valid(false) {};
+
+    /// Return validity of results
+    bool isValid(void)
+    {
+        return valid;
+    }
+
+    /// Solution
+    Vector<double> solution;
+
+    /// Postfit-residuals.
+    Vector<double> postfitResiduals;
+
+    /// Covariance matrix
+    Matrix<double> covMatrix;
+
+    /// Destructor
+    virtual ~SolverBase() {};
 
 
-        bool valid;         // true only if results are valid
+protected:
 
 
-   }; // End of class 'SolverBase'
+    bool valid;         // true only if results are valid
 
-      //@}
+
+}; // End of class 'SolverBase'
+
+//@}
 
 }  // End of namespace gpstk
 #endif   // SOLVERBASE_HPP

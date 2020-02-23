@@ -7,26 +7,17 @@ class ISAM2Data
 {
 public:
     /** The current linearization point */
-    std::map<int,Eigen::VectorXd> theta_;
-    std::map<int,Eigen::VectorXd> resulttheta_;
+    std::map<int,minimatrix*> theta_;
+    std::map<int,minimatrix*> resulttheta_;
+    std::map<int,minivector> delta_;
 
-#ifdef GMF_Using_Pose3
-    std::map<int,Pose3> thetaPose_;
-    std::map<int,Pose3> resultPose_;
-#else
-    std::map<int,Pose2> thetaPose_;
-    std::map<int,Pose2> resultPose_;
-#endif // GMF_Using_Pose3
-
-    std::map<int,Eigen::VectorXd> delta_;
-
-    mutable std::map<int,Eigen::VectorXd> deltaNewton_; // Only used when using Dogleg - stores the Gauss-Newton update
-    mutable std::map<int,Eigen::VectorXd> RgProd_; // Only used when using Dogleg - stores R*g and is updated incrementally
+    mutable std::map<int,minivector> deltaNewton_; // Only used when using Dogleg - stores the Gauss-Newton update
+    mutable std::map<int,minivector> RgProd_; // Only used when using Dogleg - stores R*g and is updated incrementally
     NonlinearFactorGraph nonlinearFactors_;
     /** The current linear factors, which are only updated as needed */
     mutable GaussianFactorGraph linearFactors_;
     VariableIndex variableIndex_;
-    mutable std::set<int> deltaReplacedMask_; // TODO: Make sure accessed in the right way
+    mutable std::set<int> deltaReplacedMask_;
     /** Set of variables that are involved with linear factors from marginalized
      * variables and thus cannot have their linearization points changed. */
     std::set<int> fixedVariables_;
@@ -34,7 +25,7 @@ public:
     ~ISAM2Data();
 
     void clearfactors();
-    void clearpose();
+    void clearvalues();
 };
 
 };

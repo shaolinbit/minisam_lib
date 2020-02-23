@@ -38,83 +38,83 @@ namespace gpstk
 {
 
 
-      /* Computes the probability density function
-       *
-       * @param x    Value
-       */
-   double Chi2Distribution::pdf(double x)
-   {
+/* Computes the probability density function
+ *
+ * @param x    Value
+ */
+double Chi2Distribution::pdf(double x)
+{
 
-      if( x <= 0.0 )
-      {
-         return (0.0);
-      }
+    if( x <= 0.0 )
+    {
+        return (0.0);
+    }
 
-         // Compute ndf/2
-      double khalf( static_cast<double>(ndf) / 2.0 );
+    // Compute ndf/2
+    double khalf( static_cast<double>(ndf) / 2.0 );
 
-         // Compute the natural logarithm of terms
-      double t1( -0.69314718055994529 * khalf );
-      double t2( -lngamma( khalf ) );
-      double t3( ( khalf - 1.0 ) * log(x) );
-      double t4( - x / 2.0 );
+    // Compute the natural logarithm of terms
+    double t1( -0.69314718055994529 * khalf );
+    double t2( -lngamma( khalf ) );
+    double t3( ( khalf - 1.0 ) * log(x) );
+    double t4( - x / 2.0 );
 
-      return ( exp( t1 + t2 + t3 + t4 ) );
+    return ( exp( t1 + t2 + t3 + t4 ) );
 
-   }  // End of method 'Chi2Distribution::pdf()'
-
-
-
-      /* Computes the cumulative distribution function
-       *
-       * @param x    Value
-       */
-   double Chi2Distribution::cdf(double x)
-   {
-
-
-      if( x <= 0.0 )
-      {
-         return (0.0);
-      }
-
-         // Compute ndf/2
-      double khalf( static_cast<double>(ndf) / 2.0 );
-
-      return ( gammaP( khalf, (x/2.0) ) );
-
-   }  // End of method 'Chi2Distribution::cdf()'
+}  // End of method 'Chi2Distribution::pdf()'
 
 
 
-      /* Set the number of degrees of freedom.
-       *
-       * @param n       Degrees of freedom
-       *
-       * \warning "n" must be > 0.0, otherwise n = |n|.
-       */
-   Chi2Distribution& Chi2Distribution::setNDF(int n)
-      throw(InvalidParameter)
-   {
+/* Computes the cumulative distribution function
+ *
+ * @param x    Value
+ */
+double Chi2Distribution::cdf(double x)
+{
 
-      if( n == 0 )
-      {
-         InvalidParameter e( "Invalid value for NDF." );
-         GPSTK_THROW(e);
-      }
 
-      if( n < 0 )
-      {
-         ndf = -n;
-      }
-      else
-      {
-         ndf = n;
-      }
+    if( x <= 0.0 )
+    {
+        return (0.0);
+    }
 
-      return (*this);
+    // Compute ndf/2
+    double khalf( static_cast<double>(ndf) / 2.0 );
 
-   }  // End of method 'Chi2Distribution::setNDF()'
+    return ( gammaP( khalf, (x/2.0) ) );
+
+}  // End of method 'Chi2Distribution::cdf()'
+
+
+
+/* Set the number of degrees of freedom.
+ *
+ * @param n       Degrees of freedom
+ *
+ * \warning "n" must be > 0.0, otherwise n = |n|.
+ */
+Chi2Distribution& Chi2Distribution::setNDF(int n)
+throw(InvalidParameter)
+{
+
+    if( n == 0 )
+    {
+        InvalidParameter e( "Invalid value for NDF." );
+        GPSTK_THROW(e);
+    }
+
+    if( n < 0 )
+    {
+        ndf = -n;
+    }
+    else
+    {
+        ndf = n;
+    }
+
+    return (*this);
+
+}  // End of method 'Chi2Distribution::setNDF()'
 
 
 

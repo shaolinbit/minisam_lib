@@ -54,104 +54,106 @@
 
 namespace gpstk
 {
-   /** @addtogroup Rinex3Obs */
-   //@{
+/** @addtogroup Rinex3Obs */
+//@{
 
-   /**
-      * This class reads RINEX 3 Obs files.
-      *
-      * @sa Rinex3ObsData and Rinex3ObsHeader.
-      */
+/**
+   * This class reads RINEX 3 Obs files.
+   *
+   * @sa Rinex3ObsData and Rinex3ObsHeader.
+   */
 
-   class Rinex3ObsStream : public FFTextStream
-   {
-   public:
+class Rinex3ObsStream : public FFTextStream
+{
+public:
 
-      /// Default constructor
-      Rinex3ObsStream()
-         : headerRead(false), timesystem(TimeSystem::GPS)
-            {};
-
-
-      /** Common constructor.
-       *
-       * @param fn the RINEX file to open
-       * @param mode how to open \a fn.
-       */
-      Rinex3ObsStream( const char* fn,
-                        std::ios::openmode mode = std::ios::in )
-         : FFTextStream(fn, mode), headerRead(false), timesystem(TimeSystem::GPS)
-         {};
+    /// Default constructor
+    Rinex3ObsStream()
+        : headerRead(false), timesystem(TimeSystem::GPS)
+    {};
 
 
-      /** Common constructor.
-       *
-       * @param fn the RINEX file to open
-       * @param mode how to open \a fn.
-       */
-      Rinex3ObsStream( const std::string fn,
-                        std::ios::openmode mode = std::ios::in )
-         : FFTextStream(fn.c_str(), mode), headerRead(false),
-           timesystem(TimeSystem::GPS)
-         {};
+    /** Common constructor.
+     *
+     * @param fn the RINEX file to open
+     * @param mode how to open \a fn.
+     */
+    Rinex3ObsStream( const char* fn,
+                     std::ios::openmode mode = std::ios::in )
+        : FFTextStream(fn, mode), headerRead(false), timesystem(TimeSystem::GPS)
+    {};
 
 
-      /// Destructor
-      virtual ~Rinex3ObsStream() {};
+    /** Common constructor.
+     *
+     * @param fn the RINEX file to open
+     * @param mode how to open \a fn.
+     */
+    Rinex3ObsStream( const std::string fn,
+                     std::ios::openmode mode = std::ios::in )
+        : FFTextStream(fn.c_str(), mode), headerRead(false),
+          timesystem(TimeSystem::GPS)
+    {};
 
 
-      /** Overrides open to reset the header
-       *
-       * @param fn the RINEX file to open
-       * @param mode how to open \a fn.
-       */
-      virtual void open( const char* fn,
-                           std::ios::openmode mode )
-      {
-         FFTextStream::open(fn, mode);
-         headerRead = false;
-         header = Rinex3ObsHeader();
-         timesystem = TimeSystem::GPS;
-      }
+    /// Destructor
+    virtual ~Rinex3ObsStream() {};
 
 
-      /** Overrides open to reset the header
-       *
-       * @param fn the RINEX 3 file to open
-       * @param mode how to open \a fn.
-       */
-      virtual void open( const std::string& fn,
-                        std::ios::openmode mode )
-         { open(fn.c_str(), mode); };
+    /** Overrides open to reset the header
+     *
+     * @param fn the RINEX file to open
+     * @param mode how to open \a fn.
+     */
+    virtual void open( const char* fn,
+                       std::ios::openmode mode )
+    {
+        FFTextStream::open(fn, mode);
+        headerRead = false;
+        header = Rinex3ObsHeader();
+        timesystem = TimeSystem::GPS;
+    }
 
-      /// Whether or not the Rinex3ObsHeader has been read
-      bool headerRead;
 
-      /// The header for this file.
-      Rinex3ObsHeader header;
+    /** Overrides open to reset the header
+     *
+     * @param fn the RINEX 3 file to open
+     * @param mode how to open \a fn.
+     */
+    virtual void open( const std::string& fn,
+                       std::ios::openmode mode )
+    {
+        open(fn.c_str(), mode);
+    };
 
-      /// Time system for epochs in this file
-      TimeSystem timesystem;
+    /// Whether or not the Rinex3ObsHeader has been read
+    bool headerRead;
 
-      /// Check if the input stream is the kind of Rinex3ObsStream
-      static bool IsRinex3ObsStream(std::istream& i)
-      {
-         try
-         {
+    /// The header for this file.
+    Rinex3ObsHeader header;
+
+    /// Time system for epochs in this file
+    TimeSystem timesystem;
+
+    /// Check if the input stream is the kind of Rinex3ObsStream
+    static bool IsRinex3ObsStream(std::istream& i)
+    {
+        try
+        {
             Rinex3ObsStream& r = dynamic_cast<Rinex3ObsStream&>(i);
 #pragma unused(r)
-         }
-         catch(...)
-         {
+        }
+        catch(...)
+        {
             return false;
-         }
+        }
 
-         return true;
-      }
+        return true;
+    }
 
-   }; // class 'Rinex3ObsStream'
+}; // class 'Rinex3ObsStream'
 
-   //@} doxygen code block
+//@} doxygen code block
 
 } // namespace gpstk
 

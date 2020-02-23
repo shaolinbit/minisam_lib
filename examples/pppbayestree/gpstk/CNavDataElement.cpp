@@ -49,151 +49,181 @@
 
 namespace gpstk
 {
-   using namespace std;
-   using namespace gpstk;
+using namespace std;
+using namespace gpstk;
 
-   CNavDataElement::CNavDataElement()
-      :dataLoadedFlag(false),
-       ctEpoch(CommonTime::BEGINNING_OF_TIME),
-       ctXmit(CommonTime::BEGINNING_OF_TIME)
-   {
-      ctEpoch.setTimeSystem(TimeSystem::GPS);
-      ctXmit.setTimeSystem(TimeSystem::GPS);
-      dataLoadedFlag = false;
-   }
+CNavDataElement::CNavDataElement()
+    :dataLoadedFlag(false),
+     ctEpoch(CommonTime::BEGINNING_OF_TIME),
+     ctXmit(CommonTime::BEGINNING_OF_TIME)
+{
+    ctEpoch.setTimeSystem(TimeSystem::GPS);
+    ctXmit.setTimeSystem(TimeSystem::GPS);
+    dataLoadedFlag = false;
+}
 
-   bool CNavDataElement::dataLoaded() const
-   {
-      return(dataLoadedFlag);
-   }
+bool CNavDataElement::dataLoaded() const
+{
+    return(dataLoadedFlag);
+}
 
-   void CNavDataElement::shortcut(ostream & os, const long HOW )
-   {
-      short DOW, hour, min, sec;
-      long SOD, SOW;
-      short SOH;
+void CNavDataElement::shortcut(ostream & os, const long HOW )
+{
+    short DOW, hour, min, sec;
+    long SOD, SOW;
+    short SOH;
 
-      SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / SEC_PER_DAY );
-      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
-      hour = static_cast<short>( SOD/3600 );
+    SOW = static_cast<long>( HOW );
+    DOW = static_cast<short>( SOW / SEC_PER_DAY );
+    SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
+    hour = static_cast<short>( SOD/3600 );
 
-      SOH = static_cast<short>( SOD - (hour*3600) );
-      min = SOH/60;
+    SOH = static_cast<short>( SOD - (hour*3600) );
+    min = SOH/60;
 
-      sec = SOH - min * 60;
-      switch (DOW)
-      {
-         case 0: os << "Sun-0"; break;
-         case 1: os << "Mon-1"; break;
-         case 2: os << "Tue-2"; break;
-         case 3: os << "Wed-3"; break;
-         case 4: os << "Thu-4"; break;
-         case 5: os << "Fri-5"; break;
-         case 6: os << "Sat-6"; break;
-         default: break;
-      }
+    sec = SOH - min * 60;
+    switch (DOW)
+    {
+    case 0:
+        os << "Sun-0";
+        break;
+    case 1:
+        os << "Mon-1";
+        break;
+    case 2:
+        os << "Tue-2";
+        break;
+    case 3:
+        os << "Wed-3";
+        break;
+    case 4:
+        os << "Thu-4";
+        break;
+    case 5:
+        os << "Fri-5";
+        break;
+    case 6:
+        os << "Sat-6";
+        break;
+    default:
+        break;
+    }
 
-      os << ":" << setfill('0')
-         << setw(2) << hour
-         << ":" << setw(2) << min
-         << ":" << setw(2) << sec
-         << setfill(' ');
-   }
+    os << ":" << setfill('0')
+       << setw(2) << hour
+       << ":" << setw(2) << min
+       << ":" << setw(2) << sec
+       << setfill(' ');
+}
 
 
-   void CNavDataElement::timeDisplay( ostream & os, const CommonTime& t )
-   {
-      os.setf(ios::dec, ios::basefield);
-         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      GPSWeekSecond dummyTime;
-      dummyTime = GPSWeekSecond(t);
-      os << setw(4) << dummyTime.week << "(";
-      os << setw(4) << (dummyTime.week & 0x03FF) << ")  ";
-      os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
+void CNavDataElement::timeDisplay( ostream & os, const CommonTime& t )
+{
+    os.setf(ios::dec, ios::basefield);
+    // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
+    GPSWeekSecond dummyTime;
+    dummyTime = GPSWeekSecond(t);
+    os << setw(4) << dummyTime.week << "(";
+    os << setw(4) << (dummyTime.week & 0x03FF) << ")  ";
+    os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
 
-      switch (dummyTime.getDayOfWeek())
-      {
-         case 0: os << "Sun-0"; break;
-         case 1: os << "Mon-1"; break;
-         case 2: os << "Tue-2"; break;
-         case 3: os << "Wed-3"; break;
-         case 4: os << "Thu-4"; break;
-         case 5: os << "Fri-5"; break;
-         case 6: os << "Sat-6"; break;
-         default: break;
-      }
-      os << printTime(t,"   %3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
-   }
+    switch (dummyTime.getDayOfWeek())
+    {
+    case 0:
+        os << "Sun-0";
+        break;
+    case 1:
+        os << "Mon-1";
+        break;
+    case 2:
+        os << "Tue-2";
+        break;
+    case 3:
+        os << "Wed-3";
+        break;
+    case 4:
+        os << "Thu-4";
+        break;
+    case 5:
+        os << "Fri-5";
+        break;
+    case 6:
+        os << "Sat-6";
+        break;
+    default:
+        break;
+    }
+    os << printTime(t,"   %3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
+}
 
-   void CNavDataElement::dump(ostream& s) const
-      throw( InvalidRequest )
-   {
-      dumpHeader(s);
-      dumpBody(s);
-      dumpFooter(s);
-   }
+void CNavDataElement::dump(ostream& s) const
+throw( InvalidRequest )
+{
+    dumpHeader(s);
+    dumpBody(s);
+    dumpFooter(s);
+}
 
-   void CNavDataElement::dumpHeader(ostream& s) const
-      throw( InvalidRequest )
-   {
-      s << "****************************************************************"
-        << "************" << endl
-        << "Broadcast Data (Engineering Units) - " << getNameLong();
-      s << endl;
+void CNavDataElement::dumpHeader(ostream& s) const
+throw( InvalidRequest )
+{
+    s << "****************************************************************"
+      << "************" << endl
+      << "Broadcast Data (Engineering Units) - " << getNameLong();
+    s << endl;
 
-      SVNumXRef svNumXRef;
-      int NAVSTARNum = 0;
+    SVNumXRef svNumXRef;
+    int NAVSTARNum = 0;
 
-      s << endl;
-      s << "PRN : " << setw(2) << satID.id << " / "
-        << "SVN : " << setw(2);
-      try
-      {
-         NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctXmit );
-         s << NAVSTARNum << "  ";
-      }
-      catch(NoNAVSTARNumberFound)
-      {
-         s << "XX";
-      }
-      s << endl
-        << endl;
-      ios::fmtflags oldFlags = s.flags();
+    s << endl;
+    s << "PRN : " << setw(2) << satID.id << " / "
+      << "SVN : " << setw(2);
+    try
+    {
+        NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctXmit );
+        s << NAVSTARNum << "  ";
+    }
+    catch(NoNAVSTARNumberFound)
+    {
+        s << "XX";
+    }
+    s << endl
+      << endl;
+    ios::fmtflags oldFlags = s.flags();
 #pragma unused(oldFlags)
-       
-      s.setf(ios::fixed, ios::floatfield);
-      s.setf(ios::right, ios::adjustfield);
-      s.setf(ios::uppercase);
-      s.precision(0);
-      s.fill(' ');
 
-      s << endl;
-      s << "           TIMES OF INTEREST"
-        << endl << endl;
-      s << "              Week(10bt)     SOW     DOW   UTD     SOD"
-        << "   MM/DD/YYYY   HH:MM:SS\n";
-      s << "Transmit Time:";
-      timeDisplay(s, ctXmit);
-      s << endl;
+    s.setf(ios::fixed, ios::floatfield);
+    s.setf(ios::right, ios::adjustfield);
+    s.setf(ios::uppercase);
+    s.precision(0);
+    s.fill(' ');
 
-         // Special case for those data elements that do not possess an
-         // epoch time.
-      if (ctEpoch>CommonTime::BEGINNING_OF_TIME)
-      {
-         s << "Epoch Time:   ";
-         timeDisplay(s, ctEpoch);
-         s << endl;
-      }
-   }
+    s << endl;
+    s << "           TIMES OF INTEREST"
+      << endl << endl;
+    s << "              Week(10bt)     SOW     DOW   UTD     SOD"
+      << "   MM/DD/YYYY   HH:MM:SS\n";
+    s << "Transmit Time:";
+    timeDisplay(s, ctXmit);
+    s << endl;
 
-   void CNavDataElement::dumpBody(ostream& s) const
-      throw( InvalidRequest )
-   {}
+    // Special case for those data elements that do not possess an
+    // epoch time.
+    if (ctEpoch>CommonTime::BEGINNING_OF_TIME)
+    {
+        s << "Epoch Time:   ";
+        timeDisplay(s, ctEpoch);
+        s << endl;
+    }
+}
 
-   void CNavDataElement::dumpFooter(ostream& s) const
-      throw( InvalidRequest )
-   {}
+void CNavDataElement::dumpBody(ostream& s) const
+throw( InvalidRequest )
+{}
+
+void CNavDataElement::dumpFooter(ostream& s) const
+throw( InvalidRequest )
+{}
 
 }  // End namespace gpstk
 

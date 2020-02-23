@@ -39,116 +39,116 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
-      //@{
+/** @addtogroup math */
+//@{
 
 
-      /** Computes the Gamma function using a simple Lanczos approximation.
-       *
-       * This implementation typically gives 15 correct decimal places, and
-       * it is adapted from free Python code found in:
-       *
-       * http://en.wikipedia.org/wiki/Lanczos_approximation
-       *
-       * \warning Be aware that Gamma function is not defined for 0, -1, -2,...
-       */
-   double gamma(const double val);
+/** Computes the Gamma function using a simple Lanczos approximation.
+ *
+ * This implementation typically gives 15 correct decimal places, and
+ * it is adapted from free Python code found in:
+ *
+ * http://en.wikipedia.org/wiki/Lanczos_approximation
+ *
+ * \warning Be aware that Gamma function is not defined for 0, -1, -2,...
+ */
+double gamma(const double val);
 
 
-      /** Computes the natural logarithm of Gamma function
-       *  using the Lanczos approximation.
-       *
-       * \warning This version does not work for values <= 0.0
-       */
-   double lngamma(double val);
+/** Computes the natural logarithm of Gamma function
+ *  using the Lanczos approximation.
+ *
+ * \warning This version does not work for values <= 0.0
+ */
+double lngamma(double val);
 
 
-      /// Lower incomplete gamma function.
-   double lower_gamma(const double a, const double z);
+/// Lower incomplete gamma function.
+double lower_gamma(const double a, const double z);
 
 
-      /// Upper incomplete gamma function.
-   double upper_gamma(const double a, const double z);
+/// Upper incomplete gamma function.
+double upper_gamma(const double a, const double z);
 
 
-      /// Lower incomplete regularized gamma function P(a,z).
-   double gammaP(const double a, const double z);
+/// Lower incomplete regularized gamma function P(a,z).
+double gammaP(const double a, const double z);
 
 
-      /// Upper incomplete regularized gamma function Q(a,z).
-   double gammaQ(const double a, const double z);
+/// Upper incomplete regularized gamma function Q(a,z).
+double gammaQ(const double a, const double z);
 
 
-      /** Computes factorial of integer number n.
-       *
-       * This implementation typically gives 15 correct decimal places, and
-       * returns the result as double.
-       */
-   double factorial(const int n);
+/** Computes factorial of integer number n.
+ *
+ * This implementation typically gives 15 correct decimal places, and
+ * returns the result as double.
+ */
+double factorial(const int n);
 
 
-      /** Computes factorial of double number n.
-       *  d < 360 has been tested
-       */
-   double factorial(const double d);
+/** Computes factorial of double number n.
+ *  d < 360 has been tested
+ */
+double factorial(const double d);
 
 
-      /** Error function.
-       *
-       * This is a C++ implementation of the free Python code found in:
-       *
-       *   http://code.activestate.com/recipes/576391/
-       *
-       * Such code was based in a C code base with OpenBSD license from:
-       *
-       * ====================================================
-       * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
-       *
-       * Developed at SunPro, a Sun Microsystems, Inc. business.
-       * Permission to use, copy, modify, and distribute this
-       * software is freely granted, provided that this notice
-       * is preserved.
-       * ====================================================
-       */
-   double erf(const double x);
+/** Error function.
+ *
+ * This is a C++ implementation of the free Python code found in:
+ *
+ *   http://code.activestate.com/recipes/576391/
+ *
+ * Such code was based in a C code base with OpenBSD license from:
+ *
+ * ====================================================
+ * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Developed at SunPro, a Sun Microsystems, Inc. business.
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
+double erf(const double x);
 
 
-      /// Complementary error function.
-   double erfc(const double x);
+/// Complementary error function.
+double erfc(const double x);
 
 
-      /** Inverse of error function.
-       *
-       * \ warning Value "z" must be in the range (-1, 1)
-       */
-   double inverf(const double z);
+/** Inverse of error function.
+ *
+ * \ warning Value "z" must be in the range (-1, 1)
+ */
+double inverf(const double z);
 
 
-      /** Beta function.
-       *
-       * \warning This version may not work for values > 130.0
-       */
-   double beta(const double x, const double y);
+/** Beta function.
+ *
+ * \warning This version may not work for values > 130.0
+ */
+double beta(const double x, const double y);
 
 
-      /** Computes the natural logarithm of Beta function
-       *
-       * \warning This version does not work for values <= 0.0
-       */
-   double lnbeta(double x, double y);
+/** Computes the natural logarithm of Beta function
+ *
+ * \warning This version does not work for values <= 0.0
+ */
+double lnbeta(double x, double y);
 
 
-      /** Computes the regularized incomplete Beta function Ix(a,b).
-       *
-       * This code is a C++ implementation and adaptation from code found
-       * in Cephes Math Library Release 2.8, copyright by Stephen L. Moshier,
-       * released under a BSD license.
-       */
-   double regIncompleteBeta(const double x, const double a, const double b)
-      throw(InvalidParameter);
+/** Computes the regularized incomplete Beta function Ix(a,b).
+ *
+ * This code is a C++ implementation and adaptation from code found
+ * in Cephes Math Library Release 2.8, copyright by Stephen L. Moshier,
+ * released under a BSD license.
+ */
+double regIncompleteBeta(const double x, const double a, const double b)
+throw(InvalidParameter);
 
 
-      //@}
+//@}
 
 }  // End of namespace gpstk
 #endif   // SPECIALFUNCTIONS_HPP

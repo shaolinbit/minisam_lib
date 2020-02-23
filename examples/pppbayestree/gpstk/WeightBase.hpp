@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Dagoberto Salazar - gAGE. 2006
 //
 //============================================================================
@@ -39,33 +39,33 @@
 
 namespace gpstk
 {
-    /// Thrown when some problem appeared when assigning weights to satellites
-    /// @ingroup exceptiongroup
-    NEW_EXCEPTION_CLASS(InvalidWeights, gpstk::Exception);
+/// Thrown when some problem appeared when assigning weights to satellites
+/// @ingroup exceptiongroup
+NEW_EXCEPTION_CLASS(InvalidWeights, gpstk::Exception);
 
 
-    /** @addtogroup GPSsolutions */
-    //@{
+/** @addtogroup GPSsolutions */
+//@{
 
-    /**
-     * Abstract base class for algorithms assigning weights to satellites.
-     */
-    class WeightBase
-    {
-    public:
+/**
+ * Abstract base class for algorithms assigning weights to satellites.
+ */
+class WeightBase
+{
+public:
 
-        /// Destructor
-        virtual ~WeightBase() {};
+    /// Destructor
+    virtual ~WeightBase() {};
 
 
-    protected:
-        bool valid;         // true only if weights are valid
+protected:
+    bool valid;         // true only if weights are valid
 
-   }; // end class WeightBase
-   
+}; // end class WeightBase
 
-   //@}
-   
+
+//@}
+
 }
 
 #endif

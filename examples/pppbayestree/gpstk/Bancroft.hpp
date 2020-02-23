@@ -1,10 +1,10 @@
 #pragma ident "$Id$"
 
 /**
- * @file Bancroft.hpp 
+ * @file Bancroft.hpp
  * Use Bancroft method to get an initial guess of GPS receiver's position
  */
- 
+
 #ifndef BANCROFT_HPP
 #define BANCROFT_HPP
 
@@ -35,131 +35,131 @@
 
 namespace gpstk
 {
-      /** @defgroup GPSsolutions GPS solution algorithms and Tropospheric
-       *  models
-       */
+/** @defgroup GPSsolutions GPS solution algorithms and Tropospheric
+ *  models
+ */
 
-      //@{
-       	
-      /** This class defines an algebraic algorithm to get an initial guess of
-       *  GPS receiver's position given satellites' positions and pseudoranges.
-       *
-       * The algorithm is based on Bancroft's Method as presented in: Yang,
-       * Ming & Kuo-Hwa Chen. ''Performance Assessment of a Noniterative
-       * Algorithm for Global Positioning System (GPS) Absolute
-       * Positioning''. Proc. Natl. Sci. Counc. ROC(A). Vol. 25, No. 2,
-       * 2001. pp. 102-106.
-       */
-   class Bancroft
-   {
-   public:
+//@{
 
-         /// Constructor
-      Bancroft()
-         throw(Exception) : SecondSolution(4,0.0)
-      { 
-         testInput= true;
-         ChooseOne = true;
-         CloseTo = 6378137.0;
-         minPRange = 15000000.0;
-         maxPRange = 30000000.0;
-         minRadius = 23000000.0;
-         maxRadius = 29000000.0;
-      };
+/** This class defines an algebraic algorithm to get an initial guess of
+ *  GPS receiver's position given satellites' positions and pseudoranges.
+ *
+ * The algorithm is based on Bancroft's Method as presented in: Yang,
+ * Ming & Kuo-Hwa Chen. ''Performance Assessment of a Noniterative
+ * Algorithm for Global Positioning System (GPS) Absolute
+ * Positioning''. Proc. Natl. Sci. Counc. ROC(A). Vol. 25, No. 2,
+ * 2001. pp. 102-106.
+ */
+class Bancroft
+{
+public:
 
-
-         /** Compute an initial guess of GPS receiver's position , given
-          *  satellites' positions and pseudoranges.
-          *
-          * @param Data    Matrix of data containing observation data in rows,
-          *                one row per observation and complying with the
-          *                following format:
-          *
-          *                        x y z P
-          *
-          *                Where x,y,z are satellite coordinates in an ECEF
-          *                system and P is pseudorange (corrected as much as
-          *                possible, specially from satellite clock errors),
-          *                all expresed in meters.
-          *
-          * @param X      Vector of position solution, in meters. There may be
-          *               another solution that may be accessed with vector
-          *               "SecondSolution" if "ChooseOne" is set to "false".
-          *
-          * @return
-          *    0  Ok, 
-          *   -1  Not enough good data
-          *   -2  Singular problem
-          */
-      int Compute( Matrix<double>& Data,
-                   Vector<double>& X )
-         throw(Exception);
+    /// Constructor
+    Bancroft()
+    throw(Exception) : SecondSolution(4,0.0)
+    {
+        testInput= true;
+        ChooseOne = true;
+        CloseTo = 6378137.0;
+        minPRange = 15000000.0;
+        maxPRange = 30000000.0;
+        minRadius = 23000000.0;
+        maxRadius = 29000000.0;
+    };
 
 
-         /** Another version of Compute method allowing calls with Matrix B
-          *  being const.
-          */
-      int Compute( const Matrix<double>& Data,
-                   Vector<double>& X )
-         throw(Exception);
+    /** Compute an initial guess of GPS receiver's position , given
+     *  satellites' positions and pseudoranges.
+     *
+     * @param Data    Matrix of data containing observation data in rows,
+     *                one row per observation and complying with the
+     *                following format:
+     *
+     *                        x y z P
+     *
+     *                Where x,y,z are satellite coordinates in an ECEF
+     *                system and P is pseudorange (corrected as much as
+     *                possible, specially from satellite clock errors),
+     *                all expresed in meters.
+     *
+     * @param X      Vector of position solution, in meters. There may be
+     *               another solution that may be accessed with vector
+     *               "SecondSolution" if "ChooseOne" is set to "false".
+     *
+     * @return
+     *    0  Ok,
+     *   -1  Not enough good data
+     *   -2  Singular problem
+     */
+    int Compute( Matrix<double>& Data,
+                 Vector<double>& X )
+    throw(Exception);
 
 
-         /** If true, the solution closest to CloseTo criterion will be chosen.
-          *  If false, the two posible solutions will be provided.
-          */
-      bool ChooseOne;
+    /** Another version of Compute method allowing calls with Matrix B
+     *  being const.
+     */
+    int Compute( const Matrix<double>& Data,
+                 Vector<double>& X )
+    throw(Exception);
 
 
-         /** Criterion to decide which solution to choose. The algorithm will
-          *  choose the solution closer to this value. By default, it is set
-          *  to earth radius, in meters.
-          */
-      double CloseTo;
+    /** If true, the solution closest to CloseTo criterion will be chosen.
+     *  If false, the two posible solutions will be provided.
+     */
+    bool ChooseOne;
 
 
-         /** If true (the default), the B input Matrix will be screened to get
-          *  out suspicious data.
-          *
-          * It works with minPRange, maxPRange, minRadius and maxRadius to
-          * pick up a set of "clean data". However, don't be too picky with
-          * these parameters in order to leave room for different GNSS systems
-          * and configurations. Anyway, Bancroft will give you just an
-          * approximate position.
-          */
-      bool testInput;
+    /** Criterion to decide which solution to choose. The algorithm will
+     *  choose the solution closer to this value. By default, it is set
+     *  to earth radius, in meters.
+     */
+    double CloseTo;
 
 
-         /// Minimum pseudorange value allowed for input data (in meters).
-      double minPRange;
+    /** If true (the default), the B input Matrix will be screened to get
+     *  out suspicious data.
+     *
+     * It works with minPRange, maxPRange, minRadius and maxRadius to
+     * pick up a set of "clean data". However, don't be too picky with
+     * these parameters in order to leave room for different GNSS systems
+     * and configurations. Anyway, Bancroft will give you just an
+     * approximate position.
+     */
+    bool testInput;
 
 
-         /// Maximum pseudorange value allowed for input data (in meters).
-      double maxPRange;
+    /// Minimum pseudorange value allowed for input data (in meters).
+    double minPRange;
 
 
-         /// Minimum allowed distance between Earth center and satellite
-         /// position for input data (in meters).
-      double minRadius;
+    /// Maximum pseudorange value allowed for input data (in meters).
+    double maxPRange;
 
 
-         /// Maximum allowed distance between Earth center and satellite
-         /// position for input data (in meters).
-      double maxRadius;
+    /// Minimum allowed distance between Earth center and satellite
+    /// position for input data (in meters).
+    double minRadius;
 
 
-         /** Vector<double> containing the estimated second position solution
-          * (ECEF, meters), if ChooseOne is set to "false".
-          */
-      Vector<double> SecondSolution;
+    /// Maximum allowed distance between Earth center and satellite
+    /// position for input data (in meters).
+    double maxRadius;
 
 
-         /// Destructor.
-      virtual ~Bancroft() throw() {};
+    /** Vector<double> containing the estimated second position solution
+     * (ECEF, meters), if ChooseOne is set to "false".
+     */
+    Vector<double> SecondSolution;
 
 
-   }; // end class Bancroft
+    /// Destructor.
+    virtual ~Bancroft() throw() {};
 
-      //@}
+
+}; // end class Bancroft
+
+//@}
 
 } // namespace gpstk
 

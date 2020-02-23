@@ -27,7 +27,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -35,34 +35,41 @@
 namespace gpstk
 {
 
- /** @addtogroup VectorGroup */
-   //@{
+/** @addtogroup VectorGroup */
+//@{
 
 #define VecBaseNewUnaryOperator(func) \
-      /** performs func on each element of x, returning a new vector */ \
-   template <class T, class BaseClass> \
-   Vector<T> func(const ConstVectorBase<T, BaseClass>& x) \
-      { \
-         BaseClass toReturn(x.size()); \
-         size_t i; for (i=0; i < x.size(); i++) toReturn[i] = func(x[i]); \
-         return toReturn; \
-      }
+
+/** performs func on each element of x, returning a new vector */ \
+template <class T, class BaseClass> \
+Vector<T> func(const ConstVectorBase<T, BaseClass>& x) \
+{
+    \
+    BaseClass toReturn(x.size());
+    \
+    size_t i;
+    for (i=0; i < x.size(); i++)
+        toReturn[i] = func(x[i]);
+    \
+    return toReturn;
+    \
+}
 
 //   VecBaseNewUnaryOperator(-)
-   VecBaseNewUnaryOperator(abs)
-      VecBaseNewUnaryOperator(acos)
-      VecBaseNewUnaryOperator(asin)
-      VecBaseNewUnaryOperator(atan)
-      VecBaseNewUnaryOperator(cos)
-      VecBaseNewUnaryOperator(cosh)
-      VecBaseNewUnaryOperator(exp)
-      VecBaseNewUnaryOperator(log)
-      VecBaseNewUnaryOperator(log10)
-      VecBaseNewUnaryOperator(sinh)
-      VecBaseNewUnaryOperator(sin)
-      VecBaseNewUnaryOperator(sqrt)
-      VecBaseNewUnaryOperator(tan)
-      VecBaseNewUnaryOperator(tanh)
+VecBaseNewUnaryOperator(abs)
+VecBaseNewUnaryOperator(acos)
+VecBaseNewUnaryOperator(asin)
+VecBaseNewUnaryOperator(atan)
+VecBaseNewUnaryOperator(cos)
+VecBaseNewUnaryOperator(cosh)
+VecBaseNewUnaryOperator(exp)
+VecBaseNewUnaryOperator(log)
+VecBaseNewUnaryOperator(log10)
+VecBaseNewUnaryOperator(sinh)
+VecBaseNewUnaryOperator(sin)
+VecBaseNewUnaryOperator(sqrt)
+VecBaseNewUnaryOperator(tan)
+VecBaseNewUnaryOperator(tanh)
 
 #define VecBaseNewBinaryOperator(func, retval) \
 /** returns a retval with each element the result of l[i] func r[i] */ \
@@ -97,23 +104,23 @@ retval operator func(const T l, const ConstVectorBase<T, BaseClass>& r) \
    size_t i; \
    for (i=0; i < r.size(); i++) toReturn[i] = l func r[i]; \
    return toReturn; \
-} 
+}
 
-      VecBaseNewBinaryOperator(*, Vector<T>)
-      VecBaseNewBinaryOperator(/, Vector<T>)
-      VecBaseNewBinaryOperator(%, Vector<T>)
-      VecBaseNewBinaryOperator(+, Vector<T>)
-      VecBaseNewBinaryOperator(-, Vector<T>)
-      VecBaseNewBinaryOperator(^, Vector<T>)
-      VecBaseNewBinaryOperator(&, Vector<T>)
-      VecBaseNewBinaryOperator(|, Vector<T>)
+VecBaseNewBinaryOperator(*, Vector<T>)
+VecBaseNewBinaryOperator(/, Vector<T>)
+VecBaseNewBinaryOperator(%, Vector<T>)
+VecBaseNewBinaryOperator(+, Vector<T>)
+VecBaseNewBinaryOperator(-, Vector<T>)
+VecBaseNewBinaryOperator(^, Vector<T>)
+VecBaseNewBinaryOperator(&, Vector<T>)
+VecBaseNewBinaryOperator(|, Vector<T>)
 
-      VecBaseNewBinaryOperator(==, Vector<bool>)
-      VecBaseNewBinaryOperator(<, Vector<bool>)
-      VecBaseNewBinaryOperator(>, Vector<bool>)
-      VecBaseNewBinaryOperator(!=, Vector<bool>)
-      VecBaseNewBinaryOperator(<=, Vector<bool>)
-      VecBaseNewBinaryOperator(>=, Vector<bool>)
+VecBaseNewBinaryOperator(==, Vector<bool>)
+VecBaseNewBinaryOperator(<, Vector<bool>)
+VecBaseNewBinaryOperator(>, Vector<bool>)
+VecBaseNewBinaryOperator(!=, Vector<bool>)
+VecBaseNewBinaryOperator(<=, Vector<bool>)
+VecBaseNewBinaryOperator(>=, Vector<bool>)
 
 #define VecBaseNewBinaryTranscendentalOperator(func, retval) \
 /** performs func between each element of l and r, returning a retval */ \
@@ -143,45 +150,51 @@ retval func(const T l, const ConstVectorBase<T, BaseClass>& r) \
    size_t i; \
    for (i=0; i < r.size(); i++) toReturn[i] = func(l, r[i]); \
    return toReturn; \
-} 
+}
 
-      VecBaseNewBinaryTranscendentalOperator(atan, Vector<T>)
-      VecBaseNewBinaryTranscendentalOperator(pow, Vector<T>)
+VecBaseNewBinaryTranscendentalOperator(atan, Vector<T>)
+VecBaseNewBinaryTranscendentalOperator(pow, Vector<T>)
 
 /** finds the cross product between l and r */
-      template <class T, class BaseClass, class BaseClass2> 
-   Vector<T> cross(const ConstVectorBase<T, BaseClass>& l, 
+template <class T, class BaseClass, class BaseClass2>
+Vector<T> cross(const ConstVectorBase<T, BaseClass>& l,
                 const ConstVectorBase<T, BaseClass2>& r) throw(VectorException)
-{ 
-   if ((l.size() != 3) && (r.size() != 3))
-   {
-      VectorException e("Cross product requires vectors of size 3");
-      GPSTK_THROW(e);
-   }
-   BaseClass toReturn(3);
-   toReturn[0] = l[1] * r[2] - l[2] * r[1];
-   toReturn[1] = l[2] * r[0] - l[0] * r[2];
-   toReturn[2] = l[0] * r[1] - l[1] * r[0];
-   return toReturn;
-} 
+{
+    if ((l.size() != 3) && (r.size() != 3))
+    {
+        VectorException e("Cross product requires vectors of size 3");
+        GPSTK_THROW(e);
+    }
+    BaseClass toReturn(3);
+    toReturn[0] = l[1] * r[2] - l[2] * r[1];
+    toReturn[1] = l[2] * r[0] - l[0] * r[2];
+    toReturn[2] = l[0] * r[1] - l[1] * r[0];
+    return toReturn;
+}
 
 /** returns a new vector with the normalized version of l */
 template <class T, class BaseClass>
-Vector<T> normalize(const ConstVectorBase<T, BaseClass>& l) 
-{ return l / norm(l); } 
+Vector<T> normalize(const ConstVectorBase<T, BaseClass>& l)
+{
+    return l / norm(l);
+}
 
 /** returns the root-sum-square of the elements of l */
 template <class T, class BaseClass>
-T RSS(const ConstVectorBase<T, BaseClass>& l) 
-{ return norm(l); } 
+T RSS(const ConstVectorBase<T, BaseClass>& l)
+{
+    return norm(l);
+}
 
 /** returns the root-mean-square of the elements of l */
 template <class T, class BaseClass>
-T RMS(const ConstVectorBase<T, BaseClass>& l) 
-{ return norm(l)/SQRT(T(l.size())); } 
+T RMS(const ConstVectorBase<T, BaseClass>& l)
+{
+    return norm(l)/SQRT(T(l.size()));
+}
 
-   //@}
- 
+//@}
+
 }  // namespace
 
 #endif

@@ -1,25 +1,9 @@
 #ifndef GAUSSIANFACTORGRAPH_H_INCLUDED
 #define GAUSSIANFACTORGRAPH_H_INCLUDED
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    GaussianFactorGraph.h
  * @brief   Linear Factor Graph where all factors are Gaussians
- * @author  Kai Ni
- * @author  Christian Potthast
- * @author  Alireza Fathi
- * @author  Richard Roberts
- * @author  Frank Dellaert
  */
 
 #include "../inference/FactorGraph.h"
@@ -28,7 +12,6 @@
 #include "../linear/JacobianFactor.h"
 #include "../linear/HessianFactor.h"
 #include <list>
-#include <Eigen/Core>
 #include <map>
 namespace minisam
 {
@@ -69,12 +52,12 @@ public:
     std::set<int> keys() const;
 
     /** unnormalized error */
-    double error(const std::map<int,Eigen::VectorXd>& x) const;
-    std::map<int,Eigen::VectorXd> optimizeGradientSearch() const;
-    std::map<int,Eigen::VectorXd> gradientAtZero() const;
-    std::list<Eigen::VectorXd> operator*(const std::map<int,Eigen::VectorXd>& x) const;
-    std::map<int,Eigen::VectorXd> optimize(std::vector<int>& ordering, const int Eliminatekind) const;
-    std::map<int,Eigen::VectorXd> hessianDiagonal() const;
+    double error(const std::map<int,minivector>& x) const;
+    std::map<int,minivector> optimizeGradientSearch() const;
+    std::map<int,minivector> gradientAtZero() const;
+    std::list<minivector> operator*(const std::map<int,minivector>& x) const;
+    std::map<int,minivector> optimize(std::vector<int>& ordering, const int Eliminatekind) const;
+    std::map<int,minivector> hessianDiagonal() const;
 
 };
 
@@ -86,9 +69,6 @@ bool hasConstraints(const std::vector<const RealGaussianFactor*>& factors);
 
 std::map<int, std::vector<int>> VariableSlots(const GaussianFactorGraph& factorGraph);
 std::map<int, std::vector<int>> VariableSlots(const std::vector<const RealGaussianFactor*>& factorGraph);
-
-std::map<int, std::vector<int>> VariableSlots(std::vector<RealGaussianFactor>& factors1,
-                             std::vector<RealGaussianFactor>& factors2);
 
 JacobianFactor* convertToJacobianFactorPtr(RealGaussianFactor* gf);
 const JacobianFactor* convertToJacobianFactorPtr(const RealGaussianFactor* gf);

@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2007, The University of Texas at Austin
 //
 //============================================================================
@@ -35,54 +35,54 @@
 
 namespace gpstk
 {
-    /** @addtogroup geodeticgroup */
-    //@{
+/** @addtogroup geodeticgroup */
+//@{
 
-      /// A utility for converting from Cartesian in XZY to East-North-Up (ENU)  
-   class ENUUtil
-   {
-      public:
-            // Constructors
-         /**
-          * Given a location as a (geodetic) latitude and longitude  
-          * the constructor creates the appropriate rotation matrix 
-          * from XYZ to ENU and retains it for later use.
-          * @param refGeodeticLatRad geodetic latitude of point of interest (radians)
-          * @param refLonRad longitude of point of interest (radians).
-          */
-            
-         ENUUtil( const double refGeodeticLatRad,
-                  const double refLonRad);
-         
-            // Methods
-         /**
-          * Convert from a vector in ECEF XYZ to ECEF ENU using the
-          * current rotation matrix.
-          * @param inV,inVec,in vector of interest in ECEF XYZ.
-          * @return Same type as input but with the vector in ECEF ENU
-          */
-         gpstk::Vector<double> convertToENU( const gpstk::Vector<double>& inV ) const;
-         gpstk::Triple         convertToENU( const gpstk::Triple& inVec ) const;
-         gpstk::Xvt            convertToENU( const gpstk::Xvt& in ) const;
+/// A utility for converting from Cartesian in XZY to East-North-Up (ENU)
+class ENUUtil
+{
+public:
+    // Constructors
+    /**
+     * Given a location as a (geodetic) latitude and longitude
+     * the constructor creates the appropriate rotation matrix
+     * from XYZ to ENU and retains it for later use.
+     * @param refGeodeticLatRad geodetic latitude of point of interest (radians)
+     * @param refLonRad longitude of point of interest (radians).
+     */
 
-         /**
-          * Update the rotation matrix to the new location without creating
-          * a new object
-          * @param refGdLatRad geodetic latitude of point of interest (radians)
-          * @param refLonRad longitude of point of interest (radians).
-          */
-         void                  updatePosition( const double refGDLatRad,
-                                               const double refLonRad );
+    ENUUtil( const double refGeodeticLatRad,
+             const double refLonRad);
 
-         // Utilities
-      protected:
-         void compute( const double refLat,
-                       const double refLon);
-                       
-         Matrix<double> rotMat;
-   };
+    // Methods
+    /**
+     * Convert from a vector in ECEF XYZ to ECEF ENU using the
+     * current rotation matrix.
+     * @param inV,inVec,in vector of interest in ECEF XYZ.
+     * @return Same type as input but with the vector in ECEF ENU
+     */
+    gpstk::Vector<double> convertToENU( const gpstk::Vector<double>& inV ) const;
+    gpstk::Triple         convertToENU( const gpstk::Triple& inVec ) const;
+    gpstk::Xvt            convertToENU( const gpstk::Xvt& in ) const;
 
-   //@}
+    /**
+     * Update the rotation matrix to the new location without creating
+     * a new object
+     * @param refGdLatRad geodetic latitude of point of interest (radians)
+     * @param refLonRad longitude of point of interest (radians).
+     */
+    void                  updatePosition( const double refGDLatRad,
+                                          const double refLonRad );
 
-}   
-#endif      
+    // Utilities
+protected:
+    void compute( const double refLat,
+                  const double refLon);
+
+    Matrix<double> rotMat;
+};
+
+//@}
+
+}
+#endif

@@ -49,7 +49,8 @@
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 
-namespace gpstk {
+namespace gpstk
+{
 //------------------------------------------------------------------------------------
 /** @defgroup rinexutils Rinex Utilities */
 //@{

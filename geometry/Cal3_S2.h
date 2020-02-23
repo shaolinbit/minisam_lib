@@ -3,23 +3,6 @@
 
 
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
-/**
- * @file   Cal3_S2.h
- * @brief  The most common 5DOF 3D->2D calibration
- * @author Frank Dellaert
- */
-
 /**
  * @brief The most common 5DOF 3D->2D calibration
  * @addtogroup geometry
@@ -27,43 +10,43 @@
  */
 
 #pragma once
-#include <Eigen/Core>
-#include <Eigen/QR>
-#include <Eigen/SVD>
-#include <Eigen/LU>
-#include <Eigen/Cholesky>
-
+#include "../mat/Matrix.h"
+#include "../mat/MatCal.h"
 
 namespace minisam
 {
 
-class Cal3_S2
+class Cal3_S2:public minivector
 {
-private:
-    double fx_, fy_, s_, u0_, v0_;
-
 public:
-    enum { dimension = 5 };
 
     /// @name Standard Constructors
     /// @{
 
     /// Create a default calibration that leaves coordinates unchanged
-    Cal3_S2() :
-        fx_(1), fy_(1), s_(0), u0_(0), v0_(0)
+    Cal3_S2() :minivector(5)
     {
+        data[0]=1.0;
+        data[1]=1.0;
+        data[2]=0.0;
+        data[3]=0.0;
+        data[4]=0.0;
     }
 
     /// constructor from doubles
-    Cal3_S2(double fx, double fy, double s, double u0, double v0) :
-        fx_(fx), fy_(fy), s_(s), u0_(u0), v0_(v0)
+    Cal3_S2(double fx, double fy, double s, double u0, double v0) :minivector(5)
     {
+        data[0]=fx;
+        data[1]=fy;
+        data[2]=s;
+        data[3]=u0;
+        data[4]=v0;
     }
 
     /// constructor from vector
-    Cal3_S2(const Eigen::VectorXd &d) :
-        fx_(d(0)), fy_(d(1)), s_(d(2)), u0_(d(3)), v0_(d(4))
+    Cal3_S2(const minivector &d):minivector(5)
     {
+        minivector_memcpy(this,d);
     }
 
     /**
@@ -89,48 +72,48 @@ public:
     /// focal length x
     inline double fx() const
     {
-        return fx_;
+        return minivector_get(this,0);
     }
 
     /// focal length y
     inline double fy() const
     {
-        return fy_;
+        return minivector_get(this,1);
     }
 
     /// aspect ratio
     inline double aspectRatio() const
     {
-        return fx_/fy_;
+        return fx()/fy();
     }
 
     /// skew
     inline double skew() const
     {
-        return s_;
+        return minivector_get(this,2);
     }
 
     /// image center in x
     inline double px() const
     {
-        return u0_;
+        return minivector_get(this,3);
     }
 
     /// image center in y
     inline double py() const
     {
-        return v0_;
+        return minivector_get(this,4);
     }
 
 
     /// vectorized form (column-wise)
-    Eigen::VectorXd vector() const;
+    minivector vector() const;
 
     /// return calibration matrix K
-    Eigen::MatrixXd K() const;
+    minimatrix K() const;
 
     /** @deprecated The following function has been deprecated, use K above */
-    Eigen::MatrixXd matrix() const;
+    minimatrix matrix() const;
 
     /**
      * convert intrinsic coordinates xy to image coordinates uv, fixed derivaitves
@@ -139,9 +122,9 @@ public:
      * @param Dp optional 2*2 Jacobian wrpt intrinsic coordinates
      * @return point in image coordinates
      */
-    Eigen::VectorXd uncalibrate(const Eigen::VectorXd& p);
-    Eigen::VectorXd uncalibrate(const Eigen::VectorXd& p, Eigen::MatrixXd* Dcal,
-                                Eigen::MatrixXd* Dp) const;
+    minivector uncalibrate(const minivector& p);
+    minivector uncalibrate(const minivector& p, minimatrix* Dcal=NULL,
+                           minimatrix* Dp=NULL) const;
     /**
      * convert image coordinates uv to intrinsic coordinates xy
      * @param p point in image coordinates
@@ -149,24 +132,28 @@ public:
      * @param Dp optional 2*2 Jacobian wrpt intrinsic coordinates
      * @return point in intrinsic coordinates
      */
-    Eigen::VectorXd calibrate(const Eigen::VectorXd& p) const;
-    Eigen::VectorXd calibrate(const Eigen::VectorXd& p, Eigen::MatrixXd* Dcal,
-                              Eigen::MatrixXd* Dp) const;
+    minivector calibrate(const minivector& p) const;
+    minivector calibrate(const minivector& p, minimatrix* Dcal,
+                         minimatrix* Dp) const;
 
 
     /// "Between", subtracts calibrations. between(p,q) == compose(inverse(p),q)
-    inline Cal3_S2 between(const Cal3_S2& q,
-                           Eigen::MatrixXd* H1,
-                           Eigen::MatrixXd* H2) const
+
+    virtual minimatrix between(const minimatrix* q) const
     {
-        *H1 =-Eigen::MatrixXd::Identity(5,5);
-        *H2 =Eigen::MatrixXd::Identity(5,5);
-        return Cal3_S2(q.fx_-fx_, q.fy_-fy_, q.s_-s_, q.u0_-u0_, q.v0_-v0_);
+         return Cal3_S2(minimatrix_get(q,0,0)-fx(), minimatrix_get(q,1,0)-fy(),
+                         minimatrix_get(q,2,0)-skew(), minimatrix_get(q,3,0)-px(), minimatrix_get(q,4,0)-py());
     }
 
-    inline Cal3_S2 between(const Cal3_S2& q) const
+    virtual minimatrix between(const minimatrix* q,minimatrix& H1,minimatrix& H2) const
     {
-        return Cal3_S2(q.fx_-fx_, q.fy_-fy_, q.s_-s_, q.u0_-u0_, q.v0_-v0_);
+            minimatrix_resize(&H1,dimension,dimension);
+            minimatrix_set_neg_identity(&H1);
+            minimatrix_resize(&H2,dimension,dimension);
+            minimatrix_set_identity(&H2);
+        return Cal3_S2(minimatrix_get(q,0,0)-fx(), minimatrix_get(q,1,0)-fy(),
+                         minimatrix_get(q,2,0)-skew(), minimatrix_get(q,3,0)-px(), minimatrix_get(q,4,0)-py());
+
     }
 
 
@@ -180,20 +167,13 @@ public:
         return 5;
     }
 
-    /// return DOF, dimensionality of tangent space
-    static int Dim()
+    virtual minimatrix* Retract(const minimatrix* d) const
     {
-        return 5;
+        return new Cal3_S2(fx() + d->data[0], fy() +  d->data[d->prd],
+                           skew()+  d->data[2*d->prd], px() +  d->data[3*d->prd], py() +  d->data[4*d->prd]);
     }
 
-    /// Given 5-dim tangent vector, create new calibration
-    inline Cal3_S2 retract(const Eigen::VectorXd& d) const
-    {
-        return Cal3_S2(fx_ + d(0), fy_ + d(1), s_ + d(2), u0_ + d(3), v0_ + d(4));
-    }
-
-    /// Unretraction for the calibration
-    Eigen::VectorXd localCoordinates(const Cal3_S2& T2) const;
+        virtual minimatrix LocalCoordinates(const minimatrix* T2) const;
     /// @}
 
 };

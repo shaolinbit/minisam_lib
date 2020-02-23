@@ -77,17 +77,17 @@
 #ifndef SVNUMXREF_HPP
 #define SVNUMXREF_HPP
 
-   // Language Headers
+// Language Headers
 #include <map>
 #include <utility>
 
-   // Library Headers
+// Library Headers
 #include "CommonTime.hpp"
 #include "SystemTime.hpp"
 #include "gps_constants.hpp"
 #include "Exception.hpp"
 
-   // Project Headers
+// Project Headers
 
 namespace gpstk
 {
@@ -98,20 +98,20 @@ NEW_EXCEPTION_CLASS( NoNAVSTARNumberFound, gpstk::Exception);
 
 class XRefNode
 {
-   public:
-      XRefNode( const int NumArg,
-                     const gpstk::CommonTime begDT,
-                     const gpstk::CommonTime endDT );
-      int getNAVSTARNum() const;
-      int getPRNNum() const;
-      gpstk::CommonTime getBeginTime() const;
-      gpstk::CommonTime getEndTime() const;
-      bool isApplicable( gpstk::CommonTime dt ) const;
+public:
+    XRefNode( const int NumArg,
+              const gpstk::CommonTime begDT,
+              const gpstk::CommonTime endDT );
+    int getNAVSTARNum() const;
+    int getPRNNum() const;
+    gpstk::CommonTime getBeginTime() const;
+    gpstk::CommonTime getEndTime() const;
+    bool isApplicable( gpstk::CommonTime dt ) const;
 
-   protected:
-      int Num;
-      gpstk::CommonTime begValid;
-      gpstk::CommonTime endValid;
+protected:
+    int Num;
+    gpstk::CommonTime begValid;
+    gpstk::CommonTime endValid;
 };
 
 typedef std::multimap<int, XRefNode>::const_iterator SVNumXRefListCI;
@@ -121,38 +121,50 @@ typedef std::pair<NAVNumXRefCI,NAVNumXRefCI> NAVNumXRefPair;
 
 class SVNumXRef
 {
-   public:
+public:
 
-      enum BlockType
-      {
-      I,
-      II,
-      IIA,
-      IIR,
-      IIR_M,
-      IIF
-      };
-      SVNumXRef( );
-      ~SVNumXRef() {}
-      BlockType getBlockType( const int NAVSTARID ) const;
-      std::string getBlockTypeString( const int NAVSTARID ) const;
-      int getNAVSTAR( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
-      int getPRNID( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
-      bool PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
-      bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
-      bool BlockTypeAvailable( const int NAVSTARID ) const;
-      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
+    enum BlockType
+    {
+        I,
+        II,
+        IIA,
+        IIR,
+        IIR_M,
+        IIF
+    };
+    SVNumXRef( );
+    ~SVNumXRef() {}
+    BlockType getBlockType( const int NAVSTARID ) const;
+    std::string getBlockTypeString( const int NAVSTARID ) const;
+    int getNAVSTAR( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
+    int getPRNID( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
+    bool PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
+    bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
+    bool BlockTypeAvailable( const int NAVSTARID ) const;
+    bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
 
-   protected:
-      std::multimap<int,XRefNode> NtoPMap;
-      std::multimap<int,XRefNode> PtoNMap;
-      std::map<int,BlockType> NtoBMap;
+protected:
+    std::multimap<int,XRefNode> NtoPMap;
+    std::multimap<int,XRefNode> PtoNMap;
+    std::map<int,BlockType> NtoBMap;
 };
 
-inline int XRefNode::getNAVSTARNum() const { return(Num); }
-inline int XRefNode::getPRNNum() const { return(Num); }
-inline gpstk::CommonTime XRefNode::getBeginTime() const { return( begValid ); }
-inline gpstk::CommonTime XRefNode::getEndTime() const { return( endValid ); }
+inline int XRefNode::getNAVSTARNum() const
+{
+    return(Num);
+}
+inline int XRefNode::getPRNNum() const
+{
+    return(Num);
+}
+inline gpstk::CommonTime XRefNode::getBeginTime() const
+{
+    return( begValid );
+}
+inline gpstk::CommonTime XRefNode::getEndTime() const
+{
+    return( endValid );
+}
 
 
 }

@@ -2,7 +2,7 @@
 
 /**
 * @file EOPDataStore.hpp
-* 
+*
 */
 
 #ifndef GPSTK_EOPDATASTORE_HPP
@@ -37,76 +37,76 @@
 
 namespace gpstk
 {
-      /** @addtogroup Precise Orbit Determination */
-      //@{
+/** @addtogroup Precise Orbit Determination */
+//@{
 
-      /**
-       * Class to store and manage Earth Orientation data.
-       *
-       */
-   class EOPDataStore : public EpochDataStore
-   {
-   public:
-     
-      typedef struct EOPData
-      {
-         double xp;        /// arcseconds
-         double yp;        /// arcseconds
-         double UT1mUTC;   /// seconds
-         double dPsi;      /// arcseconds
-         double dEps;      /// arcseconds
-         
-         EOPData() : xp(0.0), yp(0.0), UT1mUTC(0.0),dPsi(0.0), dEps(0.0)
-         {}
+/**
+ * Class to store and manage Earth Orientation data.
+ *
+ */
+class EOPDataStore : public EpochDataStore
+{
+public:
 
-         EOPData(double x, double y, double ut1_utc, double dpsi = 0.0, double deps = 0.0) 
+    typedef struct EOPData
+    {
+        double xp;        /// arcseconds
+        double yp;        /// arcseconds
+        double UT1mUTC;   /// seconds
+        double dPsi;      /// arcseconds
+        double dEps;      /// arcseconds
+
+        EOPData() : xp(0.0), yp(0.0), UT1mUTC(0.0),dPsi(0.0), dEps(0.0)
+        {}
+
+        EOPData(double x, double y, double ut1_utc, double dpsi = 0.0, double deps = 0.0)
             : xp(x), yp(y), UT1mUTC(ut1_utc), dPsi(dpsi), dEps(deps)
-         {}
-      } EOPData;
+        {}
+    } EOPData;
 
-         /// Default constructor
-      EOPDataStore() : EpochDataStore(2)
-      {}
+    /// Default constructor
+    EOPDataStore() : EpochDataStore(2)
+    {}
 
-         /// Default deconstructor
-      virtual ~EOPDataStore() {}
-      
-         /// Add to the store directly
-      void addEOPData(const CommonTime& utc,const EOPData& data)
-         throw(InvalidRequest);
+    /// Default deconstructor
+    virtual ~EOPDataStore() {}
 
-         /// Get the data at the given epoch and return it.
-      EOPData getEOPData(const CommonTime& utc) const
-         throw(InvalidRequest);
+    /// Add to the store directly
+    void addEOPData(const CommonTime& utc,const EOPData& data)
+    throw(InvalidRequest);
 
-
-         /// Add EOPs to the store via a flat IERS file. 
-         /// get finals.data from http://maia.usno.navy.mil/
-      void loadIERSFile(std::string iersFile)
-         throw(FileMissingException);
+    /// Get the data at the given epoch and return it.
+    EOPData getEOPData(const CommonTime& utc) const
+    throw(InvalidRequest);
 
 
-      void loadIGSFile(std::string igsFile)
-         throw(FileMissingException);
-
-         /** Add EOPs to the store via a flat STK file. 
-          *  EOP-v1.1.txt
-          *  http://celestrak.com/SpaceData/EOP-format.asp
-          *
-          *  @param stkFile  Name of file to read, including path.
-          */
-      void loadSTKFile(std::string stkFile)
-         throw(FileMissingException);
-
-   protected:
+    /// Add EOPs to the store via a flat IERS file.
+    /// get finals.data from http://maia.usno.navy.mil/
+    void loadIERSFile(std::string iersFile)
+    throw(FileMissingException);
 
 
-   }; // End of class 'EOPDataStore'
+    void loadIGSFile(std::string igsFile)
+    throw(FileMissingException);
 
-   
-   std::ostream& operator<<(std::ostream& s, const EOPDataStore::EOPData& d);
+    /** Add EOPs to the store via a flat STK file.
+     *  EOP-v1.1.txt
+     *  http://celestrak.com/SpaceData/EOP-format.asp
+     *
+     *  @param stkFile  Name of file to read, including path.
+     */
+    void loadSTKFile(std::string stkFile)
+    throw(FileMissingException);
 
-      // @}
+protected:
+
+
+}; // End of class 'EOPDataStore'
+
+
+std::ostream& operator<<(std::ostream& s, const EOPDataStore::EOPData& d);
+
+// @}
 
 }  // End of namespace 'gpstk'
 

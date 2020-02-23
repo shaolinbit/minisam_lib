@@ -37,25 +37,25 @@
 
 namespace gpstk
 {
-   /** @addtogroup Binex */
-   //@{
+/** @addtogroup Binex */
+//@{
 
-   typedef std::binary_function<BinexData, BinexData, bool> BinexDataBinaryOperator;
+typedef std::binary_function<BinexData, BinexData, bool> BinexDataBinaryOperator;
 
 
-      /// Determine if two BinexData objects are equal.
-   struct BinexDataOperatorEquals : 
-      public BinexDataBinaryOperator
-   {
-   public:
-      bool operator()(const BinexData& l,
-                      const BinexData& r) const
-         {
-            return (l == r);
-         }
-   };
+/// Determine if two BinexData objects are equal.
+struct BinexDataOperatorEquals :
+    public BinexDataBinaryOperator
+{
+public:
+    bool operator()(const BinexData& l,
+                    const BinexData& r) const
+    {
+        return (l == r);
+    }
+};
 
-   //@}
+//@}
 
 }
 

@@ -2,22 +2,9 @@
 #define NONLINEARFACTOR_H
 
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    NonlinearFactor.h
  * @brief   Non-linear factor base classes
- * @author  Frank Dellaert
- * @author  Richard Roberts
  */
 
 #include "../inference/Factor.h"
@@ -30,84 +17,6 @@
 
 namespace minisam
 {
-/**
- * Macro to add a standard clone function to a derived factor
- * @deprecated: will go away shortly - just add the clone function directly
- */
-
-/* ************************************************************************* */
-
-/**
- * Nonlinear factor base class
- *
- * \nosubgrouping
- */
-
-class NonlinearFactor : public Factor
-{
-public:
-    int factortype;
-
-    /// @name Standard Constructors
-    /// @{
-
-    /** Default constructor for I/O only */
-    NonlinearFactor(int factort = 0);
-    /**
-    * Constructor from a collection of the keys involved in this factor
-    */
-    NonlinearFactor(const std::vector<int>& keys, int factort = 0);
-
-    /** Destructor */
-    ~NonlinearFactor();
-    /**
-    * Calculate the error of the factor
-    * This is typically equal to log-likelihood, e.g. \f$ 0.5(h(x)-z)^2/sigma^2 \f$ in case of Gaussian.
-    * You can override this for systems with unusual noise models.
-    */
-    virtual double error(const std::map<int, Eigen::VectorXd>& c) const;
-    virtual double errorPose3(const std::map<int, Pose3>& c) const;
-    virtual double LCFPerrorP3v(const std::map<int, Pose3>& p3, const std::map<int, Eigen::VectorXd>& v) const;
-
-    virtual double errorP3v(const std::map<int, Pose3>& p3, const std::map<int, Eigen::VectorXd>& v) const;
-    virtual double errorPose2(const std::map<int, Pose2>& c) const;
-
-    virtual double LCFPerrorP2v(const std::map<int, Pose2>& p3, const std::map<int, Eigen::VectorXd>& v) const;
-
-    virtual double errorP2v(const std::map<int, Pose2>& p3, const std::map<int, Eigen::VectorXd>& v) const;
-    virtual double errorP2v(const std::map<int, Pose2>& p3, const std::map<int, Eigen::Vector2d>& v) const;
-
-    /** get the dimension of the factor (number of rows on linearization) */
-    int dim();
-
-    /**
-    * Checks whether a factor should be used based on a set of values.
-    * This is primarily used to implment inequality constraints that
-    * require a variable active set. For all others, the default implementation
-    * returning true solves this problem.
-    *
-    * In an inequality/bounding constraint, this active() returns true
-    * when the constraint is *NOT* fulfilled.
-    * @return true if the constraint is active
-    */
-    virtual bool active(const std::map<int, Eigen::VectorXd>& c /*c*/) const;
-    //
-    /** linearize to a GaussianFactor*/
-    virtual RealGaussianFactor*
-    linearizeVectorPointer(const std::map<int, Eigen::VectorXd>& c,int factorization) const;
-    virtual RealGaussianFactor* linearizePosePointer(const std::map<int, Pose3>& x,int factorization) const;
-
-    virtual RealGaussianFactor* linearizePVPointer(const std::map<int, Pose3>& x1,
-            const std::map<int, Eigen::VectorXd>& x2,int factorization) const;
-
-    virtual RealGaussianFactor* linearizePosePointer(const std::map<int, Pose2>& x,int factorization) const;
-    virtual RealGaussianFactor* linearizePVPointer(const std::map<int, Pose2>& x1,
-            const std::map<int, Eigen::VectorXd>& x2,int factorization) const;
-
-    virtual RealGaussianFactor* linearizePVPointer(const std::map<int, Pose2>& x1,
-            const std::map<int, Eigen::Vector2d>& x2,int factorization) const;
-    virtual NonlinearFactor *clone() const;
-}; // \class NonlinearFactor
 
 /* ************************************************************************* */
 /**
@@ -120,15 +29,27 @@ public:
 
  * The noise model is typically Gaussian, but robust and constrained error models are also supported.
  */
-class NoiseModelFactor : public NonlinearFactor
-{
 
-protected:
+class NoiseModelFactor
+{
+public:
+    /// Iterator over keys
+    typedef std::vector<int>::iterator iterator;
+    /// Const iterator over keys
+    typedef std::vector<int>::const_iterator const_iterator;
+
+    /// The keys involved in this factor
+    std::vector<int> keys_;
+
+    int factortype;
     GaussianNoiseModel *noiseModel_; /** Noise model */
 
 public:
     /** Default constructor for I/O only */
     NoiseModelFactor(int factort = 0);
+
+    NoiseModelFactor(const std::vector<int>& keys, int factort = 0);
+
     /** Destructor */
     virtual ~NoiseModelFactor();
 
@@ -146,6 +67,34 @@ protected:
 public:
     /** get the dimension of the factor (number of rows on linearization) */
     virtual int dim() const;
+
+    /// Access the factor's involved variable keys
+    const std::vector<int>& keys() const;
+
+    /// Access the factor's involved variable keys
+    std::vector<int>& keys();
+
+    /** Iterator at beginning of involved variable keys */
+    std::vector<int>::const_iterator begin() const;
+
+    /** Iterator at end of involved variable keys */
+    std::vector<int>::const_iterator end() const;
+
+
+    /** Iterator at beginning of involved variable keys */
+    std::vector<int>::iterator begin();
+
+    /** Iterator at end of involved variable keys */
+    std::vector<int>::iterator end();
+
+    bool empty();
+
+
+    /**
+    * @return the number of variables involved in this factor
+    */
+    int size() const;
+
     /// access to the noise model
     GaussianNoiseModel *noiseModel() const;
 
@@ -155,34 +104,8 @@ public:
     * If the optional arguments is specified, it should compute
     * both the function evaluation and its derivative(s) in H.
     */
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Eigen::VectorXd>& x) const;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Eigen::VectorXd>& x,
-                                            std::vector<Eigen::MatrixXd> &H) const;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x) const;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x, std::vector<Eigen::MatrixXd> &H) const;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x1,
-                                            const std::map<int, Eigen::VectorXd>& x2,
-                                            std::vector<Eigen::MatrixXd> &H) const;
-
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x1,
-                                            const std::map<int, Eigen::VectorXd>& x2) const;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x) const;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x, std::vector<Eigen::MatrixXd>& H) const;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x1,
-                                            const std::map<int, Eigen::VectorXd>& x2,
-                                            std::vector<Eigen::MatrixXd> &H) const;
-
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x1,
-                                            const std::map<int, Eigen::VectorXd>& x2) const;
-
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x1,const std::map<int,Eigen::Vector2d>& x2) const;
-
-
-    /**
-    * Vector of errors, whitened
-    * This is the raw error, i.e., i.e. \f$ (h(x)-z)/\sigma \f$ in case of a Gaussian
-    */
-    Eigen::VectorXd whitenedError(const std::map<int, Eigen::VectorXd>& c) const;
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const;
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x,std::vector<minimatrix> &H) const;
 
     /**
     * Calculate the error of the factor.
@@ -190,30 +113,16 @@ public:
     * In this class, we take the raw prediction error \f$ h(x)-z \f$, ask the noise model
     * to transform it to \f$ (h(x)-z)^2/\sigma^2 \f$, and then multiply by 0.5.
     */
-    virtual double error(const std::map<int, Eigen::VectorXd>& c) const;
-
-#ifdef GMF_Using_Pose3
-    virtual double errorPose3(const std::map<int, Pose3>& c) const;
-    virtual double errorP3v(const std::map<int, Pose3>& p3, const std::map<int, Eigen::VectorXd>& v) const;
-#else
-    virtual double errorPose2(const std::map<int, Pose2>& c) const;
-    virtual double errorP2v(const std::map<int, Pose2>& p2, const std::map<int, Eigen::VectorXd>& v) const;
-    virtual double errorP2v(const std::map<int, Pose2>& p2, const std::map<int, Eigen::Vector2d>& v) const;
-#endif // GMF_Using_Pose3
+    virtual double error(const std::map<int, minimatrix*>& c) const;
 
     /**
     * Linearize a non-linearFactorN to get a GaussianFactor,
     * \f$ Ax-b \approx h(x+\delta x)-z = h(x) + A \delta x - z \f$
     * Hence \f$ b = z - h(x) = - \mathtt{error\_vector}(x) \f$
     */
+    virtual RealGaussianFactor*  linearize(const std::map<int, minimatrix*>& x,int factorizaton) const;
+    virtual NoiseModelFactor *clone() const;
 
-    virtual RealGaussianFactor* linearizeVectorPointer(const std::map<int, Eigen::VectorXd>& x,int factorizaton) const override;
-    virtual RealGaussianFactor* linearizePosePointer(const std::map<int, Pose3>& x,int factorization) const override;
-    virtual RealGaussianFactor* linearizePVPointer(const std::map<int, Pose3>& x1,
-            const std::map<int, Eigen::VectorXd>& x2,int factorization) const override;
-    virtual RealGaussianFactor* linearizePosePointer(const std::map<int, Pose2>& x,int factorization) const override;
-    virtual RealGaussianFactor* linearizePVPointer(const std::map<int, Pose2>& x1,
-            const std::map<int, Eigen::VectorXd>& x2,int factorization) const override;
 };     // \class NoiseModelFactor
 
 /* ************************************************************************* */
@@ -255,82 +164,29 @@ public:
     /** Calls the 1-key specific version of evaluateError, which is pure virtual
     *  so must be implemented in the derived class.
     */
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x) const
-    {
-        std::map<int, Pose3>::const_iterator xbegin = x.find(keys_[0]);
-        const Pose3& x1 = xbegin->second;
-        return evaluateError(x1);
-    }
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x, std::vector<Eigen::MatrixXd> &H) const
-    {
-        std::map<int, Pose3>::const_iterator xbegin = x.find(keys_[0]);
 
-        const Pose3& x1 = xbegin->second;
-        return evaluateError(x1, H.front());
-    }
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x) const
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const
     {
-        std::map<int, Pose2>::const_iterator xbegin = x.find(keys_[0]);
-        const Pose2& x1 = xbegin->second;
-        return evaluateError(x1);
+        std::map<int, minimatrix*>::const_iterator xbegin = x.find(keys_[0]);
+        return evaluateError(xbegin->second);
     }
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose2>& x, std::vector<Eigen::MatrixXd> &H) const
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x,std::vector<minimatrix> &H) const
     {
-        std::map<int, Pose2>::const_iterator xbegin = x.find(keys_[0]);
-        const Pose2& x1 = xbegin->second;
-        return evaluateError(x1, H.front());
+        std::map<int, minimatrix*>::const_iterator xbegin = x.find(keys_[0]);
+        return evaluateError(xbegin->second, H.front());
+    }
+    virtual minivector evaluateError(const minimatrix* x) const
+    {
+        minivector xb;
+        return xb;
+    }
+    virtual minivector evaluateError(const minimatrix* x, minimatrix &H) const
+    {
+        minivector xb;
+        return xb;
     }
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Eigen::VectorXd>& x) const
-    {
-        std::map<int, Eigen::VectorXd>::const_iterator xbegin = x.find(keys_[0]);
-        Eigen::VectorXd x1 = xbegin->second;
-        return evaluateError(x1);
-    }
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Eigen::VectorXd>& x, std::vector<Eigen::MatrixXd> &H) const
-    {
-        std::map<int, Eigen::VectorXd>::const_iterator xbegin = x.find(keys_[0]);
-        Eigen::VectorXd x1 = xbegin->second;
-        return evaluateError(x1, H.front());
-    }
-    /**
-    *  Override this method to finish implementing a unary factor.
-    *  If the optional Matrix reference argument is specified, it should compute
-    *  both the function evaluation and its derivative in X.
-    */
-
-    virtual Eigen::VectorXd evaluateError(const Eigen::VectorXd& x) const
-    {
-        Eigen::VectorXd xb;
-        return xb;
-    }
-    virtual Eigen::VectorXd evaluateError(const Eigen::VectorXd& x, Eigen::MatrixXd &H) const
-    {
-        Eigen::VectorXd xb;
-        return xb;
-    }
-    virtual Eigen::VectorXd evaluateError(const Pose3& x) const
-    {
-        Eigen::VectorXd xb;
-        return xb;
-
-    }
-    virtual Eigen::VectorXd evaluateError(const Pose3& x, Eigen::MatrixXd &H) const
-    {
-        Eigen::VectorXd xb;
-        return xb;
-    }
-    virtual Eigen::VectorXd evaluateError(const Pose2& x) const
-    {
-        Eigen::VectorXd xb;
-        return xb;
-    }
-    virtual Eigen::VectorXd evaluateError(const Pose2& x, Eigen::MatrixXd &H) const
-    {
-        Eigen::VectorXd xb;
-        return xb;
-    }
 }; // \class NoiseModelFactor1
 
 /* ************************************************************************* */
@@ -369,41 +225,44 @@ public:
         return keys_[1];
     }
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Eigen::VectorXd>& x) const
-    {
-        std::map<int, Eigen::VectorXd>::const_iterator xbegin = x.find(key1());
-        Eigen::VectorXd x1 = xbegin->second;
-        std::map<int, Eigen::VectorXd>::const_iterator xsecond = x.find(key2());
-        Eigen::VectorXd x2 = xsecond->second;
-        return evaluateError(x1, x2);
-    }
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Eigen::VectorXd>& x, std::vector<Eigen::MatrixXd> &H) const
-    {
-        std::map<int, Eigen::VectorXd>::const_iterator xbegin = x.find(key1());
-        Eigen::VectorXd x1 = xbegin->second;
-        std::map<int, Eigen::VectorXd>::const_iterator xsecond = x.find(key2());
-        Eigen::VectorXd x2 = xsecond->second;
+    /**
+    *  Override this method to finish implementing a binary factor.
+    *  If any of the optional Matrix reference arguments are specified, it should compute
+    *  both the function evaluation and its derivative(s) in X1 (and/or X2).
+    */
 
-        return evaluateError(x1, x2, *(H.begin()), *(H.begin() + 1));
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const
+    {
+        std::map<int, minimatrix*>::const_iterator xbegin = x.find(key1());
+        std::map<int, minimatrix*>::const_iterator xsecond = x.find(key2());
+        return evaluateError(xbegin->second, xsecond->second);
+    }
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x, std::vector<minimatrix> &H) const
+    {
+        std::map<int, minimatrix*>::const_iterator xbegin = x.find(key1());
+        std::map<int, minimatrix*>::const_iterator xsecond = x.find(key2());
+
+        return evaluateError(xbegin->second, xsecond->second, *(H.begin()), *(H.begin() + 1));
     }
     /**
     *  Override this method to finish implementing a binary factor.
     *  If any of the optional Matrix reference arguments are specified, it should compute
     *  both the function evaluation and its derivative(s) in X1 (and/or X2).
     */
-    virtual Eigen::VectorXd
-    evaluateError(const Eigen::VectorXd& X1, const Eigen::VectorXd& X2) const
+    virtual minivector
+    evaluateError(const minimatrix* X1, const minimatrix* X2) const
     {
-        Eigen::VectorXd VV;
+        minivector VV;
         return VV;
     }
 
-    virtual Eigen::VectorXd
-    evaluateError(const Eigen::VectorXd& X1, const Eigen::VectorXd& X2, Eigen::MatrixXd &H1, Eigen::MatrixXd &H2) const
+    virtual minivector
+    evaluateError(const minimatrix* X1, const minimatrix* X2, minimatrix &H1, minimatrix &H2) const
     {
-        Eigen::VectorXd VV;
+        minivector VV;
         return VV;
     }
+
 
 }; // \class NoiseModelFactor2
 

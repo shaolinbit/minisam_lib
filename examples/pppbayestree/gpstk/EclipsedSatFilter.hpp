@@ -56,162 +56,169 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      //@{
+/** @addtogroup GPSsolutions */
+//@{
 
 
-      /** This class filters out satellites that are eclipsed by Earth shadow.
-       *
-       * This class is meant to be used with the GNSS data structures objects
-       * found in "DataStructures" class.
-       *
-       * A typical way to use this class follows:
-       *
-       * @code
-       *      // Input observation file stream
-       *   RinexObsStream rin("ebre0300.02o");
-       *
-       *      // Load the precise ephemeris file
-       *   SP3EphemerisStore sp3Eph;
-       *   sp3Eph.loadFile("igs11513.sp3");
+/** This class filters out satellites that are eclipsed by Earth shadow.
+ *
+ * This class is meant to be used with the GNSS data structures objects
+ * found in "DataStructures" class.
+ *
+ * A typical way to use this class follows:
+ *
+ * @code
+ *      // Input observation file stream
+ *   RinexObsStream rin("ebre0300.02o");
+ *
+ *      // Load the precise ephemeris file
+ *   SP3EphemerisStore sp3Eph;
+ *   sp3Eph.loadFile("igs11513.sp3");
 
-       *      // Reference position of receiver station
-       *   Position nominalPos(4833520.2269, 41537.00768, 4147461.489);
-       *
-       *      // Object to compute basic model data
-       *   BasicModel basicM(nominalPos, sp3Eph);
-       *
-       *      // Object to detect and delete satellites in eclipse
-       *   EclipsedSatFilter eclipsedSV;
-       *
-       *      // Some more code and definitions here...
-       *
-       *   gnssRinex gRin;  // GNSS data structure for fixed station data
-       *
-       *   while(rin >> gRin)
-       *   {
-       *
-       *         // Apply the model on the GDS and delete satellites in eclipse
-       *      gRin >> basicM >> eclipsedSV;
-       *   }
-       * @endcode
-       *
-       * The "EclipsedSatFilter" object will visit every satellite in the GNSS
-       * data structure that is "gRin" and will determine if such satellite is
-       * in eclipse, or whether it recently was.
-       *
-       * This effect may be important when using precise positioning, because
-       * satellite orbits tend to degrade when satellites are in eclipse, or
-       * when they have been in eclipse recently.
-       *
-       * There are two adjustable parameters in this class: Shadow cone angle
-       * (30 degrees by default), and the period after eclipse that the
-       * satellite will still be deemed unreliable (1800 seconds by default).
-       *
-       */
-   class EclipsedSatFilter : public ProcessingClass
-   {
-      public:
+ *      // Reference position of receiver station
+ *   Position nominalPos(4833520.2269, 41537.00768, 4147461.489);
+ *
+ *      // Object to compute basic model data
+ *   BasicModel basicM(nominalPos, sp3Eph);
+ *
+ *      // Object to detect and delete satellites in eclipse
+ *   EclipsedSatFilter eclipsedSV;
+ *
+ *      // Some more code and definitions here...
+ *
+ *   gnssRinex gRin;  // GNSS data structure for fixed station data
+ *
+ *   while(rin >> gRin)
+ *   {
+ *
+ *         // Apply the model on the GDS and delete satellites in eclipse
+ *      gRin >> basicM >> eclipsedSV;
+ *   }
+ * @endcode
+ *
+ * The "EclipsedSatFilter" object will visit every satellite in the GNSS
+ * data structure that is "gRin" and will determine if such satellite is
+ * in eclipse, or whether it recently was.
+ *
+ * This effect may be important when using precise positioning, because
+ * satellite orbits tend to degrade when satellites are in eclipse, or
+ * when they have been in eclipse recently.
+ *
+ * There are two adjustable parameters in this class: Shadow cone angle
+ * (30 degrees by default), and the period after eclipse that the
+ * satellite will still be deemed unreliable (1800 seconds by default).
+ *
+ */
+class EclipsedSatFilter : public ProcessingClass
+{
+public:
 
-         /// Default constructor.
-      EclipsedSatFilter() : coneAngle(30.0), postShadowPeriod(1800.0)
-      { };
-
-
-         /** Common constructor
-          *
-          * @param angle      Aperture angle of shadow cone, in degrees.
-          * @param pShTime    Time after exiting shadow that satellite will
-          *                   still be filtered out, in seconds.
-          */
-      EclipsedSatFilter( const double angle,
-                         const double pShTime )
-         : coneAngle(angle), postShadowPeriod(pShTime)
-      { };
+    /// Default constructor.
+    EclipsedSatFilter() : coneAngle(30.0), postShadowPeriod(1800.0)
+    { };
 
 
-         /** Returns a satTypeValueMap object, adding the new data generated
-          *  when calling this object.
-          *
-          * @param epoch     Time of observations.
-          * @param gData     Data object holding the data.
-          */
-      virtual satTypeValueMap& Process( const CommonTime& epoch,
-                                        satTypeValueMap& gData )
-         throw(ProcessingException);
+    /** Common constructor
+     *
+     * @param angle      Aperture angle of shadow cone, in degrees.
+     * @param pShTime    Time after exiting shadow that satellite will
+     *                   still be filtered out, in seconds.
+     */
+    EclipsedSatFilter( const double angle,
+                       const double pShTime )
+        : coneAngle(angle), postShadowPeriod(pShTime)
+    { };
 
 
-         /** Returns a gnnsSatTypeValue object, adding the new data generated
-          *  when calling this object.
-          *
-          * @param gData    Data object holding the data.
-          */
-      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(ProcessingException)
-      { Process(gData.header.epoch, gData.body); return gData; };
+    /** Returns a satTypeValueMap object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param epoch     Time of observations.
+     * @param gData     Data object holding the data.
+     */
+    virtual satTypeValueMap& Process( const CommonTime& epoch,
+                                      satTypeValueMap& gData )
+    throw(ProcessingException);
 
 
-         /** Returns a gnnsRinex object, adding the new data generated when
-          *  calling this object.
-          *
-          * @param gData    Data object holding the data.
-          */
-      virtual gnssRinex& Process(gnssRinex& gData)
-         throw(ProcessingException);
+    /** Returns a gnnsSatTypeValue object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.header.epoch, gData.body);
+        return gData;
+    };
 
 
-         /// Returns aperture of shadow cone, in degrees.
-      virtual double getConeAngle(void) const
-      { return coneAngle; };
+    /** Returns a gnnsRinex object, adding the new data generated when
+     *  calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssRinex& Process(gnssRinex& gData)
+    throw(ProcessingException);
 
 
-         /** Sets aperture of shadow cone, in degrees.
-          *
-          * @param angle   Aperture angle of shadow cone, in degrees.
-          *
-          * \warning Valid values are within 0 and 90 degrees.
-          */
-      virtual EclipsedSatFilter& setConeAngle(const double angle);
+    /// Returns aperture of shadow cone, in degrees.
+    virtual double getConeAngle(void) const
+    {
+        return coneAngle;
+    };
 
 
-         /// Returns time after exiting shadow that satellite will still be
-         /// filtered out, in seconds.
-      virtual double getPostShadowPeriod(void) const
-      { return postShadowPeriod; };
+    /** Sets aperture of shadow cone, in degrees.
+     *
+     * @param angle   Aperture angle of shadow cone, in degrees.
+     *
+     * \warning Valid values are within 0 and 90 degrees.
+     */
+    virtual EclipsedSatFilter& setConeAngle(const double angle);
 
 
-         /** Sets time after exiting shadow that satellite will still be
-          *  filtered out, in seconds.
-          * @param pShTime    Time after exiting shadow that satellite will
-          *                   still be filtered out, in seconds.
-          */
-      virtual EclipsedSatFilter& setPostShadowPeriod(const double pShTime);
+    /// Returns time after exiting shadow that satellite will still be
+    /// filtered out, in seconds.
+    virtual double getPostShadowPeriod(void) const
+    {
+        return postShadowPeriod;
+    };
 
 
-         /// Returns a string identifying this object.
-      virtual std::string getClassName(void) const;
+    /** Sets time after exiting shadow that satellite will still be
+     *  filtered out, in seconds.
+     * @param pShTime    Time after exiting shadow that satellite will
+     *                   still be filtered out, in seconds.
+     */
+    virtual EclipsedSatFilter& setPostShadowPeriod(const double pShTime);
 
 
-         /// Destructor
-      virtual ~EclipsedSatFilter() {};
+    /// Returns a string identifying this object.
+    virtual std::string getClassName(void) const;
 
 
-   private:
+    /// Destructor
+    virtual ~EclipsedSatFilter() {};
 
 
-         /// Aperture angle of shadow cone, in degrees.
-      double coneAngle;
+private:
 
-         /// Time after exiting shadow that satellite will still be
-         /// filtered out, in seconds.
-      double postShadowPeriod;
 
-         /// Map holding the time information about every satellite in eclipse
-      std::map<SatID, CommonTime> shadowEpoch;
+    /// Aperture angle of shadow cone, in degrees.
+    double coneAngle;
 
-   }; // End of class 'EclipsedSatFilter'
+    /// Time after exiting shadow that satellite will still be
+    /// filtered out, in seconds.
+    double postShadowPeriod;
 
-      //@}
+    /// Map holding the time information about every satellite in eclipse
+    std::map<SatID, CommonTime> shadowEpoch;
+
+}; // End of class 'EclipsedSatFilter'
+
+//@}
 
 }  // End of namespace gpstk
 

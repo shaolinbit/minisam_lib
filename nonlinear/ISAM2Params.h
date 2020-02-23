@@ -1,21 +1,10 @@
 #ifndef ISAM2PARAMS_H_INCLUDED
 #define ISAM2PARAMS_H_INCLUDED
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
 
 /**
  * @file    ISAM2Params.h
  * @brief   Parameters for iSAM 2.
- * @author  Michael Kaess, Richard Roberts, Frank Dellaert
  */
 
 #include "../nonlinear/DoglegOptimizerImpl.h"
@@ -47,18 +36,23 @@ struct  ISAM2GaussNewtonParams
         this->wildfireThreshold = wildfireThreshold;
     }
 };
+
 struct  ISAM2DoglegParams
 {
     double initialDelta; ///< The initial trust region radius for Dogleg
     double wildfireThreshold; ///< Continue updating the linear delta only when changes are above this threshold (default: 1e-5)
-    DoglegOptimizerImpl::TrustRegionAdaptationMode adaptationMode; ///< See description in DoglegOptimizerImpl::TrustRegionAdaptationMode
+
+    // DoglegOptimizerImpl::
+    TrustRegionAdaptationMode adaptationMode; ///< See description in DoglegOptimizerImpl::TrustRegionAdaptationMode
     bool verbose; ///< Whether Dogleg prints iteration and convergence information
 
-    /** Specify parameters as constructor arguments */
+    // Specify parameters as constructor arguments
     ISAM2DoglegParams(
         double _initialDelta = 1.0, ///< see ISAM2DoglegParams::initialDelta
         double _wildfireThreshold = 1e-5, ///< see ISAM2DoglegParams::wildfireThreshold
-        DoglegOptimizerImpl::TrustRegionAdaptationMode _adaptationMode = DoglegOptimizerImpl::SEARCH_EACH_ITERATION, ///< see ISAM2DoglegParams::adaptationMode
+        //DoglegOptimizerImpl::
+        TrustRegionAdaptationMode _adaptationMode = //DoglegOptimizerImpl::
+            SEARCH_EACH_ITERATION, ///< see ISAM2DoglegParams::adaptationMode
         bool _verbose = false ///< see ISAM2DoglegParams::verbose
     ) : initialDelta(_initialDelta), wildfireThreshold(_wildfireThreshold),
         adaptationMode(_adaptationMode), verbose(_verbose) {}
@@ -98,8 +92,10 @@ struct  ISAM2DoglegParams
         this->verbose = verbose;
     };
 
-    std::string adaptationModeTranslator(const DoglegOptimizerImpl::TrustRegionAdaptationMode& adaptationMode) const;
-    DoglegOptimizerImpl::TrustRegionAdaptationMode adaptationModeTranslator(const std::string& adaptationMode) const;
+    std::string adaptationModeTranslator(//const DoglegOptimizerImpl::
+        const TrustRegionAdaptationMode& adaptationMode) const;
+    //DoglegOptimizerImpl::
+    TrustRegionAdaptationMode adaptationModeTranslator(const std::string& adaptationMode) const;
 };
 
 /**
@@ -136,7 +132,7 @@ struct  ISAM2Params
 
     double relinearizeThresholdDouble;
 
-    std::map<char,Eigen::VectorXd> *relinearizeThresholdMap;
+    std::map<char,minivector> *relinearizeThresholdMap;
 
 
     int relinearizeSkip; ///< Only relinearize any variables every relinearizeSkip calls to ISAM2::update (default: 10)
@@ -175,7 +171,7 @@ struct  ISAM2Params
         ISAM2DoglegParams *_optimizationParamsDog=NULL, ///< see ISAM2Params::optimizationParams
         ISAM2GaussNewtonParams *_optimizationParamsGaussNewton=NULL,
         double _relinearizeThresholdDouble = 0.1, ///< see ISAM2Params::relinearizeThreshold
-        std::map<char,Eigen::VectorXd> *_relinearizeThresholdMap=NULL,
+        std::map<char,minivector> *_relinearizeThresholdMap=NULL,
         int _relinearizeSkip = 10, ///< see ISAM2Params::relinearizeSkip
         bool _enableRelinearization = true, ///< see ISAM2Params::enableRelinearization
         bool _evaluateNonlinearError = false, ///< see ISAM2Params::evaluateNonlinearError
@@ -194,6 +190,7 @@ struct  ISAM2Params
     /// @name Getters and Setters for all properties
     /// @{
 
+
     ISAM2DoglegParams getOptimizationParamsDogleg() const
     {
         return *optimizationParamsDogleg;
@@ -209,7 +206,7 @@ struct  ISAM2Params
         return relinearizeThresholdDouble;
     }
 
-    std::map<char,Eigen::VectorXd> getrelinearizeThresholdMap() const
+    std::map<char,minivector> getrelinearizeThresholdMap() const
     {
         return *relinearizeThresholdMap;
     }
@@ -248,6 +245,7 @@ struct  ISAM2Params
     {
         this->optimizationParamsDogleg = optimizationParamsDL;
     }
+
     void setOptimizationParamsGaussNewton(ISAM2GaussNewtonParams *optimizationParamsGN)
     {
         this->optimizationParamsGaussNewton = optimizationParamsGN;
@@ -258,7 +256,7 @@ struct  ISAM2Params
         this->relinearizeThresholdDouble = relinearizeThresholdD;
     }
 
-    void setRelinearizeThresholdMap(std::map<char,Eigen::VectorXd> *relinearizeThresholdM)
+    void setRelinearizeThresholdMap(std::map<char,minivector> *relinearizeThresholdM)
     {
         this->relinearizeThresholdMap = relinearizeThresholdM;
     }

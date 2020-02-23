@@ -1,27 +1,13 @@
 #ifndef GAUSSIANBAYESNET_H_INCLUDED
 #define GAUSSIANBAYESNET_H_INCLUDED
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    GaussianBayesNet.h
- * @brief   Chordal Bayes Net, the result of eliminating a factor graph
- * @brief   GaussianBayesNet
- * @author  Frank Dellaert
+ * @brief   Chordal Bayes Net, the result of eliminating a factor graph,GaussianBayesNet
  */
 
 #include "../linear/GaussianConditional.h"
 #include "../inference/FactorGraph.h"
-#include <Eigen/Core>
 namespace minisam
 {
 
@@ -50,10 +36,10 @@ public:
     /// @{
 
     /// Solve the GaussianBayesNet, i.e. return \f$ x = R^{-1}*d \f$, by back-substitution
-    std::map<int,Eigen::VectorXd> optimize() const;
+    std::map<int,minivector> optimize() const;
 
     /// Version of optimize for incomplete BayesNet, needs solution for missing variables
-    std::map<int,Eigen::VectorXd> optimize(const std::map<int,Eigen::VectorXd>& solutionForMissing) const;
+    std::map<int,minivector> optimize(const std::map<int,minivector>& solutionForMissing) const;
 
     ///@}
 
@@ -63,7 +49,7 @@ public:
     /**
      * Return (dense) upper-triangular matrix representation
      */
-    std::pair<Eigen::MatrixXd, Eigen::VectorXd> matrix() const;
+    std::pair<minimatrix, minivector> matrix() const;
 
     /**
      * Optimize along the gradient direction, with a closed-form computation to perform the line
@@ -90,7 +76,7 @@ public:
      * \f$ G \f$, returning
      *
      * \f[ \delta x = \hat\alpha g = \frac{-g^T g}{(R g)^T(R g)} \f] */
-    std::map<int,Eigen::VectorXd> optimizeGradientSearch() const;
+    std::map<int,minivector> optimizeGradientSearch() const;
 
     /** Compute the gradient of the energy function, \f$ \nabla_{x=0} \left\Vert \Sigma^{-1} R x - d
      * \right\Vert^2 \f$, centered around zero. The gradient about zero is \f$ -R^T d \f$.  See also
@@ -98,10 +84,10 @@ public:
      *
      * @param [output] g A VectorValues to store the gradient, which must be preallocated, see
      *        allocateVectorValues */
-    std::map<int,Eigen::VectorXd> gradientAtZero() const;
+    std::map<int,minivector> gradientAtZero() const;
 
     /** Mahalanobis norm error. */
-    double error(const std::map<int,Eigen::VectorXd>& x) const;
+    double error(const std::map<int,minivector>& x) const;
 
     /**
      * Computes the determinant of a GassianBayesNet. A GaussianBayesNet is an upper triangular

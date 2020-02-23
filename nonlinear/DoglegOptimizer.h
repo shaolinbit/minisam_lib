@@ -4,9 +4,6 @@
 
 /**
  * @file    DoglegOptimizer.h
- * @brief
- * @author  Richard Roberts
- * @date   Feb 26, 2012
  */
 
 #include "../nonlinear/NonlinearOptimizer.h"
@@ -69,15 +66,10 @@ public:
      * @param initialValues The initial variable assignments
      * @param params The optimization parameters
      */
-#ifdef GMF_Using_Pose3
-    DoglegOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                    const std::map<int,Pose3>& initialPoses,
+    DoglegOptimizer(const NonlinearFactorGraph& graph,
+                    const std::map<int,minimatrix*>& initialValues,
                     const DoglegParams& params = DoglegParams());
-#else
-    DoglegOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                    const std::map<int,Pose2>& initialPoses,
-                    const DoglegParams& params = DoglegParams());
-#endif
+
     /** Standard constructor, requires a nonlinear factor graph, initial
      * variable assignments, and optimization parameters.  For convenience this
      * version takes plain objects instead of shared pointers, but internally
@@ -85,14 +77,8 @@ public:
      * @param graph The nonlinear factor graph to optimize
      * @param initialValues The initial variable assignments
      */
-#ifdef GMF_Using_Pose3
-    DoglegOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                    const std::map<int,Pose3>& initialPoses,const std::vector<int>& ordering);
-#else
-    DoglegOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                    const std::map<int,Pose2>& initialPoses,const std::vector<int>& ordering);
-#endif
-
+    DoglegOptimizer(const NonlinearFactorGraph& graph, const std::map<int,minimatrix*>& initialValues,
+                    const std::vector<int>& ordering);
     /// @}
 
     /// @name Advanced interface

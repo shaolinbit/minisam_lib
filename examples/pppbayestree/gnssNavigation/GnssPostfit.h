@@ -12,9 +12,9 @@
 
 
 #ifndef FOREACH_HPP
-  #define FOREACH_HPP
-  #include <boost/foreach.hpp>
-  #define foreach BOOST_FOREACH
+#define FOREACH_HPP
+#include <boost/foreach.hpp>
+#define foreach BOOST_FOREACH
 #endif
 
 #include "boost/foreach.hpp"
@@ -27,12 +27,12 @@ using namespace boost;
 
 
 /// Function to calculate gnss postfit residuals
-vector<double> getResiduals( Eigen::Vector3d &nomXYZ, std::map<int,Eigen::VectorXd> &results, vector<rnxData> data);
+vector<double> getResiduals( minivector &nomXYZ, std::map<int,minivector> &results,const vector<rnxData>& data);
 
 /// write residuals to text file
-void writeResiduals( vector<double> postfitResiduals, string outputFile, vector<string> switchIndex );
+void writeResiduals(const vector<double>& postfitResiduals, string outputFile,const vector<string>& switchIndex );
 
 // iterate over residual vector to mark outliers.
-vector<int> markResiduals( vector<double> postfitResdiuals, double threshold );
+vector<int> markResiduals(const vector<double>& postfitResdiuals, double threshold );
 
 

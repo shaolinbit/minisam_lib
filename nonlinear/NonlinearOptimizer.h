@@ -5,8 +5,6 @@
 /**
  * @file NonlinearOptimizer.h
  * @brief Base class and parameters for nonlinear optimization algorithms
- * @author Richard Roberts
- * @date Sep 7, 2009
  */
 
 #pragma once
@@ -92,11 +90,7 @@ public:
      * process, you may call iterate() and check_convergence() yourself, and if
      * needed modify the optimization state between iterations.
      */
-#ifdef  GMF_Using_Pose3
-    virtual const std::map<int,Eigen::VectorXd> optimize(std::map<int,Pose3>* poses);
-#else
-    virtual const std::map<int,Eigen::VectorXd> optimize(std::map<int,Pose2>* poses);
-#endif // GMF_Using_Pose3
+    virtual const std::map<int,minimatrix*> optimize();
 
     /**
      * Optimize, but return empty result if any uncaught exception is thrown
@@ -104,11 +98,8 @@ public:
      * No message is printed: it is up to the caller to check the result
      * @param optimizer a non-linear optimizer
      */
-#ifdef  GMF_Using_Pose3
-    const std::map<int,Eigen::VectorXd> optimizeSafely(std::map<int,Pose3>* poses);
-#else
-    const std::map<int,Eigen::VectorXd> optimizeSafely(std::map<int,Pose2>* poses);
-#endif
+    const std::map<int,minimatrix*> optimizeSafely();
+
     /// return error
     double error() const;
 
@@ -116,13 +107,8 @@ public:
     int iterations() const;
 
     /// return values
-    const std::map<int,Eigen::VectorXd> values() const;
+    const std::map<int,minimatrix*> values() const;
 
-#ifdef  GMF_Using_Pose3
-    const std::map<int,Pose3>& poses() const;
-#else
-    const std::map<int,Pose2>& poses() const;
-#endif
     /// @}
 
     /// @name Advanced interface
@@ -132,8 +118,8 @@ public:
     virtual ~NonlinearOptimizer();
 
     /** Default function to do linear solve, i.e. optimize a GaussianFactorGraph */
-    virtual std::map<int,Eigen::VectorXd> solve(const GaussianFactorGraph &gfg,
-            const NonlinearOptimizerParams& params) const;
+    virtual std::map<int,minivector> solve(const GaussianFactorGraph &gfg,
+                                           const NonlinearOptimizerParams& params) const;
 
     /** Perform a single iteration, returning a new NonlinearOptimizer class
      * containing the updated variable assignments, which may be retrieved with

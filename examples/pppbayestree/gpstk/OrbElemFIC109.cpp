@@ -54,50 +54,50 @@
 
 namespace gpstk
 {
-   using namespace std;
+using namespace std;
 
-   OrbElemFIC109::OrbElemFIC109()
-      :OrbElemLNav()
-   {}
+OrbElemFIC109::OrbElemFIC109()
+    :OrbElemLNav()
+{}
 
-   OrbElemFIC109::OrbElemFIC109( const FICData& fic109 )
-      throw( InvalidParameter )
-   {
-      loadData( fic109 );
-   }
+OrbElemFIC109::OrbElemFIC109( const FICData& fic109 )
+throw( InvalidParameter )
+{
+    loadData( fic109 );
+}
 
-   OrbElemFIC109* OrbElemFIC109::clone() const
-   {
-      return new OrbElemFIC109 (*this); 
-   }
-   
-   void OrbElemFIC109::loadData( const FICData& fic109)
-      throw( InvalidParameter )
-   {
-      if (fic109.blockNum!=109)
-      {
-         InvalidParameter exc("Invalid FIC Block: "+StringUtils::asString(fic109.blockNum));
-         GPSTK_THROW(exc);
-      }
-      short XmitGPSWeek = fic109.i[0];
-      short PRNID = fic109.i[1];
-      long SF1[10], SF2[10], SF3[10];
-      for(int i = 0; i < 10; i++)
-      {
-         SF1[i] = fic109.i[2+i];
-         SF2[i] = fic109.i[12+i];
-         SF3[i] = fic109.i[22+i];
-      }
+OrbElemFIC109* OrbElemFIC109::clone() const
+{
+    return new OrbElemFIC109 (*this);
+}
 
-         // FIC only stores GPS data, so the system is well-defined.
-      SatID sid(PRNID, SatID::systemGPS);
+void OrbElemFIC109::loadData( const FICData& fic109)
+throw( InvalidParameter )
+{
+    if (fic109.blockNum!=109)
+    {
+        InvalidParameter exc("Invalid FIC Block: "+StringUtils::asString(fic109.blockNum));
+        GPSTK_THROW(exc);
+    }
+    short XmitGPSWeek = fic109.i[0];
+    short PRNID = fic109.i[1];
+    long SF1[10], SF2[10], SF3[10];
+    for(int i = 0; i < 10; i++)
+    {
+        SF1[i] = fic109.i[2+i];
+        SF2[i] = fic109.i[12+i];
+        SF3[i] = fic109.i[22+i];
+    }
 
-      OrbElemLNav::loadData( SF1,
-                             SF2,
-                             SF3,
-                             sid,
-                             XmitGPSWeek );
-   }
+    // FIC only stores GPS data, so the system is well-defined.
+    SatID sid(PRNID, SatID::systemGPS);
+
+    OrbElemLNav::loadData( SF1,
+                           SF2,
+                           SF3,
+                           sid,
+                           XmitGPSWeek );
+}
 
 } // namespace
 

@@ -40,51 +40,53 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      /// @ingroup math
-      //@{
+/** @addtogroup GPSsolutions */
+/// @ingroup math
+//@{
 
-      /**
-       * Abstract base class for filter algorithms.
-       */
-   class FilterBase
-   {
-   public:
-
-
-         /// Implicit constructor
-      FilterBase() : valid(false) {};
+/**
+ * Abstract base class for filter algorithms.
+ */
+class FilterBase
+{
+public:
 
 
-         /** Abstract method. Returns result.
-          *
-          * @param input      Input data.
-          */
-      virtual double Compute( double input ) = 0;
+    /// Implicit constructor
+    FilterBase() : valid(false) {};
 
 
-         /// Abstract method. Resets filter.
-      virtual void Reset(void) = 0;
+    /** Abstract method. Returns result.
+     *
+     * @param input      Input data.
+     */
+    virtual double Compute( double input ) = 0;
 
 
-         /// Returns validity of results
-      bool isValid(void)
-      { return valid; }
+    /// Abstract method. Resets filter.
+    virtual void Reset(void) = 0;
 
 
-         /// Destructor
-      virtual ~FilterBase() {};
+    /// Returns validity of results
+    bool isValid(void)
+    {
+        return valid;
+    }
 
 
-   protected:
+    /// Destructor
+    virtual ~FilterBase() {};
 
 
-        bool valid;         // true only if results are valid
+protected:
 
 
-   }; // End of class 'FilterBase'
+    bool valid;         // true only if results are valid
 
-      //@}
+
+}; // End of class 'FilterBase'
+
+//@}
 
 }  // End of namespace gpstk
 

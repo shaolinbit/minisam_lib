@@ -38,75 +38,81 @@
 namespace gpstk
 {
 
-      /** @addtogroup RinexObs */
-      //@{
+/** @addtogroup RinexObs */
+//@{
 
 
-      /// This class eases PC combination data extraction from
-      /// a Rinex3ObsData object.
-   class ExtractPC : public ExtractCombinationData
-   {
-   public:
+/// This class eases PC combination data extraction from
+/// a Rinex3ObsData object.
+class ExtractPC : public ExtractCombinationData
+{
+public:
 
-         /// Default constructor
-      ExtractPC()
-         : typeObs1("P1"), typeObs2("P2")
-      { valid = false; checkData = true; };
+    /// Default constructor
+    ExtractPC()
+        : typeObs1("P1"), typeObs2("P2")
+    {
+        valid = false;
+        checkData = true;
+    };
 
 
-         /** Compute the PC observation from a Rinex3ObsData object.
-          *
-          * @param rinexData  The Rinex data set holding the observations.
-          * @param hdr        RINEX Observation Header for current RINEX file.
-          *
-          * @return
-          *  Number of satellites with PC combination data available
-          */
+    /** Compute the PC observation from a Rinex3ObsData object.
+     *
+     * @param rinexData  The Rinex data set holding the observations.
+     * @param hdr        RINEX Observation Header for current RINEX file.
+     *
+     * @return
+     *  Number of satellites with PC combination data available
+     */
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
-      virtual int getData( const Rinex3ObsData& rinexData,
-                           const Rinex3ObsHeader& hdr )
-         throw(InvalidRequest)
-      {
+    virtual int getData( const Rinex3ObsData& rinexData,
+                         const Rinex3ObsHeader& hdr )
+    throw(InvalidRequest)
+    {
 
-         return ExtractCombinationData::getData( rinexData,
-                                                 typeObs1,
-                                                 typeObs2,
-                                                 hdr );
+        return ExtractCombinationData::getData( rinexData,
+                                                typeObs1,
+                                                typeObs2,
+                                                hdr );
 
-      }; // End of method 'ExtractPC::getData()'
+    }; // End of method 'ExtractPC::getData()'
 
 #pragma clang diagnostic pop
-         /// Some Rinex data files provide C1 instead of P1. Use this method
-         /// in those cases.
-      virtual ExtractPC& useC1()
-      { typeObs1 = "C1"; return (*this); };
+    /// Some Rinex data files provide C1 instead of P1. Use this method
+    /// in those cases.
+    virtual ExtractPC& useC1()
+    {
+        typeObs1 = "C1";
+        return (*this);
+    };
 
 
-         /// Destructor
-      virtual ~ExtractPC() {};
+    /// Destructor
+    virtual ~ExtractPC() {};
 
 
-   protected:
+protected:
 
 
-         /// Compute the combination of observables.
-      virtual double getCombination( double obs1, double obs2 )
-         throw(InvalidRequest)
-      {
-         return ( (GAMMA_GPS*obs1 - obs2)/(GAMMA_GPS - 1.0) );
-      };
+    /// Compute the combination of observables.
+    virtual double getCombination( double obs1, double obs2 )
+    throw(InvalidRequest)
+    {
+        return ( (GAMMA_GPS*obs1 - obs2)/(GAMMA_GPS - 1.0) );
+    };
 
-   private:
+private:
 
-      std::string typeObs1;
-      std::string typeObs2;
-
-
-   }; // End of class 'ExtractPC'
+    std::string typeObs1;
+    std::string typeObs2;
 
 
-      //@}
+}; // End of class 'ExtractPC'
+
+
+//@}
 
 }  // End of namespace gpstk
 

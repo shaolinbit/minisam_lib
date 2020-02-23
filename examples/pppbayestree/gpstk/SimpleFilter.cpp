@@ -46,75 +46,77 @@
 namespace gpstk
 {
 
-      // Returns a string identifying this object.
-   std::string SimpleFilter::getClassName() const
-   { return "SimpleFilter"; }
+// Returns a string identifying this object.
+std::string SimpleFilter::getClassName() const
+{
+    return "SimpleFilter";
+}
 
 
-      // Returns a satTypeValueMap object, filtering the target observables.
-      //
-      // @param gData     Data object holding the data.
-      //
-   satTypeValueMap& SimpleFilter::Process(satTypeValueMap& gData)
-      throw(ProcessingException)
-   {
+// Returns a satTypeValueMap object, filtering the target observables.
+//
+// @param gData     Data object holding the data.
+//
+satTypeValueMap& SimpleFilter::Process(satTypeValueMap& gData)
+throw(ProcessingException)
+{
 
-      try
-      {
+    try
+    {
 
-         SatIDSet satRejectedSet;
+        SatIDSet satRejectedSet;
 
-            // Check all the indicated TypeID's
-         TypeIDSet::const_iterator pos;
-         for (pos = filterTypeSet.begin(); pos != filterTypeSet.end(); ++pos)
-         {
+        // Check all the indicated TypeID's
+        TypeIDSet::const_iterator pos;
+        for (pos = filterTypeSet.begin(); pos != filterTypeSet.end(); ++pos)
+        {
 
             double value(0.0);
 
-               // Loop through all the satellites
+            // Loop through all the satellites
             satTypeValueMap::iterator it;
             for (it = gData.begin(); it != gData.end(); ++it)
             {
-               try
-               {
-                     // Try to extract the values
-                  value = (*it).second(*pos);
+                try
+                {
+                    // Try to extract the values
+                    value = (*it).second(*pos);
 
-                     // Now, check that the value is within bounds
-                  if ( !( checkValue(value) ) )
-                  {
+                    // Now, check that the value is within bounds
+                    if ( !( checkValue(value) ) )
+                    {
                         // If value is out of bounds, then schedule this
                         // satellite for removal
-                      satRejectedSet.insert( (*it).first );
-                  }
-               }
-               catch(...)
-               {
-                     // If some value is missing, then schedule this satellite
-                     // for removal
-                  satRejectedSet.insert( (*it).first );
-               }
+                        satRejectedSet.insert( (*it).first );
+                    }
+                }
+                catch(...)
+                {
+                    // If some value is missing, then schedule this satellite
+                    // for removal
+                    satRejectedSet.insert( (*it).first );
+                }
             }
 
-               // Before checking next TypeID, let's remove satellites with
-               // data out of bounds
+            // Before checking next TypeID, let's remove satellites with
+            // data out of bounds
             gData.removeSatID(satRejectedSet);
-         }
+        }
 
-         return gData;
+        return gData;
 
-      }
-      catch(Exception& u)
-      {
-            // Throw an exception if something unexpected happens
-         ProcessingException e( getClassName() + ":"
-                                + u.what() );
+    }
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
 
-         GPSTK_THROW(e);
+        GPSTK_THROW(e);
 
-      }
+    }
 
-   }  // End of 'SimpleFilter::Process()'
+}  // End of 'SimpleFilter::Process()'
 
 
 } // End of namespace gpstk

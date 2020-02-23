@@ -52,36 +52,37 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   //-----------------------------------------------------------------------------
-   // See notes in the .hpp. This function is designed to be called AFTER all elements
-   // are loaded. It can then make adjustments to time relationships based on
-   // inter-comparisons between sets of elements that cannot be performed until the
-   // ordering has been determined.
-   void BDSEphemerisStore::rationalize(void)
-   {
-   }
+//-----------------------------------------------------------------------------
+// See notes in the .hpp. This function is designed to be called AFTER all elements
+// are loaded. It can then make adjustments to time relationships based on
+// inter-comparisons between sets of elements that cannot be performed until the
+// ordering has been determined.
+void BDSEphemerisStore::rationalize(void)
+{
+}
 
-   //-----------------------------------------------------------------------------
-   // Add all ephemerides to an existing list<BDSEphemeris> for given satellite
-   // If sat.id is -1 (the default), all ephemerides are added.
-   // @return the number of ephemerides added.
-   int BDSEphemerisStore::addToList(list<BDSEphemeris>& bdslist, SatID sat) const
-   {
-      // get the list from OrbitEphStore
-      list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemBeiDou));
+//-----------------------------------------------------------------------------
+// Add all ephemerides to an existing list<BDSEphemeris> for given satellite
+// If sat.id is -1 (the default), all ephemerides are added.
+// @return the number of ephemerides added.
+int BDSEphemerisStore::addToList(list<BDSEphemeris>& bdslist, SatID sat) const
+{
+    // get the list from OrbitEphStore
+    list<OrbitEph*> oelst;
+    OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemBeiDou));
 
-      int n(0);
-      list<OrbitEph*>::const_iterator it;
-      for(it = oelst.begin(); it != oelst.end(); ++it) {
-         OrbitEph *ptr = *it;
-         BDSEphemeris *bdsptr = dynamic_cast<BDSEphemeris*>(ptr);
-         BDSEphemeris bdseph(*bdsptr);
-         bdslist.push_back(bdseph);
-         n++;
-      }
+    int n(0);
+    list<OrbitEph*>::const_iterator it;
+    for(it = oelst.begin(); it != oelst.end(); ++it)
+    {
+        OrbitEph *ptr = *it;
+        BDSEphemeris *bdsptr = dynamic_cast<BDSEphemeris*>(ptr);
+        BDSEphemeris bdseph(*bdsptr);
+        bdslist.push_back(bdseph);
+        n++;
+    }
 
-      return n;
-   }
+    return n;
+}
 
 } // namespace

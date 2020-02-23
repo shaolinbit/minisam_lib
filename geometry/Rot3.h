@@ -1,25 +1,9 @@
 #ifndef ROT3_H
 #define ROT3_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    Rot3.h
  * @brief   3D rotation represented as a rotation matrix or quaternion
- * @author  Alireza Fathi
- * @author  Christian Potthast
- * @author  Frank Dellaert
- * @author  Richard Roberts
- * @author  Luca Carlone
  */
 
 #pragma once
@@ -28,6 +12,7 @@
 #include "../geometry/Quaternion.h"
 #include "../geometry/SO3.h"
 #include "../gmfconfig.h"
+#include <assert.h>
 
 // Get USE_QUATERNIONS macro
 
@@ -49,7 +34,6 @@
 namespace minisam
 {
 
-
 /**
  * @brief A 3D rotation represented as a rotation matrix if the preprocessor
  * symbol USE_QUATERNIONS is not defined, or as a quaternion if it
@@ -57,16 +41,13 @@ namespace minisam
  * @addtogroup geometry
  * \nosubgrouping
  */
-class Rot3
-{
-public:
-
+class Rot3:
 #ifdef USE_QUATERNIONS
-    /** Internal Eigen Quaternion */
-    QQuaternion quaternion_;
+    public Quaternion4
 #else
-    Eigen::Matrix3d rot_;
+    public minimatrix
 #endif
+{
 
 public:
 
@@ -82,7 +63,7 @@ public:
      * @param r2 Y-axis of rotated frame
      * @param r3 Z-axis of rotated frame
      */
-    Rot3(const Eigen::Vector3d& col1, const Eigen::Vector3d& col2, const Eigen::Vector3d& col3);
+    Rot3(const minivector& col1, const minivector& col2, const minivector& col3);
 
     /** constructor from a rotation matrix, as doubles in *row-major* order !!! */
     Rot3(double R11, double R12, double R13,
@@ -97,25 +78,33 @@ public:
      * See: http://stackoverflow.com/questions/27094132/cannot-understand-if-this-is-circular-dependency-or-clang#tab-top
      */
 
-    inline explicit Rot3(const Eigen::Matrix3d& R)
-    {
+    inline explicit Rot3(const minimatrix& R):
 #ifdef USE_QUATERNIONS
-        quaternion_=QQuaternion(R);
+        Quaternion4(R)
 #else
-        rot_ = R;
+        minimatrix(R)
 #endif
+    {
+
     }
+
 
 
     /** Constructor from a quaternion.  This can also be called using a plain
      * Vector, due to implicit conversion from Vector to Quaternion
      * @param q The quaternion
      */
-    Rot3(const QQuaternion& q);
-    Rot3(double x, double y, double z, double w) : Rot3(QQuaternion(x, y, z, w)) {}
+    Rot3(const Quaternion4& q);
+    Rot3(double x, double y, double z, double w) : Rot3(Quaternion(w,x, y, z)) {}
+    /** Constructor from a Rot3.
+     */
+    Rot3(const Rot3& rr);
 
     /** Virtual destructor */
-    virtual ~Rot3() {}
+    virtual ~Rot3()
+    {
+
+    }
 
     /* Static member function to generate some well known rotations */
 
@@ -132,10 +121,10 @@ public:
     static Rot3 RzRyRx(double x, double y, double z);
 
     /// Rotations around Z, Y, then X axes as in http://en.wikipedia.org/wiki/Rotation_matrix, counterclockwise when looking from unchanging axis.
-    inline static Rot3 RzRyRx(const Eigen::VectorXd& xyz)
+    inline static Rot3 RzRyRx(const minivector& xyz)
     {
-        assert(xyz.size() == 3);
-        return RzRyRx(xyz(0), xyz(1), xyz(2));
+        assert(xyz.size1== 3);
+        return RzRyRx(xyz.data[0], xyz.data[1], xyz.data[2]);
     }
 
     /// Positive yaw is to right (as in aircraft heading). See ypr
@@ -170,7 +159,7 @@ public:
      * @param   angle rotation angle
      * @return incremental rotation
      */
-    static Rot3 AxisAngle(const Eigen::Vector3d& axis, double angle);
+    static Rot3 AxisAngle(const minivector& axis, double angle);
 
     /**
      * Convert from axis/angle representation
@@ -184,7 +173,7 @@ public:
      * @param w a vector of incremental roll,pitch,yaw
      * @return incremental rotation
      */
-    static Rot3 Rodrigues(const Eigen::Vector3d& w);
+    static Rot3 Rodrigues(const minivector& w);
     /**
      * Rodrigues' formula to compute an incremental rotation
      * @param wx Incremental roll (about X)
@@ -219,8 +208,8 @@ public:
     }
 
     /// Syntatic sugar for composing two rotations
-    Rot3 operator*(const Rot3& R2) const;
-
+   // Rot3 operator*(const Rot3& R2) const;
+    Rot3 multiply(const Rot3& R2) const;
     /// inverse of a rotation, TODO should be different for M/Q
     Rot3 inverse() const;
 
@@ -246,9 +235,7 @@ public:
     enum CoordinatesMode
     {
         EXPMAP, ///< Use the Lie group exponential map to retract
-#ifndef USE_QUATERNIONS
-        CAYLEY, ///< Retract and localCoordinates using the Cayley transform.
-#endif
+        CAYLEY ///< Retract and localCoordinates using the Cayley transform.
     };
 
 #ifndef USE_QUATERNIONS
@@ -256,23 +243,60 @@ public:
     // Cayley chart around origin
     struct CayleyChart
     {
-        static Rot3 retract(const Eigen::Vector3d& v);
-        static Rot3 retract(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
-        static Eigen::Vector3d Local(const Rot3& r);
-        static Eigen::Vector3d Local(const Rot3& r, Eigen::Matrix3d* H);
+        static Rot3 retract(const minivector& v);
+
+        static Rot3 retract(const minivector& v, minimatrix* H);
+        static minivector Local(const Rot3& r);
+        static minivector Local(const Rot3& r, minimatrix* H);
     };
 
+
+
     /// Retraction from R^3 to Rot3 manifold using the Cayley transform
-    Rot3 retractCayley(const Eigen::VectorXd& omega) const;
+    Rot3 retractCayley(const minivector& omega) const;
 
     /// Inverse of retractCayley
-    Eigen::Vector3d localCayley(const Rot3& other) const;
+    minivector localCayley(const Rot3& other) const;
 
 
 
 #endif
-    Rot3 between(const Rot3& g, Eigen::Matrix3d* H1=NULL,
-                 Eigen::Matrix3d* H2 =NULL) const;
+Rot3* CayleyChartretractp(const minivector& v);
+    virtual minimatrix between(const minimatrix* mpose) const
+    {
+        Rot3 X2(mpose);
+        Rot3 result =this->inverse().multiply(X2);
+        return result;
+
+    }
+    virtual minimatrix between(const minimatrix* mpose,minimatrix& H1,minimatrix& H2) const
+    {
+        Rot3 X2(mpose);
+        Rot3 result =this->inverse().multiply(X2);
+        minimatrix_resize(&H1,3,3);
+#ifndef USE_QUATERNIONS
+        H1.data[0]=-result.data[0];
+        H1.data[1]=-result.data[3];
+        H1.data[2]=-result.data[6];
+        H1.data[3]=-result.data[1];
+        H1.data[4]=-result.data[4];
+        H1.data[5]=-result.data[7];
+        H1.data[6]=-result.data[2];
+        H1.data[7]=-result.data[5];
+        H1.data[8]=-result.data[8];
+#else
+        Rot3 ginv(result.inverse());
+        QuaternionToMatrix(ginv,&H1);
+        minimatrix_scale(&H1,-1.0);
+#endif // USE_QUATERNIONS
+
+        minimatrix_resize(&H2,3,3);
+        minimatrix_set_identity(&H2);
+
+        return result;
+
+    }
+
 
     /// @}
     /// @name Lie Group
@@ -282,26 +306,27 @@ public:
      * Exponential map at identity - create a rotation from canonical coordinates
      * \f$ [R_x,R_y,R_z] \f$ using Rodrigues' formula
      */
-    static Rot3 Expmap(const Eigen::Vector3d& v);
-    static Rot3 Expmap(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
+    static Rot3 Expmap(const minivector& v);
+    Rot3* ExpmapP(const minivector& v);
+    static Rot3 Expmap(const minivector& v, minimatrix* H);
 
 
     /**
      * Log map at identity - returns the canonical coordinates
      * \f$ [R_x,R_y,R_z] \f$ of this rotation
      */
-    static Eigen::Vector3d Logmap(const Rot3& R);
+    static minivector Logmap(const Rot3& R);
 
-    static Eigen::Vector3d Logmap(const Rot3& R, Eigen::Matrix3d* H);
+    static minivector Logmap(const Rot3& R, minimatrix* H);
 
     /// Derivative of Expmap
-    static Eigen::Matrix3d ExpmapDerivative(const Eigen::Vector3d& x);
+    static minimatrix ExpmapDerivative(const minivector& x);
 
     /// Derivative of Logmap
-    static Eigen::Matrix3d LogmapDerivative(const Eigen::Vector3d& x);
+    static minimatrix LogmapDerivative(const minivector& x);
 
     /** Calculate Adjoint map */
-    Eigen::Matrix3d AdjointMap() const
+    minimatrix AdjointMap() const
     {
         return matrix();
     }
@@ -309,23 +334,51 @@ public:
     // Chart at origin, depends on compile-time flag ROT3_DEFAULT_COORDINATES_MODE
     struct ChartAtOrigin
     {
-        static Rot3 retract(const Eigen::Vector3d& v);
-        static Rot3 retract(const Eigen::Vector3d& v, Eigen::Matrix3d* H);
-        static Eigen::Vector3d Local(const Rot3& r);
-        static Eigen::Vector3d Local(const Rot3& r, Eigen::Matrix3d* H);
-    };
+        static Rot3 retract(const minivector& v);
 
-    Rot3 compose(const Rot3& g, Eigen::Matrix3d* H1=NULL,Eigen::Matrix3d* H2=NULL)
+        static Rot3 retract(const minivector& v, minimatrix* H);
+        static minivector Local(const Rot3& r);
+        static minivector Local(const Rot3& r, minimatrix* H);
+    };
+    Rot3* retractp(const minivector& v);
+
+    Rot3 compose(const Rot3& g, minimatrix* H1=NULL,minimatrix* H2=NULL)const
     {
         if(H1!=NULL)
-            *H1=g.inverse().AdjointMap();
+        {
+#ifndef USE_QUATERNIONS
+            H1->data[0]=g.data[0];
+            H1->data[1]=g.data[3];
+            H1->data[2]=g.data[6];
+            H1->data[3]=g.data[1];
+            H1->data[4]=g.data[4];
+            H1->data[5]=g.data[7];
+            H1->data[6]=g.data[2];
+            H1->data[7]=g.data[5];
+            H1->data[8]=g.data[8];
+#else
+            Rot3 ginv(g.inverse());
+            QuaternionToMatrix(ginv,H1);
+
+#endif // USE_QUATERNIONS
+        }
         if(H2!=NULL)
-            *H2= Eigen::MatrixXd::Identity(3,3);
-        return *this*g;
+        {
+            H2->data[0]=1.0;
+            H2->data[1]=0.0;
+            H2->data[2]=0.0;
+            H2->data[3]=0.0;
+            H2->data[4]=1.0;
+            H2->data[5]=0.0;
+            H2->data[6]=0.0;
+            H2->data[7]=0.0;
+            H2->data[8]=1.0;
+        }
+        return this->multiply(g);
     }
-    Rot3 expmap(const Eigen::VectorXd& v,Eigen::Matrix3d* H1=NULL,Eigen::Matrix3d* H2=NULL)
+    Rot3 expmap(const minivector& v,minimatrix* H1=NULL,minimatrix* H2=NULL)
     {
-        Eigen::Matrix3d D_g_v;
+        minimatrix D_g_v;
         Rot3 g;
         if(H2!=NULL)
         {
@@ -338,17 +391,37 @@ public:
         Rot3 h=this->compose(g,NULL);
 
         if(H1!=NULL)
-            *H1=g.inverse().AdjointMap();
+        {
+            //*H1=g.inverse().AdjointMap();
+#ifndef USE_QUATERNIONS
+            H1->data[0]=g.data[0];
+            H1->data[1]=g.data[3];
+            H1->data[2]=g.data[6];
+            H1->data[3]=g.data[1];
+            H1->data[4]=g.data[4];
+            H1->data[5]=g.data[7];
+            H1->data[6]=g.data[2];
+            H1->data[7]=g.data[5];
+            H1->data[8]=g.data[8];
+#else
+            Rot3 ginv(g.inverse());
+            QuaternionToMatrix(ginv,H1);
+#endif // USE_QUATERNIONS
+        }
         if(H2!=NULL)
             *H2=D_g_v;
         return h;
     }
-    Rot3 retract(const Eigen::VectorXd& v)
+
+    virtual minimatrix* Retract(const minimatrix* mpose)
     {
-        return Rot3::ChartAtOrigin::retract(v);
+        minivector v(mpose);
+        return this->retractp(v);
+
     }
-    Eigen::Vector3d LocalCoordinates(const Rot3& g)
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
     {
+        Rot3 g(mpose);
         return Rot3::ChartAtOrigin::Local(g);
     }
 
@@ -359,16 +432,15 @@ public:
     /**
      * rotate point from rotated coordinate frame to world \f$ p^w = R_c^w p^c \f$
      */
-    Eigen::Vector3d rotatePoint(const Eigen::Vector3d& p, Eigen::Matrix3d* H1=NULL,
-                                Eigen::Matrix3d* H2=NULL) const;
+    minivector rotatePoint(const minivector& p, minimatrix* H1=NULL,
+                           minimatrix* H2=NULL) const;
 
     /// rotate point from rotated coordinate frame to world = R*p
-    Eigen::Vector3d operator*(const Eigen::Vector3d& p) const;
+    minivector multiplyvector(const minivector& p) const;
 
     /// rotate point from world to rotated frame \f$ p^c = (R_c^w)^T p^w \f$
-    //Eigen::Vector3d unrotatePoint(const Eigen::Vector3d& p) const;
-    Eigen::Vector3d unrotatePoint(const Eigen::Vector3d& p, Eigen::Matrix3d* H1=NULL,
-                                  Eigen::Matrix3d* H2=NULL) const;
+    minivector unrotatePoint(const minivector& p, minimatrix* H1=NULL,
+                             minimatrix* H2=NULL) const;
 
     /// @}
     /// @name Group Action on Unit3
@@ -376,54 +448,53 @@ public:
 
     /// rotate 3D direction from rotated coordinate frame to world frame
     Unit3 rotateUnit(const Unit3& p) const;
-    Unit3 rotateUnit(const Unit3& p, Eigen::MatrixXd* HR,
-                     Eigen::Matrix3d* Hp ) const;
+    Unit3 rotateUnit( Unit3& p, minimatrix* HR,
+                      minimatrix* Hp ) const;
 
     /// unrotate 3D direction from world frame to rotated coordinate frame
-    Unit3 unrotateUnit(const Unit3& p) const;
+    Unit3 unrotateUnit( Unit3& p) const;
 
-    Unit3 unrotateUnit(const Unit3& p, Eigen::MatrixXd* HR,
-                       Eigen::Matrix2d* Hp ) const;
+    Unit3 unrotateUnit( Unit3& p, minimatrix* HR,
+                        minimatrix* Hp ) const;
 
     /// rotate 3D direction from rotated coordinate frame to world frame
-    Unit3 operator*(const Unit3& p) const;
-
+    Unit3 multiplyunit(const Unit3& p) const;
     /// @}
     /// @name Standard Interface
     /// @{
 
     /** return 3*3 rotation matrix */
-    Eigen::Matrix3d matrix() const;
+    minimatrix matrix() const;
 
     /**
      * Return 3*3 transpose (inverse) rotation matrix
      */
-    Eigen::Matrix3d transpose() const;
+    minimatrix transpose() const;
 
     /// @deprecated, this is base 1, and was just confusing
-    Eigen::Vector3d  column(int index) const;
+    minivector  column(int index) const;
 
-    Eigen::Vector3d  r1() const; ///< first column
-    Eigen::Vector3d  r2() const; ///< second column
-    Eigen::Vector3d  r3() const; ///< third column
+    minivector  r1() const; ///< first column
+    minivector  r2() const; ///< second column
+    minivector  r3() const; ///< third column
 
     /**
      * Use RQ to calculate xyz angle representation
      * @return a vector containing x,y,z s.t. R = Rot3::RzRyRx(x,y,z)
      */
-    Eigen::Vector3d  xyz() const;
+    minivector  xyz() const;
 
     /**
      * Use RQ to calculate yaw-pitch-roll angle representation
      * @return a vector containing ypr s.t. R = Rot3::Ypr(y,p,r)
      */
-    Eigen::Vector3d  ypr() const;
+    minivector  ypr() const;
 
     /**
      * Use RQ to calculate roll-pitch-yaw angle representation
      * @return a vector containing ypr s.t. R = Rot3::Ypr(y,p,r)
      */
-    Eigen::Vector3d rpy() const;
+    minivector rpy() const;
 
     /**
      * Accessor to get to component of angle representations
@@ -433,7 +504,7 @@ public:
      */
     inline double roll() const
     {
-        return ypr()(2);
+        return ypr().data[2];
     }
 
     /**
@@ -444,7 +515,7 @@ public:
      */
     inline double pitch() const
     {
-        return ypr()(1);
+        return ypr().data[1];
     }
 
     /**
@@ -455,7 +526,8 @@ public:
      */
     inline double yaw() const
     {
-        return ypr()(0);
+        //return ypr()(0);
+        return ypr().data[0];
     }
 
     /// @}
@@ -465,13 +537,13 @@ public:
     /** Compute the quaternion representation of this rotation.
      * @return The quaternion
      */
-    QQuaternion toQuaternion() const;
+    Quaternion4 toQuaternion() const;
 
     /**
      * Converts to a generic matrix to allow for use with matlab
      * In format: w x y z
      */
-    Eigen::VectorXd quaternion() const;
+    minivector quaternion() const;
 
     /**
      * @brief Spherical Linear intERPolation between *this and other
@@ -482,11 +554,11 @@ public:
 
     inline Rot3& operator=(const Rot3& rObj)
     {
-
-#ifdef USE_QUATERNIONS
-        quaternion_=rObj.quaternion_;
+       #ifdef USE_QUATERNIONS
+        minivector_memcpy(this,rObj);
 #else
-        rot_=rObj.matrix();
+        minimatrix_memcpy(this,rObj);
+
 #endif // USE_QUATERNIONS
         return *this;
     }
@@ -509,6 +581,6 @@ public:
  * @return an upper triangular matrix R
  * @return a vector [thetax, thetay, thetaz] in radians.
  */
-std::pair<Eigen::Matrix3d,Eigen::Vector3d> RQ(const Eigen::Matrix3d& A);
+std::pair<minimatrix,minivector> RQ(const minimatrix& A);
 };
 #endif // ROT3_H

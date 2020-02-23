@@ -42,179 +42,179 @@
 
 namespace gpstk
 {
-   JulianDate& JulianDate::operator=( const JulianDate& right )
-   {
-      jd = right.jd;
-      timeSystem = right.timeSystem;
-      return *this;
-   }
+JulianDate& JulianDate::operator=( const JulianDate& right )
+{
+    jd = right.jd;
+    timeSystem = right.timeSystem;
+    return *this;
+}
 
-   CommonTime JulianDate::convertToCommonTime() const
-   {
-      try
-      {
-         long double temp_jd( jd + 0.5 );
-         long jday( static_cast<long>( temp_jd ) );
-         long double sod =
+CommonTime JulianDate::convertToCommonTime() const
+{
+    try
+    {
+        long double temp_jd( jd + 0.5 );
+        long jday( static_cast<long>( temp_jd ) );
+        long double sod =
             ( temp_jd - static_cast<long double>( jday ) ) * SEC_PER_DAY;
 
-         CommonTime ct;
-         return ct.set( jday,
-                        static_cast<long>( sod ),
-                        static_cast<double>( sod - static_cast<long>( sod ) ),
-                        timeSystem );
-      }
-      catch (InvalidParameter& ip)
-      {
-         InvalidRequest ir(ip);
-         GPSTK_THROW(ir);
-      }
-   }
+        CommonTime ct;
+        return ct.set( jday,
+                       static_cast<long>( sod ),
+                       static_cast<double>( sod - static_cast<long>( sod ) ),
+                       timeSystem );
+    }
+    catch (InvalidParameter& ip)
+    {
+        InvalidRequest ir(ip);
+        GPSTK_THROW(ir);
+    }
+}
 
-   void JulianDate::convertFromCommonTime( const CommonTime& ct )
-   {
-      long jday, sod;
-      double fsod;
-      ct.get( jday, sod, fsod, timeSystem );
+void JulianDate::convertFromCommonTime( const CommonTime& ct )
+{
+    long jday, sod;
+    double fsod;
+    ct.get( jday, sod, fsod, timeSystem );
 
-      jd =   static_cast<long double>( jday ) +
+    jd =   static_cast<long double>( jday ) +
            (   static_cast<long double>( sod )
-             + static_cast<long double>( fsod ) ) * DAY_PER_SEC
+               + static_cast<long double>( fsod ) ) * DAY_PER_SEC
            - 0.5;
-   }
+}
 
-   std::string JulianDate::printf( const std::string& fmt ) const
-   {
-      try
-      {
-         using gpstk::StringUtils::formattedPrint;
-         std::string rv( fmt );
+std::string JulianDate::printf( const std::string& fmt ) const
+{
+    try
+    {
+        using gpstk::StringUtils::formattedPrint;
+        std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
-                              "JLf", jd );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Ps", timeSystem.asString().c_str() );
-         return rv;
-      }
-      catch( gpstk::StringUtils::StringException& se )
-      {
-         GPSTK_RETHROW( se );
-      }
-   }
+        rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
+                             "JLf", jd );
+        rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                             "Ps", timeSystem.asString().c_str() );
+        return rv;
+    }
+    catch( gpstk::StringUtils::StringException& se )
+    {
+        GPSTK_RETHROW( se );
+    }
+}
 
-   std::string JulianDate::printError( const std::string& fmt ) const
-   {
-      try
-      {
-         using gpstk::StringUtils::formattedPrint;
-         std::string rv( fmt );
+std::string JulianDate::printError( const std::string& fmt ) const
+{
+    try
+    {
+        using gpstk::StringUtils::formattedPrint;
+        std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
-                              "Js", getError().c_str() );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Ps", getError().c_str() );
-         return rv;
-      }
-      catch( gpstk::StringUtils::StringException& se )
-      {
-         GPSTK_RETHROW( se );
-      }
-   }
+        rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
+                             "Js", getError().c_str() );
+        rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                             "Ps", getError().c_str() );
+        return rv;
+    }
+    catch( gpstk::StringUtils::StringException& se )
+    {
+        GPSTK_RETHROW( se );
+    }
+}
 
-   bool JulianDate::setFromInfo( const IdToValue& info )
-   {
-      using namespace gpstk::StringUtils;
+bool JulianDate::setFromInfo( const IdToValue& info )
+{
+    using namespace gpstk::StringUtils;
 
-      for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
-      {
-         switch( i->first )
-         {
-            case 'J':
-               jd = asLongDouble( i->second );
-               break;
+    for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
+    {
+        switch( i->first )
+        {
+        case 'J':
+            jd = asLongDouble( i->second );
+            break;
 
-            case 'P':
-               timeSystem.fromString(i->second);
-               break;
+        case 'P':
+            timeSystem.fromString(i->second);
+            break;
 
-            default:
-                  // do nothing
-               break;
-         };
-      }
+        default:
+            // do nothing
+            break;
+        };
+    }
 
-      return true;
-   }
+    return true;
+}
 
-   bool JulianDate::isValid() const
-   {
-      JulianDate temp;
-      temp.convertFromCommonTime( convertToCommonTime() );
-      if( *this == temp )
-      {
-         return true;
-      }
-      return false;
-   }
+bool JulianDate::isValid() const
+{
+    JulianDate temp;
+    temp.convertFromCommonTime( convertToCommonTime() );
+    if( *this == temp )
+    {
+        return true;
+    }
+    return false;
+}
 
-   void JulianDate::reset()
-   {
-      jd = 0.0;
-      timeSystem = TimeSystem::Unknown;
-   }
+void JulianDate::reset()
+{
+    jd = 0.0;
+    timeSystem = TimeSystem::Unknown;
+}
 
-   bool JulianDate::operator==( const JulianDate& right ) const
-   {
-     /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != TimeSystem::Any &&
-           right.timeSystem != TimeSystem::Any) &&
-          timeSystem != right.timeSystem)
-         return false;
+bool JulianDate::operator==( const JulianDate& right ) const
+{
+    /// Any (wildcard) type exception allowed, otherwise must be same time systems
+    if ((timeSystem != TimeSystem::Any &&
+            right.timeSystem != TimeSystem::Any) &&
+            timeSystem != right.timeSystem)
+        return false;
 
-      if( fabs(jd - right.jd) < CommonTime::eps )
-      {
-         return true;
-      }
-      return false;
-   }
+    if( fabs(jd - right.jd) < CommonTime::eps )
+    {
+        return true;
+    }
+    return false;
+}
 
-   bool JulianDate::operator!=( const JulianDate& right ) const
-   {
-      return ( !operator==( right ) );
-   }
+bool JulianDate::operator!=( const JulianDate& right ) const
+{
+    return ( !operator==( right ) );
+}
 
-   bool JulianDate::operator<( const JulianDate& right ) const
-   {
-     /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != TimeSystem::Any &&
-           right.timeSystem != TimeSystem::Any) &&
-          timeSystem != right.timeSystem)
-      {
-         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
-         GPSTK_THROW(ir);
-      }
+bool JulianDate::operator<( const JulianDate& right ) const
+{
+    /// Any (wildcard) type exception allowed, otherwise must be same time systems
+    if ((timeSystem != TimeSystem::Any &&
+            right.timeSystem != TimeSystem::Any) &&
+            timeSystem != right.timeSystem)
+    {
+        gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+        GPSTK_THROW(ir);
+    }
 
-      if( jd < right.jd )
-      {
-         return true;
-      }
-      return false;
-   }
+    if( jd < right.jd )
+    {
+        return true;
+    }
+    return false;
+}
 
-   bool JulianDate::operator>( const JulianDate& right ) const
-   {
-      return ( !operator<=( right ) );
-   }
+bool JulianDate::operator>( const JulianDate& right ) const
+{
+    return ( !operator<=( right ) );
+}
 
-   bool JulianDate::operator<=( const JulianDate& right ) const
-   {
-      return ( operator<( right ) ||
-               operator==( right ) );
-   }
+bool JulianDate::operator<=( const JulianDate& right ) const
+{
+    return ( operator<( right ) ||
+             operator==( right ) );
+}
 
-   bool JulianDate::operator>=( const JulianDate& right ) const
-   {
-      return ( !operator<( right ) );
-   }
+bool JulianDate::operator>=( const JulianDate& right ) const
+{
+    return ( !operator<( right ) );
+}
 
 } // namespace

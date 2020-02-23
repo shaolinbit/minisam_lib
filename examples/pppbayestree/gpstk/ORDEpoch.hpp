@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -53,61 +53,61 @@
 
 namespace gpstk
 {
-   class ORDEpoch
-   {
-   public:
-      ORDEpoch() : wonky(false) {};
+class ORDEpoch
+{
+public:
+    ORDEpoch() : wonky(false) {};
 
-      /// defines a store for each SV's ord, indexed by prn
-      typedef std::map<SatID, ObsRngDev> ORDMap;
+    /// defines a store for each SV's ord, indexed by prn
+    typedef std::map<SatID, ObsRngDev> ORDMap;
 
-      ORDEpoch& removeORD(const SatID& svid) throw()
-      {
-         ORDMap::iterator i = ords.find(svid);
-         if(i != ords.end())
+    ORDEpoch& removeORD(const SatID& svid) throw()
+    {
+        ORDMap::iterator i = ords.find(svid);
+        if(i != ords.end())
             ords.erase(i);
-         return *this;
-      }
-   
-      ORDEpoch& applyClockModel(const ClockModel& cm) throw()
-      {
-         if (cm.isOffsetValid(time))
-         {
+        return *this;
+    }
+
+    ORDEpoch& applyClockModel(const ClockModel& cm) throw()
+    {
+        if (cm.isOffsetValid(time))
+        {
             clockOffset = cm.getOffset(time);
             removeOffset(clockOffset);
-         }
-         return *this;
-      }
+        }
+        return *this;
+    }
 
-      ORDEpoch& removeOffset(const double offset) throw()
-      {
-         ORDMap::iterator i;
-         for (i = ords.begin(); i != ords.end(); i++)
+    ORDEpoch& removeOffset(const double offset) throw()
+    {
+        ORDMap::iterator i;
+        for (i = ords.begin(); i != ords.end(); i++)
             i->second.applyClockOffset(offset);
-         return *this;
-      }
+        return *this;
+    }
 
-      vdouble clockOffset;    ///< clock bias value (application defined units)
-      vdouble clockResidual;  ///< clock bias minus expected value
-      ORDMap ords;            ///< map of ORDs in epoch
-      gpstk::CommonTime time;
-      bool wonky;             ///< Indicates that this epoch is suspect
+    vdouble clockOffset;    ///< clock bias value (application defined units)
+    vdouble clockResidual;  ///< clock bias minus expected value
+    ORDMap ords;            ///< map of ORDs in epoch
+    gpstk::CommonTime time;
+    bool wonky;             ///< Indicates that this epoch is suspect
 
-      friend std::ostream& operator<<(std::ostream& s, 
-                                      const ORDEpoch& oe)
-         throw()
-      {
-         s << "t=" << oe.time
-           << " clk=" << oe.clockOffset << std::endl;
-         ORDMap::const_iterator i;
-         for (i=oe.ords.begin(); i!=oe.ords.end(); i++)
+    friend std::ostream& operator<<(std::ostream& s,
+                                    const ORDEpoch& oe)
+    throw()
+    {
+        s << "t=" << oe.time
+          << " clk=" << oe.clockOffset << std::endl;
+        ORDMap::const_iterator i;
+        for (i=oe.ords.begin(); i!=oe.ords.end(); i++)
             s << i->second << std::endl;
-         return s;
-      }
-   
-   };
+        return s;
+    }
 
-   // this is a store of ORDs over time
-   typedef std::map<gpstk::CommonTime, gpstk::ORDEpoch> ORDEpochMap;
+};
+
+// this is a store of ORDs over time
+typedef std::map<gpstk::CommonTime, gpstk::ORDEpoch> ORDEpochMap;
 }
 #endif

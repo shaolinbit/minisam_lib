@@ -12,18 +12,18 @@
 
 namespace gpstk
 {
-   /** @defgroup RinexClock RINEX Clock format file I/O */
-   //@{
+/** @defgroup RinexClock RINEX Clock format file I/O */
+//@{
 
-   /// This class is here to make readable inheritance diagrams.
-   class RinexClockBase : public FFData
-   {
-   public:
-         /// Destructor per the coding standards
-      virtual ~RinexClockBase() {}
-   };
+/// This class is here to make readable inheritance diagrams.
+class RinexClockBase : public FFData
+{
+public:
+    /// Destructor per the coding standards
+    virtual ~RinexClockBase() {}
+};
 
-   //@}
+//@}
 
 }  // namespace
 

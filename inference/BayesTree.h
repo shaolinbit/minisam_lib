@@ -4,7 +4,6 @@
 /**
  * @file    BayesTree.h
  * @brief   Bayes Tree is a tree of cliques of a Bayes Chain
- * @author  Frank Dellaert
  */
 
 #include "../linear/GaussianFactorGraph.h"
@@ -123,14 +122,6 @@ public:
      */
     GaussianBayesNet* jointBayesNet(int j1, int j2, const int Eliminatefunction);
 
-    /**
-     * Read only with side effects
-     */
-
-    /** saves the Tree to a text file in GraphViz format */
-    void saveGraph(std::ostream& stm) const;
-
-
 
     /// @}
     /// @name Advanced Interface
@@ -171,7 +162,7 @@ public:
     void addconditionaltograph(GaussianFactorGraph& nb,const BayesTreeCliqueBase* cc) const;
 
     /** Recursively optimize the BayesTree to produce a vector solution. */
-    std::map<int,Eigen::VectorXd> optimize() const;
+    std::map<int,minivector> optimize() const;
 
 
     /**
@@ -199,7 +190,7 @@ public:
          * \f$ G \f$, returning
          *
          * \f[ \delta x = \hat\alpha g = \frac{-g^T g}{(R g)^T(R g)} \f] */
-    std::map<int,Eigen::VectorXd> optimizeGradientSearch();
+    std::map<int,minivector> optimizeGradientSearch();
 
 
     /** Compute the gradient of the energy function, \f$ \nabla_{x=0} \left\Vert \Sigma^{-1} R x - d
@@ -207,10 +198,10 @@ public:
      * gradient(const GaussianBayesNet&, const VectorValues&).
      *
      * @return A VectorValues storing the gradient. */
-    std::map<int,Eigen::VectorXd> gradientAtZero();
+    std::map<int,minivector> gradientAtZero();
 
     /** Mahalanobis norm error. */
-    double error(const std::map<int,Eigen::VectorXd>& x) const;
+    double error(const std::map<int,minivector>& x) const;
 
     /** Computes the determinant of a GassianBayesTree, as if the Bayes tree is reorganized into a
      * matrix. A GassianBayesTree is equivalent to an upper triangular matrix, and for an upper
@@ -232,8 +223,6 @@ public:
 protected:
 
     /** private helper method for saving the Tree to a text file in GraphViz format */
-    void saveGraph(std::ostream &s,const BayesTreeCliqueBase* clique,
-                   int parentnum = 0) const;
 
     /** Gather data on a single clique */
     void getCliqueData(BayesTreeCliqueData& data,const BayesTreeCliqueBase* clique) const;
@@ -290,8 +279,8 @@ struct BayesTreeTraversalNodeDPointer
 struct OptimizeData
 {
     OptimizeData* parentData_;
-    std::map<int, std::map<int,Eigen::VectorXd>::const_iterator> cliqueResults;
-    OptimizeData(OptimizeData* bparentData,std::map<int, std::map<int,Eigen::VectorXd>::const_iterator>
+    std::map<int, std::map<int,minivector>::const_iterator> cliqueResults;
+    OptimizeData(OptimizeData* bparentData,std::map<int, std::map<int,minivector>::const_iterator>
                  bcliqueResults):parentData_(bparentData),cliqueResults(bcliqueResults) {}
     OptimizeData(const OptimizeData& opti):parentData_(opti.parentData_),cliqueResults(opti.cliqueResults) {}
 
@@ -309,7 +298,7 @@ struct BT_LATraversalNode
     }
 };
 
-OptimizeData OptimizeClique(std::map<int,Eigen::VectorXd>& collectedResult,const BayesTreeCliqueBase* clique,
+OptimizeData OptimizeClique(std::map<int,minivector>& collectedResult,const BayesTreeCliqueBase* clique,
                             OptimizeData* parentData);
 
 void BayesTreeDepthFirstForestINT(const BayesTree& forest, int* rootData,GaussianFactorGraph& graph);
@@ -317,7 +306,7 @@ void BayesTreeDepthFirstForestINT(const BayesTree& forest, int* rootData,Gaussia
 void GBayesTreeDepthFirstForestdouble(const BayesTree& forest, double* rootData);
 
 
-std::map<int,Eigen::VectorXd> optimizeBayesTree(const BayesTree& bayesTree);
+std::map<int,minivector> optimizeBayesTree(const BayesTree& bayesTree);
 
 double internallogDeterminant(BayesTreeCliqueBase* clique, double* parentSum);
 };

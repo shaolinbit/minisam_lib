@@ -10,6 +10,7 @@ Thanks for the gtsam's authors. We only keep the core functions and classes in g
 2. No boost libraries are used.
 3. No traits.
 4. No smart pointers.
+5. Self Contained.
 
 ## Requirements:
 
@@ -17,7 +18,6 @@ Thanks for the gtsam's authors. We only keep the core functions and classes in g
 
 2. Cmake above version 2.6
 
-3. eigen3 
 
 ## Install:
 

@@ -46,53 +46,56 @@
 namespace gpstk
 {
 
-const double CorrectCodeBiases::factoP1P2[6] = {
-        +L2_FREQ_GPS*L2_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L1
-        +L1_FREQ_GPS*L1_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L2
-        +0.0,                                                // L3
-        -1.0,                                                // L4
-        -L1_FREQ_GPS*L2_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L5
-        0.0                                                 // L6
+const double CorrectCodeBiases::factoP1P2[6] =
+{
+    +L2_FREQ_GPS*L2_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L1
+    +L1_FREQ_GPS*L1_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L2
+    +0.0,                                                // L3
+    -1.0,                                                // L4
+    -L1_FREQ_GPS*L2_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L5
+    0.0                                                 // L6
 };
 
-const double CorrectCodeBiases::factorP1C1[6]={
-        +1.0,                                                 // L1
-        +0.0,                                                 // L2
-        +L1_FREQ_GPS*L1_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L3
-        +1.0,                                                 // L4
-        +L1_FREQ_GPS/(L1_FREQ_GPS-L2_FREQ_GPS),                           // L5
-        -L1_FREQ_GPS/(L1_FREQ_GPS+L2_FREQ_GPS)                            // L6
+const double CorrectCodeBiases::factorP1C1[6]=
+{
+    +1.0,                                                 // L1
+    +0.0,                                                 // L2
+    +L1_FREQ_GPS*L1_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS), // L3
+    +1.0,                                                 // L4
+    +L1_FREQ_GPS/(L1_FREQ_GPS-L2_FREQ_GPS),                           // L5
+    -L1_FREQ_GPS/(L1_FREQ_GPS+L2_FREQ_GPS)                            // L6
 };
 
-const double CorrectCodeBiases::factorC1X2[6]={
-        +1.0,
-        +1.0,
-        +1.0,
-        +0.0,
-        +1.0,
-        -1.0
+const double CorrectCodeBiases::factorC1X2[6]=
+{
+    +1.0,
+    +1.0,
+    +1.0,
+    +0.0,
+    +1.0,
+    -1.0
 };
 
 // Returns a string identifying this object.
 std::string CorrectCodeBiases::getClassName() const
 {
-        return "CorrectCodeBiases";
+    return "CorrectCodeBiases";
 }
 
 // Default constructor
 CorrectCodeBiases::CorrectCodeBiases()
-        : usingC1(false),
-        receiverName(""),
-        crossCorrelationReceiver(false)
+    : usingC1(false),
+      receiverName(""),
+      crossCorrelationReceiver(false)
 {
 }
 
 // Default deconstructor
 CorrectCodeBiases::~CorrectCodeBiases()
 {
-        // make sure the files are closed
-        dcbP1P2.close();
-        dcbP1C1.close();
+    // make sure the files are closed
+    dcbP1P2.close();
+    dcbP1C1.close();
 }
 
 /* Sets name of file containing DCBs data.
@@ -100,12 +103,12 @@ CorrectCodeBiases::~CorrectCodeBiases()
  * @param name      Name of the file containing DCB(P1-C1)
  */
 CorrectCodeBiases& CorrectCodeBiases::setDCBFile( const std::string& fileP1P2,
-                                                  const std::string& fileP1C1)
+        const std::string& fileP1C1)
 {
-        dcbP1P2.open(fileP1P2);
-        dcbP1C1.open(fileP1C1);
+    dcbP1P2.open(fileP1P2);
+    dcbP1C1.open(fileP1C1);
 
-        return (*this);
+    return (*this);
 }
 
 /* Returns a satTypeValueMap object, adding the new data generated
@@ -115,132 +118,132 @@ CorrectCodeBiases& CorrectCodeBiases::setDCBFile( const std::string& fileP1P2,
  * @param gData     Data object holding the data.
  */
 satTypeValueMap& CorrectCodeBiases::Process( const CommonTime& time,
-                                             satTypeValueMap& gData )
+        satTypeValueMap& gData )
 throw(ProcessingException)
 {
-        try
-        {
-                SatIDSet satRejectedSet;
+    try
+    {
+        SatIDSet satRejectedSet;
 
-                // Loop through all the satellites
-                satTypeValueMap::iterator it;
-                for (it = gData.begin(); it != gData.end(); ++it)
+        // Loop through all the satellites
+        satTypeValueMap::iterator it;
+        for (it = gData.begin(); it != gData.end(); ++it)
+        {
+            SatID sat = it->first;
+            for(typeValueMap::iterator itt = it->second.begin();
+                    itt != it->second.end();
+                    ++itt)
+            {
+                TypeID type = itt->first;
+                //itt->second += getDCBCorrection(receiverName, sat, type, usingC1);
+
+                if( (type == TypeID::C1) || (type == TypeID::P1))
                 {
-                        SatID sat = it->first;
-                        for(typeValueMap::iterator itt = it->second.begin();
-                            itt != it->second.end();
-                            ++itt)
-                        {
-                                TypeID type = itt->first;
-                                //itt->second += getDCBCorrection(receiverName, sat, type, usingC1);
+                    gData[sat][TypeID::instC1] = getDCBCorrection(receiverName, sat, type, usingC1);
+                }
+                else if( (type == TypeID::P2) )
+                {
+                    gData[sat][TypeID::instC2] = getDCBCorrection(receiverName, sat, type, usingC1);
+                }
 
-                                if( (type == TypeID::C1) || (type == TypeID::P1))
-                                {
-                                        gData[sat][TypeID::instC1] = getDCBCorrection(receiverName, sat, type, usingC1);
-                                }
-                                else if( (type == TypeID::P2) )
-                                {
-                                        gData[sat][TypeID::instC2] = getDCBCorrection(receiverName, sat, type, usingC1);
-                                }
+            }
 
-                        }
+        } // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
 
-                } // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
+        // Remove satellites with missing data
+        gData.removeSatID(satRejectedSet);
 
-                // Remove satellites with missing data
-                gData.removeSatID(satRejectedSet);
+        return gData;
 
-                return gData;
+    }
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
 
-        }
-        catch(Exception& u)
-        {
-                // Throw an exception if something unexpected happens
-                ProcessingException e( getClassName() + ":"
-                                       + u.what() );
+        GPSTK_THROW(e);
 
-                GPSTK_THROW(e);
-
-        }
+    }
 
 
 }     // End of method 'CorrectCodeBiases::Process()'
 
 double CorrectCodeBiases::getDCBCorrection(const std::string& receiver,
-                                           const SatID&  sat,
-                                           const TypeID& type,
-                                           const bool&   useC1)
+        const SatID&  sat,
+        const TypeID& type,
+        const bool&   useC1)
 {
-        double satP1P2(0.0);
-        double satP1C1(0.0);
-        double receiverP1P2(0.0);
+    double satP1P2(0.0);
+    double satP1C1(0.0);
+    double receiverP1P2(0.0);
 
-        try
-        {
-                satP1P2 = dcbP1P2.getDCB(sat);
-                satP1C1 = dcbP1C1.getDCB(sat);
-                receiverP1P2 = dcbP1P2.getDCB(receiver, SatID::systemGPS);
-        }
-        catch(...)
-        {
-                // exception
-                satP1P2 = 0.0;
-                satP1C1 = 0.0;
-        }
+    try
+    {
+        satP1P2 = dcbP1P2.getDCB(sat);
+        satP1C1 = dcbP1C1.getDCB(sat);
+        receiverP1P2 = dcbP1P2.getDCB(receiver, SatID::systemGPS);
+    }
+    catch(...)
+    {
+        // exception
+        satP1P2 = 0.0;
+        satP1C1 = 0.0;
+    }
 
-        int ind = -1;
+    int ind = -1;
 
-        if( (type == TypeID::C1) ||
+    if( (type == TypeID::C1) ||
             (type == TypeID::P1) ||
             (type == TypeID::GRAPHIC1) )
-        {
-                ind = 0;
-        }
-        else if( (type == TypeID::P2)       ||
-                 (type == TypeID::GRAPHIC2) )
-        {
-                ind = 1;
-        }
-        else if( type == TypeID::PC )
-        {
-                ind = 2;
-        }
-        else if( type == TypeID::PI)
-        {
-                ind = 3;
-        }
-        else if( type == TypeID::MWubbena )
-        {
-                ind = 5;
-        }
-        else
-        {
-                ind = -1;
+    {
+        ind = 0;
+    }
+    else if( (type == TypeID::P2)       ||
+             (type == TypeID::GRAPHIC2) )
+    {
+        ind = 1;
+    }
+    else if( type == TypeID::PC )
+    {
+        ind = 2;
+    }
+    else if( type == TypeID::PI)
+    {
+        ind = 3;
+    }
+    else if( type == TypeID::MWubbena )
+    {
+        ind = 5;
+    }
+    else
+    {
+        ind = -1;
 
-                return 0.0;
-        }
+        return 0.0;
+    }
 
-        double dcb1(0.0), dcb2(0.0), dcb3(0.0);
-        if(ind >= 0)
-        {
-                dcb1 = factoP1P2[ind];
-                dcb2 = factorP1C1[ind];
-                dcb3 = factorC1X2[ind];
-        }
+    double dcb1(0.0), dcb2(0.0), dcb3(0.0);
+    if(ind >= 0)
+    {
+        dcb1 = factoP1P2[ind];
+        dcb2 = factorP1C1[ind];
+        dcb3 = factorC1X2[ind];
+    }
 
-        if( !useC1 && (type==TypeID::P1))
-        {
-                dcb2 = 0.0;
-        }
+    if( !useC1 && (type==TypeID::P1))
+    {
+        dcb2 = 0.0;
+    }
 
-        if(crossCorrelationReceiver)
-        {
-                dcb2 = dcb3;
-        }
+    if(crossCorrelationReceiver)
+    {
+        dcb2 = dcb3;
+    }
 
-        double dcb =  dcb1 * (satP1P2 + receiverP1P2) + dcb2 * satP1C1;
-        double corr = -1.0 * dcb * (C_MPS * 1.0e-9);  // ns -> meter
-        return corr;
+    double dcb =  dcb1 * (satP1P2 + receiverP1P2) + dcb2 * satP1C1;
+    double corr = -1.0 * dcb * (C_MPS * 1.0e-9);  // ns -> meter
+    return corr;
 }     // End of method 'CorrectCodeBiases::getDCBCorrection()'
 
 

@@ -1,21 +1,9 @@
 #ifndef ISAM2_IMPL_H_INCLUDED
 #define ISAM2_IMPL_H_INCLUDED
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    ISAM2-impl.h
  * @brief   Incremental update functionality (ISAM2) for BayesTree, with fluid relinearization.
- * @author  Michael Kaess, Richard Roberts
  */
 
 
@@ -35,18 +23,9 @@ namespace minisam
   * @param keyFormatter Formatter for printing nonlinear keys during debugging
   */
 
-#ifdef GMF_Using_Pose3
-
-void ISAM2ImplAddVariables(const std::map<int,Eigen::VectorXd>& newTheta,
-                           const std::map<int,Pose3>& newThetaPose,
+void ISAM2ImplAddVariables(const std::map<int,minimatrix*>& newTheta,
                            ISAM2Data& isam2data);
 
-#else
-
-void ISAM2ImplAddVariables(const std::map<int,Eigen::VectorXd>& newTheta,
-                           const std::map<int,Pose2>& newThetaPose,
-                           ISAM2Data& isam2data);
-#endif
 /// Perform the first part of the bookkeeping updates for adding new factors.  Adds them to the
 /// complete list of nonlinear factors, and populates the list of new factor indices, both
 /// optionally finding and reusing empty factor slots.
@@ -68,9 +47,9 @@ void ISAM2ImplRemoveVariables(std::set<int>& unusedKeys,std::map<int,ISAM2Clique
  * @return The set of variable indices in delta whose magnitude is greater than or
  * equal to relinearizeThreshold
  */
-std::set<int> ISAM2ImplCheckRelinearizationFull(const std::map<int,Eigen::VectorXd>& delta,
+std::set<int> ISAM2ImplCheckRelinearizationFull(const std::map<int,minivector>& delta,
         double relinearizeThresholdDouble,
-        std::map<char,Eigen::VectorXd> *relinearizeThresholdMap);
+        std::map<char,minivector> *relinearizeThresholdMap);
 
 /**
  * Find the set of variables to be relinearized according to relinearizeThreshold.
@@ -84,8 +63,8 @@ std::set<int> ISAM2ImplCheckRelinearizationFull(const std::map<int,Eigen::Vector
  * equal to relinearizeThreshold
  */
 std::set<int> ISAM2ImplCheckRelinearizationPartial(const std::vector<ISAM2Clique*>& roots,
-        std::map<int,Eigen::VectorXd>& delta,  const  double relinearizeThresholdDouble,
-        std::map<char,Eigen::VectorXd> *relinearizeThresholdMap);
+        std::map<int,minivector>& delta,  const  double relinearizeThresholdDouble,
+        std::map<char,minivector> *relinearizeThresholdMap);
 
 /**
  * Recursively search this clique and its children for marked keys appearing
@@ -117,21 +96,20 @@ void ISAM2ImplFindAll(const ISAM2Clique* clique,
  * where we might expmap something twice, or expmap it but then not
  * recalculate its delta.
  */
-void ISAM2ImplExpmapMasked(std::map<int,Eigen::VectorXd>& vectorvalues,std::map<int,Pose3>& Pose3values,
-                           std::map<int,Eigen::VectorXd>& delta,
-                           const std::set<int>& mask, std::map<int,Eigen::VectorXd>* invalidateIfDebug);
-void ISAM2ImplExpmapMasked(std::map<int,Eigen::VectorXd>& vectorvalues,std::map<int,Pose2>& Pose3values,
-                           std::map<int,Eigen::VectorXd>& delta,
-                           const std::set<int>& mask, std::map<int,Eigen::VectorXd>* invalidateIfDebug);
+void ISAM2ImplExpmapMasked(std::map<int,minimatrix*>& vectorvalues,
+                           std::map<int,minivector>& delta,
+                           const std::set<int>& mask, std::map<int,minivector>* invalidateIfDebug);
 /**
  * Update the Newton's method step point, using wildfire
  */
 int ISAM2ImplUpdateGaussNewtonDelta(std::vector<ISAM2Clique*>* roots,
-                                    const std::set<int>& replacedKeys, std::map<int,Eigen::VectorXd>* delta, double wildfireThreshold);
+                                    const std::set<int>& replacedKeys,
+                                    std::map<int,minivector>* delta, double wildfireThreshold);
 
 
 bool internaloptimizeWildfireNode(ISAM2Clique* clique,double threshold,
-                                  std::set<int>& changed, const std::set<int>& replaced, std::map<int,Eigen::VectorXd>* delta, int* count);
+                                  std::set<int>& changed, const std::set<int>& replaced,
+                                  std::map<int,minivector>* delta, int* count);
 /// traits
 /// Optimize the BayesTree, starting from the root.
 /// @param replaced Needs to contain
@@ -146,18 +124,18 @@ bool internaloptimizeWildfireNode(ISAM2Clique* clique,double threshold,
 /// @return The number of variables that were solved for
 
 int optimizeWildfireNonRecursive(std::vector<ISAM2Clique*>* roots,
-                                 double threshold, const std::set<int>& replaced, std::map<int,Eigen::VectorXd>* delta);
+                                 double threshold, const std::set<int>& replaced, std::map<int,minivector>* delta);
 
 /**
  * Compute the gradient-search point.  Only used in Dogleg.
  */
-std::map<int,Eigen::VectorXd> ISAM2ImplComputeGradientSearch(std::map<int,Eigen::VectorXd>& gradAtZero,
-        const std::map<int,Eigen::VectorXd>& RgProd);
+std::map<int,minivector> ISAM2ImplComputeGradientSearch(const std::map<int,minivector>& gradAtZero,
+        const std::map<int,minivector>& RgProd);
 
 
 int ISAM2ImplUpdateRgProd(std::vector<ISAM2Clique*>& roots,
                           const std::set<int>& replacedKeys,
-                          const  std::map<int,Eigen::VectorXd>& gradAtZero, std::map<int,Eigen::VectorXd>& RgProd);
+                          const  std::map<int,minivector>& gradAtZero, std::map<int,minivector>& RgProd);
 };
 
 

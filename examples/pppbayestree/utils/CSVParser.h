@@ -8,7 +8,8 @@
 
 // 当前直接实现成将数据解析成double
 
-class CSVParser {
+class CSVParser
+{
 
     typedef std::vector<double> ROW_TYPE;
     typedef std::vector<ROW_TYPE*> DATA_TYPE;
@@ -21,8 +22,9 @@ public:
     size_t load(const std::string &csvFile,
                 const std::string &sep,
                 const std::vector<std::string> &header);
-    
-    size_t size() const {
+
+    size_t size() const
+    {
         return data.size();
     }
 
@@ -39,8 +41,10 @@ public:
         return data.end();
     }
 
-    std::string& trim(std::string& s, const std::string& char_list) {
-        if (!s.empty()) {
+    std::string& trim(std::string& s, const std::string& char_list)
+    {
+        if (!s.empty())
+        {
             s.erase(0, s.find_first_not_of(char_list));
             s.erase(s.find_last_not_of(char_list) + 1);
         }
@@ -50,7 +54,7 @@ public:
                                     std::vector<std::string> &ret,
                                     const std::string &sep);
 
-  private:
+private:
     DATA_TYPE data;
 };
 

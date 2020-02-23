@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Dagoberto Salazar - gAGE. 2006, 2012
 //
 //============================================================================
@@ -41,114 +41,126 @@
 namespace gpstk
 {
 
-      /** @addtogroup RinexObs */
-      //@{
+/** @addtogroup RinexObs */
+//@{
 
 
-      /// This is the base class to ease data extraction from a RinexObsData object.
-   class ExtractData
-   {
-   public:
+/// This is the base class to ease data extraction from a RinexObsData object.
+class ExtractData
+{
+public:
 
-         /// Return validity of data
-      inline bool isValid(void) const
-      { return valid; }
-
-
-         /// Number of satellites with available data
-      int numSV;
+    /// Return validity of data
+    inline bool isValid(void) const
+    {
+        return valid;
+    }
 
 
-         /// Vector with the PRN of satellites with available data.
-      Vector<SatID> availableSV;
+    /// Number of satellites with available data
+    int numSV;
 
 
-         /// Vector holding the available data
-      Vector<double> obsData;
+    /// Vector with the PRN of satellites with available data.
+    Vector<SatID> availableSV;
 
 
-         /// Default constructor
-      ExtractData()
-         : checkData(true), valid(false), minPRange(15000000.0),
-           maxPRange(30000000.0)
-      {};
+    /// Vector holding the available data
+    Vector<double> obsData;
 
 
-         /** Pull out the selected observation type from a Rinex3ObsData object
-          *
-          * @param rinexData  The Rinex data set holding the observations
-          * @param index      Index representing the observation type. It is
-          *                   obtained from corresponding RINEX Obs Header
-          *                   using method 'Rinex3ObsHeader::getObsIndex()'.
-          *
-          * @return
-          *  Number of satellites with this kind of data available
-          */
-      virtual int getData( const Rinex3ObsData& rinexData, int index )
-         throw(InvalidRequest);
+    /// Default constructor
+    ExtractData()
+        : checkData(true), valid(false), minPRange(15000000.0),
+          maxPRange(30000000.0)
+    {};
 
 
-         /** Pull out the selected observation type from a Rinex3ObsData object
-          *
-          * @param rinexData  The Rinex data set holding the observations
-          * @param type       String representing the observation type.
-          * @param hdr        RINEX Observation Header for current RINEX file.
-          */
-      virtual int getData( const Rinex3ObsData& rinexData,
-                           std::string type,
-                           const Rinex3ObsHeader& hdr )
-         throw(InvalidRequest);
+    /** Pull out the selected observation type from a Rinex3ObsData object
+     *
+     * @param rinexData  The Rinex data set holding the observations
+     * @param index      Index representing the observation type. It is
+     *                   obtained from corresponding RINEX Obs Header
+     *                   using method 'Rinex3ObsHeader::getObsIndex()'.
+     *
+     * @return
+     *  Number of satellites with this kind of data available
+     */
+    virtual int getData( const Rinex3ObsData& rinexData, int index )
+    throw(InvalidRequest);
 
 
-         /// Set this to true if you want to enable data checking within given
-         /// boundaries (default for code measurements)
-      bool checkData;
+    /** Pull out the selected observation type from a Rinex3ObsData object
+     *
+     * @param rinexData  The Rinex data set holding the observations
+     * @param type       String representing the observation type.
+     * @param hdr        RINEX Observation Header for current RINEX file.
+     */
+    virtual int getData( const Rinex3ObsData& rinexData,
+                         std::string type,
+                         const Rinex3ObsHeader& hdr )
+    throw(InvalidRequest);
 
 
-         /// Set the minimum pseudorange value allowed for data (in meters).
-      virtual ExtractData& setMinPRange( double minPR )
-      { minPRange = minPR; return (*this); };
+    /// Set this to true if you want to enable data checking within given
+    /// boundaries (default for code measurements)
+    bool checkData;
 
 
-         /// Get the minimum pseudorange value allowed for data (in meters).
-      virtual double getMinPRange(void) const
-      { return minPRange; };
+    /// Set the minimum pseudorange value allowed for data (in meters).
+    virtual ExtractData& setMinPRange( double minPR )
+    {
+        minPRange = minPR;
+        return (*this);
+    };
 
 
-         /// Set the maximum pseudorange value allowed for data (in meters).
-      virtual ExtractData& setMaxPRange( double maxPR )
-      { maxPRange = maxPR; return (*this); };
+    /// Get the minimum pseudorange value allowed for data (in meters).
+    virtual double getMinPRange(void) const
+    {
+        return minPRange;
+    };
 
 
-         /// Get the minimum pseudorange value allowed for data (in meters).
-      virtual double getMaxPRange(void) const
-      { return maxPRange; };
+    /// Set the maximum pseudorange value allowed for data (in meters).
+    virtual ExtractData& setMaxPRange( double maxPR )
+    {
+        maxPRange = maxPR;
+        return (*this);
+    };
 
 
-         /// Destructor
-      virtual ~ExtractData() {};
+    /// Get the minimum pseudorange value allowed for data (in meters).
+    virtual double getMaxPRange(void) const
+    {
+        return maxPRange;
+    };
 
 
-   protected:
+    /// Destructor
+    virtual ~ExtractData() {};
 
 
-         /// True only if results are valid
-      bool valid;
+protected:
 
 
-         /// Minimum pseudorange value allowed for input data (in meters).
-      double minPRange;
+    /// True only if results are valid
+    bool valid;
 
 
-         /// Maximum pseudorange value allowed for input data (in meters).
-      double maxPRange;
+    /// Minimum pseudorange value allowed for input data (in meters).
+    double minPRange;
 
 
-   }; // End of class 'ExtractData'
-   
+    /// Maximum pseudorange value allowed for input data (in meters).
+    double maxPRange;
 
-      //@}
-   
+
+}; // End of class 'ExtractData'
+
+
+//@}
+
 }  // End of namespace gpstk
 
 #endif   // GPSTK_EXTRACTDATA_HPP

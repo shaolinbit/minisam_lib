@@ -51,7 +51,7 @@ namespace gpstk
 // Returns a string identifying this object.
 std::string BasicModel::getClassName() const
 {
-        return "BasicModel";
+    return "BasicModel";
 }
 
 
@@ -82,11 +82,11 @@ BasicModel::BasicModel( const double& aRx,
                         ReferenceFrame frame )
 {
 
-        minElev = 10.0;
-        pDefaultEphemeris = NULL;
-        defaultObservable = TypeID::C1;
-        useTGD = false;
-        setInitialRxPosition( aRx, bRx, cRx, s, ell, frame );
+    minElev = 10.0;
+    pDefaultEphemeris = NULL;
+    defaultObservable = TypeID::C1;
+    useTGD = false;
+    setInitialRxPosition( aRx, bRx, cRx, s, ell, frame );
 
 }     // End of 'BasicModel::BasicModel()'
 
@@ -96,11 +96,11 @@ BasicModel::BasicModel( const double& aRx,
 BasicModel::BasicModel(const Position& RxCoordinates)
 {
 
-        minElev = 10.0;
-        pDefaultEphemeris = NULL;
-        defaultObservable = TypeID::C1;
-        useTGD = false;
-        setInitialRxPosition(RxCoordinates);
+    minElev = 10.0;
+    pDefaultEphemeris = NULL;
+    defaultObservable = TypeID::C1;
+    useTGD = false;
+    setInitialRxPosition(RxCoordinates);
 
 }     // End of 'BasicModel::BasicModel()'
 
@@ -123,11 +123,11 @@ BasicModel::BasicModel( const Position& RxCoordinates,
                         const bool& applyTGD )
 {
 
-        minElev = 10.0;
-        setInitialRxPosition(RxCoordinates);
-        setDefaultEphemeris(dEphemeris);
-        defaultObservable = dObservable;
-        useTGD = applyTGD;
+    minElev = 10.0;
+    setInitialRxPosition(RxCoordinates);
+    setDefaultEphemeris(dEphemeris);
+    defaultObservable = dObservable;
+    useTGD = applyTGD;
 
 }     // End of 'BasicModel::BasicModel()'
 
@@ -144,130 +144,130 @@ satTypeValueMap& BasicModel::Process( const CommonTime& time,
 throw(ProcessingException)
 {
 
-        try
+    try
+    {
+
+        SatIDSet satRejectedSet;
+
+        // Loop through all the satellites
+        satTypeValueMap::iterator stv;
+        for( stv = gData.begin();
+                stv != gData.end();
+                ++stv )
         {
+            // Scalar to hold temporal value
+            double observable( (*stv).second(defaultObservable) );
 
-                SatIDSet satRejectedSet;
+            // A lot of the work is done by a CorrectedEphemerisRange object
+            CorrectedEphemerisRange cerange;
 
-                // Loop through all the satellites
-                satTypeValueMap::iterator stv;
-                for( stv = gData.begin();
-                     stv != gData.end();
-                     ++stv )
+            try
+            {
+                // Compute most of the parameters
+                cerange.ComputeAtTransmitTime( time,
+                                               observable,
+                                               rxPos,
+                                               (*stv).first,
+                                               *(getDefaultEphemeris()) );
+            }
+            catch(InvalidRequest& e)
+            {
+
+                // If some problem appears, then schedule this satellite
+                // for removal
+                satRejectedSet.insert( (*stv).first );
+
+                continue; // Skip this SV if problems arise
+
+            }
+
+            // Let's test if satellite has enough elevation over horizon
+            if ( rxPos.elevationGeodetic(cerange.svPosVel) < minElev )
+            {
+
+                // Mark this satellite if it doesn't have enough elevation
+                satRejectedSet.insert( (*stv).first );
+
+                continue;
+
+            }
+
+            // Computing Total Group Delay (TGD - meters), if possible
+            double tempTGD(getTGDCorrections( time,
+                                              (*pDefaultEphemeris),
+                                              (*stv).first ) );
+
+            // Now we have to add the new values to the data structure
+            (*stv).second[TypeID::dtSat] = cerange.svclkbias;
+
+            // Now, lets insert the geometry matrix
+            (*stv).second[TypeID::dx] = cerange.cosines[0];
+            (*stv).second[TypeID::dy] = cerange.cosines[1];
+            (*stv).second[TypeID::dz] = cerange.cosines[2];
+
+            (*stv).second[TypeID::dSatX] = -cerange.cosines[0];
+            (*stv).second[TypeID::dSatY] = -cerange.cosines[1];
+            (*stv).second[TypeID::dSatZ] = -cerange.cosines[2];
+
+            // When using pseudorange method, this is 1.0
+            (*stv).second[TypeID::cdt] = 1.0;
+
+            // Now we have to add the new values to the data structure
+            (*stv).second[TypeID::rho] = cerange.rawrange;
+            (*stv).second[TypeID::rel] = -cerange.relativity;
+            (*stv).second[TypeID::elevation] = cerange.elevationGeodetic;
+            (*stv).second[TypeID::azimuth] = cerange.azimuthGeodetic;
+
+            // Let's insert satellite position at transmission time
+            (*stv).second[TypeID::satX] = cerange.svPosVel.x[0];
+            (*stv).second[TypeID::satY] = cerange.svPosVel.x[1];
+            (*stv).second[TypeID::satZ] = cerange.svPosVel.x[2];
+
+            // Let's insert satellite velocity at transmission time
+            (*stv).second[TypeID::satVX] = cerange.svPosVel.v[0];
+            (*stv).second[TypeID::satVY] = cerange.svPosVel.v[1];
+            (*stv).second[TypeID::satVZ] = cerange.svPosVel.v[2];
+
+            // Let's insert receiver position
+            (*stv).second[TypeID::recX] = rxPos.X();
+            (*stv).second[TypeID::recY] = rxPos.Y();
+            (*stv).second[TypeID::recZ] = rxPos.Z();
+
+            // Let's insert receiver velocity
+            (*stv).second[TypeID::recVX] = 0.0;
+            (*stv).second[TypeID::recVY] = 0.0;
+            (*stv).second[TypeID::recVZ] = 0.0;
+
+            // Apply correction to C1 observable, if appropriate
+            if(useTGD)
+            {
+                // Look for C1
+                if( (*stv).second.find(TypeID::C1) != (*stv).second.end() )
                 {
-                        // Scalar to hold temporal value
-                        double observable( (*stv).second(defaultObservable) );
+                    (*stv).second[TypeID::C1] =
+                        (*stv).second[TypeID::C1] - tempTGD;
+                };
+            };
 
-                        // A lot of the work is done by a CorrectedEphemerisRange object
-                        CorrectedEphemerisRange cerange;
+            (*stv).second[TypeID::instC1] = tempTGD;
 
-                        try
-                        {
-                                // Compute most of the parameters
-                                cerange.ComputeAtTransmitTime( time,
-                                                               observable,
-                                                               rxPos,
-                                                               (*stv).first,
-                                                               *(getDefaultEphemeris()) );
-                        }
-                        catch(InvalidRequest& e)
-                        {
+        } // End of loop for(stv = gData.begin()...
 
-                                // If some problem appears, then schedule this satellite
-                                // for removal
-                                satRejectedSet.insert( (*stv).first );
+        // Remove satellites with missing data
+        gData.removeSatID(satRejectedSet);
 
-                                continue; // Skip this SV if problems arise
+        return gData;
 
-                        }
+    } // End of try...
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
 
-                        // Let's test if satellite has enough elevation over horizon
-                        if ( rxPos.elevationGeodetic(cerange.svPosVel) < minElev )
-                        {
+        GPSTK_THROW(e);
 
-                                // Mark this satellite if it doesn't have enough elevation
-                                satRejectedSet.insert( (*stv).first );
-
-                                continue;
-
-                        }
-
-                        // Computing Total Group Delay (TGD - meters), if possible
-                        double tempTGD(getTGDCorrections( time,
-                                                          (*pDefaultEphemeris),
-                                                          (*stv).first ) );
-
-                        // Now we have to add the new values to the data structure
-                        (*stv).second[TypeID::dtSat] = cerange.svclkbias;
-
-                        // Now, lets insert the geometry matrix
-                        (*stv).second[TypeID::dx] = cerange.cosines[0];
-                        (*stv).second[TypeID::dy] = cerange.cosines[1];
-                        (*stv).second[TypeID::dz] = cerange.cosines[2];
-
-                        (*stv).second[TypeID::dSatX] = -cerange.cosines[0];
-                        (*stv).second[TypeID::dSatY] = -cerange.cosines[1];
-                        (*stv).second[TypeID::dSatZ] = -cerange.cosines[2];
-
-                        // When using pseudorange method, this is 1.0
-                        (*stv).second[TypeID::cdt] = 1.0;
-
-                        // Now we have to add the new values to the data structure
-                        (*stv).second[TypeID::rho] = cerange.rawrange;
-                        (*stv).second[TypeID::rel] = -cerange.relativity;
-                        (*stv).second[TypeID::elevation] = cerange.elevationGeodetic;
-                        (*stv).second[TypeID::azimuth] = cerange.azimuthGeodetic;
-
-                        // Let's insert satellite position at transmission time
-                        (*stv).second[TypeID::satX] = cerange.svPosVel.x[0];
-                        (*stv).second[TypeID::satY] = cerange.svPosVel.x[1];
-                        (*stv).second[TypeID::satZ] = cerange.svPosVel.x[2];
-
-                        // Let's insert satellite velocity at transmission time
-                        (*stv).second[TypeID::satVX] = cerange.svPosVel.v[0];
-                        (*stv).second[TypeID::satVY] = cerange.svPosVel.v[1];
-                        (*stv).second[TypeID::satVZ] = cerange.svPosVel.v[2];
-
-                        // Let's insert receiver position
-                        (*stv).second[TypeID::recX] = rxPos.X();
-                        (*stv).second[TypeID::recY] = rxPos.Y();
-                        (*stv).second[TypeID::recZ] = rxPos.Z();
-
-                        // Let's insert receiver velocity
-                        (*stv).second[TypeID::recVX] = 0.0;
-                        (*stv).second[TypeID::recVY] = 0.0;
-                        (*stv).second[TypeID::recVZ] = 0.0;
-
-                        // Apply correction to C1 observable, if appropriate
-                        if(useTGD)
-                        {
-                                // Look for C1
-                                if( (*stv).second.find(TypeID::C1) != (*stv).second.end() )
-                                {
-                                        (*stv).second[TypeID::C1] =
-                                                (*stv).second[TypeID::C1] - tempTGD;
-                                };
-                        };
-
-                        (*stv).second[TypeID::instC1] = tempTGD;
-
-                } // End of loop for(stv = gData.begin()...
-
-                // Remove satellites with missing data
-                gData.removeSatID(satRejectedSet);
-
-                return gData;
-
-        } // End of try...
-        catch(Exception& u)
-        {
-                // Throw an exception if something unexpected happens
-                ProcessingException e( getClassName() + ":"
-                                       + u.what() );
-
-                GPSTK_THROW(e);
-
-        }
+    }
 
 }     // End of method 'BasicModel::Process()'
 
@@ -286,16 +286,16 @@ int BasicModel::setInitialRxPosition( const double& aRx,
                                       ReferenceFrame frame )
 {
 
-        try
-        {
-                Position rxpos( aRx, bRx, cRx, s, ell, frame );
-                setInitialRxPosition(rxpos);
-                return 0;
-        }
-        catch(GeometryException& e)
-        {
-                return -1;
-        }
+    try
+    {
+        Position rxpos( aRx, bRx, cRx, s, ell, frame );
+        setInitialRxPosition(rxpos);
+        return 0;
+    }
+    catch(GeometryException& e)
+    {
+        return -1;
+    }
 
 }     // End of method 'BasicModel::setInitialRxPosition()'
 
@@ -305,15 +305,15 @@ int BasicModel::setInitialRxPosition( const double& aRx,
 int BasicModel::setInitialRxPosition(const Position& RxCoordinates)
 {
 
-        try
-        {
-                rxPos = RxCoordinates;
-                return 0;
-        }
-        catch(GeometryException& e)
-        {
-                return -1;
-        }
+    try
+    {
+        rxPos = RxCoordinates;
+        return 0;
+    }
+    catch(GeometryException& e)
+    {
+        return -1;
+    }
 
 }     // End of method 'BasicModel::setInitialRxPosition()'
 
@@ -322,16 +322,16 @@ int BasicModel::setInitialRxPosition(const Position& RxCoordinates)
 // Method to set the initial (a priori) position of receiver.
 int BasicModel::setInitialRxPosition()
 {
-        try
-        {
-                Position rxpos(0.0, 0.0, 0.0, Position::Cartesian, NULL);
-                setInitialRxPosition(rxpos);
-                return 0;
-        }
-        catch(GeometryException& e)
-        {
-                return -1;
-        }
+    try
+    {
+        Position rxpos(0.0, 0.0, 0.0, Position::Cartesian, NULL);
+        setInitialRxPosition(rxpos);
+        return 0;
+    }
+    catch(GeometryException& e)
+    {
+        return -1;
+    }
 
 }     // End of method 'BasicModel::setInitialRxPosition()'
 
@@ -344,20 +344,20 @@ double BasicModel::getTGDCorrections( CommonTime Tr,
 throw()
 {
 
-        try
-        {
-                const GPSEphemerisStore& bce =
-                        dynamic_cast<const GPSEphemerisStore&>(Eph);
+    try
+    {
+        const GPSEphemerisStore& bce =
+            dynamic_cast<const GPSEphemerisStore&>(Eph);
 
-                bce.findEphemeris(sat,Tr);
+        bce.findEphemeris(sat,Tr);
 
-                //return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
-                return ( bce.findEphemeris(sat,Tr).Tgd * C_MPS );
-        }
-        catch(...)
-        {
-                return 0.0;
-        }
+        //return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
+        return ( bce.findEphemeris(sat,Tr).Tgd * C_MPS );
+    }
+    catch(...)
+    {
+        return 0.0;
+    }
 
 }     // End of method 'BasicModel::getTGDCorrections()'
 

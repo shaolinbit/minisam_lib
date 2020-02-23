@@ -37,136 +37,150 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
-      //@{
+/** @addtogroup math */
+//@{
 
-      /** This class implements the Chi-square distribution.
-       *
-       * A typical way to use this class follows:
-       *
-       * @code
-       *
-       *      // Declare a 'Chi2Distribution' object with 2 degrees of freedom
-       *   Chi2Distribution chiObj;
-       *
-       *   double x(5.7);
-       *
-       *   cout << chiObj.pdf(x) << " | "
-       *        << chiObj.cdf(x) << " | "
-       *        << chiObj.Q(x) << endl;
-       *
-       *      // Now, the same but with four degrees of freedom
-       *   cout << chiObj.pdf(x, 4) << " | "
-       *        << chiObj.cdf(x, 4) << " | "
-       *        << chiObj.Q(x, 4) << endl;
-       *
-       * @endcode
-       *
-       * @sa SpecialFunctions.hpp for useful functions, and
-       *     GaussianDistribution.hpp for a normal distribution.
-       *
-       */
-   class Chi2Distribution : public BaseDistribution
-   {
-   public:
-
-
-         /// Default constructor. Sets the number of degrees of freedom to 2.
-      Chi2Distribution() : ndf(2) {};
+/** This class implements the Chi-square distribution.
+ *
+ * A typical way to use this class follows:
+ *
+ * @code
+ *
+ *      // Declare a 'Chi2Distribution' object with 2 degrees of freedom
+ *   Chi2Distribution chiObj;
+ *
+ *   double x(5.7);
+ *
+ *   cout << chiObj.pdf(x) << " | "
+ *        << chiObj.cdf(x) << " | "
+ *        << chiObj.Q(x) << endl;
+ *
+ *      // Now, the same but with four degrees of freedom
+ *   cout << chiObj.pdf(x, 4) << " | "
+ *        << chiObj.cdf(x, 4) << " | "
+ *        << chiObj.Q(x, 4) << endl;
+ *
+ * @endcode
+ *
+ * @sa SpecialFunctions.hpp for useful functions, and
+ *     GaussianDistribution.hpp for a normal distribution.
+ *
+ */
+class Chi2Distribution : public BaseDistribution
+{
+public:
 
 
-         /** Explicit constructor.
-          *
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      Chi2Distribution( int n )
-      { setNDF(n); };
+    /// Default constructor. Sets the number of degrees of freedom to 2.
+    Chi2Distribution() : ndf(2) {};
 
 
-         /** Computes the probability density function
-          *
-          * @param x    Value
-          */
-      virtual double pdf(double x);
+    /** Explicit constructor.
+     *
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    Chi2Distribution( int n )
+    {
+        setNDF(n);
+    };
 
 
-         /** Computes the probability density function
-          *
-          * @param x       Value
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual double pdf(double x, int n)
-      { setNDF(n); return pdf(x); };
+    /** Computes the probability density function
+     *
+     * @param x    Value
+     */
+    virtual double pdf(double x);
 
 
-         /** Computes the cumulative distribution function
-          *
-          * @param x       Value
-          */
-      virtual double cdf(double x);
+    /** Computes the probability density function
+     *
+     * @param x       Value
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual double pdf(double x, int n)
+    {
+        setNDF(n);
+        return pdf(x);
+    };
 
 
-         /** Computes the cumulative distribution function
-          *
-          * @param x       Value
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual double cdf(double x, int n)
-      { setNDF(n); return cdf(x); };
+    /** Computes the cumulative distribution function
+     *
+     * @param x       Value
+     */
+    virtual double cdf(double x);
 
 
-         /** Computes the upper tail of the Chi-square probability
-          *  function Q(x, ndf).
-          *
-          * @param x       Value
-          */
-      virtual double Q(double x)
-      { return ( 1.0 - cdf(x) ); };
+    /** Computes the cumulative distribution function
+     *
+     * @param x       Value
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual double cdf(double x, int n)
+    {
+        setNDF(n);
+        return cdf(x);
+    };
 
 
-         /** Computes the upper tail of the Chi-square probability
-          *  function Q(x, n).
-          *
-          * @param x       Value
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual double Q(double x, int n)
-      { return ( 1.0 - cdf(x,n) ); };
+    /** Computes the upper tail of the Chi-square probability
+     *  function Q(x, ndf).
+     *
+     * @param x       Value
+     */
+    virtual double Q(double x)
+    {
+        return ( 1.0 - cdf(x) );
+    };
 
 
-         /// Get number of degrees of freedom
-      virtual double getNDF(void) const
-      { return ndf; };
+    /** Computes the upper tail of the Chi-square probability
+     *  function Q(x, n).
+     *
+     * @param x       Value
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual double Q(double x, int n)
+    {
+        return ( 1.0 - cdf(x,n) );
+    };
 
 
-         /** Set the number of degrees of freedom.
-          *
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual Chi2Distribution& setNDF(int n)
-         throw(InvalidParameter);
+    /// Get number of degrees of freedom
+    virtual double getNDF(void) const
+    {
+        return ndf;
+    };
 
 
-   private:
+    /** Set the number of degrees of freedom.
+     *
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual Chi2Distribution& setNDF(int n)
+    throw(InvalidParameter);
 
 
-         /// Number of degrees of freedom
-      int ndf;
+private:
 
 
-   };  // End of class "Chi2Distribution"
+    /// Number of degrees of freedom
+    int ndf;
 
-      //@}
+
+};  // End of class "Chi2Distribution"
+
+//@}
 
 }  // End of namespace gpstk
 #endif   // CHI2DISTRIBUTION_HPP

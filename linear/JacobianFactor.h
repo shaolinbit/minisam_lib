@@ -2,23 +2,8 @@
 #define JACOBIANFACTOR_H
 
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    JacobianFactor.h
- * @author  Richard Roberts
- * @author  Christian Potthast
- * @author  Frank Dellaert
- * @date    Dec 8, 2010
  */
 
 
@@ -26,8 +11,7 @@
 #include "../linear/GaussianFactorGraph.h"
 #include "../linear/NoiseModel.h"
 #include "../inference/Ordering.h"
-#include "../base/SVBlockMatrix.h"
-#include "../inference/VariableSlots.h"
+#include "../mat/GaussianBlockMatrix.h"
 
 namespace minisam
 {
@@ -74,7 +58,7 @@ class GaussianFactorGraph;
    * and the negative log-likelihood represented by this factor would be
    * \f[ E(x) = \frac{1}{2} (A_1 x_{j1} + A_2 x_{j2} - b)^T \Sigma^{-1} (A_1 x_{j1} + A_2 x_{j2} - b) . \f]
    */
-class JacobianFactor : public RealGaussianFactor
+    class JacobianFactor : public RealGaussianFactor
 {
 public:
     /** default constructor for I/O */
@@ -84,34 +68,38 @@ public:
     explicit JacobianFactor(const RealGaussianFactor &gf);
 
     /** Copy constructor */
-    explicit JacobianFactor(const JacobianFactor &jf) : RealGaussianFactor(jf.keys_,jf.Ab_, jf.model_, 0)
+    explicit JacobianFactor(const JacobianFactor &jf) :
+        RealGaussianFactor(jf.keys_,jf.Ab_, jf.model_, 0)
     {
     }
 
     /** Construct an n-ary factor
      * @tparam TERMS A container whose value type is std::pair<Key, Matrix>, specifying the
      *         collection of keys and matrices making up the factor. */
-    JacobianFactor(const std::map<int, Eigen::MatrixXd> &terms, const Eigen::VectorXd &b,
-                   DiagonalNoiseModel *model =NULL);
-                 //  DiagonalNoiseModel *model =new DiagonalNoiseModel());
+    JacobianFactor(const std::map<int, minimatrix> &terms, const minivector &b,
+                   GaussianNoiseModel *model =NULL);
+    JacobianFactor(const std::vector<int>& keys,const std::vector<minimatrix>& Avec, const minivector &b,
+                   GaussianNoiseModel *model =NULL);
 
-    JacobianFactor(const std::vector<std::pair<int, Eigen::MatrixXd>> &terms,
-                   const Eigen::VectorXd &b,
-                    DiagonalNoiseModel *model =NULL);
-                  // DiagonalNoiseModel *model =new DiagonalNoiseModel());
+    JacobianFactor(const std::map<int, minimatrix>* terms,
+                   const minivector* b,
+                   GaussianNoiseModel *model);
 
-    JacobianFactor(int i1, const Eigen::MatrixXd &A1,
-                   const Eigen::VectorXd &b,
-                   DiagonalNoiseModel *model);
+    JacobianFactor(const std::vector<std::pair<int, minimatrix>>& terms,
+                   const minivector &b,
+                   GaussianNoiseModel *model =NULL);
+
+    JacobianFactor(int i1, const minimatrix &A1,
+                   const minivector &b,
+                   GaussianNoiseModel *model);
 
     /** Constructor with arbitrary number keys, and where the augmented matrix is given all together
      *  instead of in block terms.  Note that only the active view of the provided augmented matrix
      *  is used, and that the matrix data is copied into a newly-allocated matrix in the constructed
      *  factor. */
     JacobianFactor(
-        const std::vector<int> &keys, const SVBlockMatrix& augmentedMatrix,
-        DiagonalNoiseModel *sigmas =NULL);
-       //  DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
+        const std::vector<int> &keys, const GaussianBlockMatrix& augmentedMatrix,
+        GaussianNoiseModel *sigmas =NULL);
 
     /**
      * Build a dense joint factor from all the factors in a factor graph.  If a VariableSlots
@@ -134,11 +122,11 @@ public:
 
     //V
     /** Return the full augmented Jacobian matrix of this factor as a VerticalBlockMatrix object. */
-    const SVBlockMatrix& matrixObject() const;
+    const GaussianBlockMatrix& matrixObject() const;
 
     //V
     /** Mutable access to the full augmented Jacobian matrix of this factor as a VerticalBlockMatrix object. */
-    SVBlockMatrix& matrixObject();
+    GaussianBlockMatrix& matrixObject();
 
     /** is noise model constrained ? */
     bool isConstrained() const;
@@ -156,48 +144,50 @@ public:
     JacobianFactor(JacobianFactor &jf);
 
     /** get a copy of model */
-    const DiagonalNoiseModel* get_model() const;
+     GaussianNoiseModel* get_model() const;
 
     /** get a copy of model (non-const version) */
-    DiagonalNoiseModel* get_model();
+    GaussianNoiseModel* get_model();
     /** Get a view of the r.h.s. vector b, not weighted by noise */
 
-    Eigen::VectorXd getb();
+    minivector getb();
+    void setb(const minivector& sb);
 
-    const Eigen::VectorXd getb() const;
+     minivector getb() const;
     /** Get a view of the A matrix for the variable pointed to by the given key iterator */
-    Eigen::Block<const Eigen::MatrixXd> getA(std::vector<int>::const_iterator variable) const;
+     minimatrix getA(std::vector<int>::const_iterator variable) const;
 
     /** Get a view of the A matrix, not weighted by noise */
-    Eigen::Block<const Eigen::MatrixXd> getA() const;
+     minimatrix getA() const;
 
     /** Get a view of the A matrix for the variable pointed to by the given key iterator (non-const version) */
-    Eigen::Block<Eigen::MatrixXd> getA(std::vector<int>::iterator variable);
+    minimatrix getA(std::vector<int>::iterator variable);
 
     /** Get a view of the A matrix for the variable pointed to by the given key iterator (non-const version) */
-    Eigen::Block<const Eigen::MatrixXd> getA(int vpos) const;
+     minimatrix getA(int vpos) const;
 
     /** Get a view of the A matrix */
-    Eigen::Block<Eigen::MatrixXd> getA();
+    minimatrix getA();
 
     /** Return A*x */
-    Eigen::VectorXd operator*(const std::map<int, Eigen::VectorXd> &x) const;
+    minivector operator*(const std::map<int, minivector> &x) const;
 
     /** set noiseModel correctly */
-    void setModel(bool anyConstrained, const Eigen::VectorXd &sigmas);
+    void setModel(bool anyConstrained, const minivector &sigmas);
 
     JacobianFactor &operator=(const JacobianFactor &rObj);
 
 protected:
     /// Internal function to fill blocks and set dimensions
-    void fillTerms(const std::map<int, Eigen::MatrixXd> &terms, const Eigen::VectorXd &b,  DiagonalNoiseModel* noiseModel);
-    void fillVecTerms(const std::vector<std::pair<int, Eigen::MatrixXd>> &terms, const Eigen::VectorXd &b,
-                      DiagonalNoiseModel *noiseModel);
+    void fillTerms(const std::map<int, minimatrix> &terms,
+                   const minivector &b,  GaussianNoiseModel* noiseModel);
+    void fillVecTerms(const std::vector<std::pair<int, minimatrix>> &terms, const minivector &b,
+                      GaussianNoiseModel *noiseModel);
 
 public:
     JacobianFactor(const std::vector<int>& keys,const std::vector<int>& dims, int m,
-                  DiagonalNoiseModel* model =NULL) ://  DiagonalNoiseModel* model =new DiagonalNoiseModel()) :
-                        RealGaussianFactor(keys,SVBlockMatrix(dims.begin(), dims.end(), m, true, false), model, 0)
+                   GaussianNoiseModel* model =NULL) ://  DiagonalNoiseModel* model =new DiagonalNoiseModel()) :
+        RealGaussianFactor(keys,GaussianBlockMatrix(dims.begin(), dims.end(), m, true, false), model, 0)
     {
     }
 

@@ -17,8 +17,6 @@ public:
 
 public:
     /// shorthand for a smart pointer to a factor
-    //typedef boost::shared_ptr<UnaryFactor> shared_ptr;
-
     // The constructor requires the variable key, the (X, Y) measurement value, and the noise model
     UnaryFactor(int j, double x, double y, GaussianNoiseModel* model):
         NoiseModelFactor1(model, j,1), mx_(x), my_(y) {}
@@ -29,14 +27,14 @@ public:
     // The first is the 'evaluateError' function. This function implements the desired measurement
     // function, returning a vector of errors when evaluated at the provided variable value. It
     // must also calculate the Jacobians for this measurement function, if requested.
-    virtual Eigen::VectorXd evaluateError(const Pose2& x) const
+    virtual minivector evaluateError(const minimatrix* mx) const
     {
-        Eigen::VectorXd br(2);
-        br<< x.x() - mx_, x.y() - my_;
+        minivector br(2);
+        br.data[0]=mx->x() - mx_;
+        br.data[1]=mx->y() - my_;
         return br;
-        //return (Vector(2) << q.x() - mx_, q.y() - my_).finished();
     }
-    virtual Eigen::VectorXd evaluateError(const Pose2& x, Eigen::MatrixXd& H)const
+    virtual minivector evaluateError(const minimatrix* mx, minimatrix& H)const
     {
         // The measurement function for a GPS-like measurement is simple:
         // error_x = pose.x - measurement.x
@@ -44,47 +42,25 @@ public:
         // Consequently, the Jacobians are:
         // [ derror_x/dx  derror_x/dy  derror_x/dtheta ] = [1 0 0]
         // [ derror_y/dx  derror_y/dy  derror_y/dtheta ] = [0 1 0]
-        //Eigen::MatrixXd H(2,3);
-        // H<< 1.0,0.0,0.0, 0.0,1.0,0.0;
-        H= (Eigen::MatrixXd(2,3) << 1.0,0.0,0.0, 0.0,1.0,0.0).finished();
-        Eigen::VectorXd br(2);
-        br<< x.x() - mx_, x.y() - my_;
+
+        minimatrix_resize(&H,2,3);
+        minimatrix_set(&H,0,0,1.0);minimatrix_set(&H,0,1,0.0);minimatrix_set(&H,0,2,0.0);
+        minimatrix_set(&H,1,0,0.0);minimatrix_set(&H,1,1,1.0);minimatrix_set(&H,1,2,0.0);
+
+        minivector br(2);
+        br.data[0]=mx->x()-mx_;
+        br.data[1]=mx->y()-my_;
+        //br<< x.x() - mx_, x.y() - my_;
         return br;
 
     }
 
-    /*
-
-    virtual Eigen::VectorXd evaluateError(const Eigen::VectorXd x) const
-    {
-        Eigen::VectorXd x0;
-        return x0;
-    }
-    virtual Eigen::VectorXd evaluateError(const Eigen::VectorXd x, Eigen::MatrixXd& H)const
-    {
-        Eigen::VectorXd x0;
-        return x0;
-    }
-    */
-
-
-    /*Eigen::VectorXd evaluateError(const Pose2& q, boost::optional<Matrix&> H = boost::none) const
-    {
-      // The measurement function for a GPS-like measurement is simple:
-      // error_x = pose.x - measurement.x
-      // error_y = pose.y - measurement.y
-      // Consequently, the Jacobians are:
-      // [ derror_x/dx  derror_x/dy  derror_x/dtheta ] = [1 0 0]
-      // [ derror_y/dx  derror_y/dy  derror_y/dtheta ] = [0 1 0]
-      if (H) (*H) = (Matrix(2,3) << 1.0,0.0,0.0, 0.0,1.0,0.0).finished();
-      return (Vector(2) << q.x() - mx_, q.y() - my_).finished();
-    }*/
 
     // The second is a 'clone' function that allows the factor to be copied. Under most
     // circumstances, the following code that employs the default copy constructor should
     // work fine.
 
-    virtual NonlinearFactor* clone()const
+    virtual NoiseModelFactor* clone()const
     {
         UnaryFactor* newfactor=new UnaryFactor(key(),mx_,my_,noiseModel_);
         return newfactor;

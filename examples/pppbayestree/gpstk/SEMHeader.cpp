@@ -39,73 +39,73 @@ using namespace std;
 
 namespace gpstk
 {
-   short SEMHeader::nearFullWeek = 0;
+short SEMHeader::nearFullWeek = 0;
 
-   void SEMHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
-   {
-      string line;
+void SEMHeader::reallyPutRecord(FFStream& ffs) const
+throw(std::exception, FFStreamError,
+      gpstk::StringUtils::StringException)
+{
+    string line;
 
-      SEMStream& strm = dynamic_cast<SEMStream&>(ffs);
+    SEMStream& strm = dynamic_cast<SEMStream&>(ffs);
 
-      line = leftJustify(asString<short>(numRecords),2);
-      line += " ";
-      line += Title;
-      strm << line << endl;
-      line.erase();
+    line = leftJustify(asString<short>(numRecords),2);
+    line += " ";
+    line += Title;
+    strm << line << endl;
+    line.erase();
 
-      line = rightJustify(asString<short>(week),4);
-      line += " ";
-      line += asString<long>(Toa);
-      strm << line << endl;
-      line.erase();
+    line = rightJustify(asString<short>(week),4);
+    line += " ";
+    line += asString<long>(Toa);
+    strm << line << endl;
+    line.erase();
 
-   }   // end SEMAHeader::reallyPutRecord
+}   // end SEMAHeader::reallyPutRecord
 
 
-   void SEMHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
-   {
-      string line;
+void SEMHeader::reallyGetRecord(FFStream& ffs)
+throw(std::exception, FFStreamError,
+      gpstk::StringUtils::StringException)
+{
+    string line;
 
-      SEMStream& strm = dynamic_cast<SEMStream&>(ffs);
+    SEMStream& strm = dynamic_cast<SEMStream&>(ffs);
 
-      //Grab the first line
-      strm.formattedGetLine(line);
+    //Grab the first line
+    strm.formattedGetLine(line);
 
-      numRecords = (short) asInt(line.substr(0,2));
-      Title = line.substr(3,24);
+    numRecords = (short) asInt(line.substr(0,2));
+    Title = line.substr(3,24);
 
-      //Grab the second line
-      strm.formattedGetLine(line);
-      week = (short) asInt(line.substr(0,4));
-      Toa = asInt(line.substr(5,6));
+    //Grab the second line
+    strm.formattedGetLine(line);
+    week = (short) asInt(line.substr(0,4));
+    Toa = asInt(line.substr(5,6));
 
-      if (nearFullWeek > 0)
-      {
-            // In case a full week is provided.
-         week %= 1024;
-         week += (nearFullWeek / 1024) * 1024;
-         short diff = nearFullWeek - week;
-         if (diff > 512)
+    if (nearFullWeek > 0)
+    {
+        // In case a full week is provided.
+        week %= 1024;
+        week += (nearFullWeek / 1024) * 1024;
+        short diff = nearFullWeek - week;
+        if (diff > 512)
             week += 512;
-         else if(diff < -512)
+        else if(diff < -512)
             week -= 512;
-      }
+    }
 
-      strm.header = *this;
-      strm.headerRead = true;
+    strm.header = *this;
+    strm.headerRead = true;
 
-   } // end of reallyGetRecord()
+} // end of reallyGetRecord()
 
-   void SEMHeader::dump(ostream& s) const
-   {
-      std::cout << "numRecords = " << numRecords << std::endl;
-      std::cout << "Title = " << Title << std::endl;
-      std::cout << "week = " << week << std::endl;
-      std::cout << "Toa = " << Toa << std::endl;
-   }
+void SEMHeader::dump(ostream& s) const
+{
+    std::cout << "numRecords = " << numRecords << std::endl;
+    std::cout << "Title = " << Title << std::endl;
+    std::cout << "week = " << week << std::endl;
+    std::cout << "Toa = " << Toa << std::endl;
+}
 
 } // namespace

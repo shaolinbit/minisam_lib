@@ -6,17 +6,13 @@
 
 /**
  * @file EliminatableClusterTree.h
- * @date Oct 8, 2013
- * @author Kai Ni
- * @author Richard Roberts
- * @author Frank Dellaert
  * @brief Collects factorgraph fragments defined on variable clusters, arranged in a tree
  */
 
 #include "../linear/GaussianFactorGraph.h"
 #include "../nonlinear/ISAM2.h"
 #include "../inference/BayesTree.h"
-#include "../symbolic/SymbolicConditional.h"
+#include "../inference/SymbolicConditional.h"
 
 namespace minisam
 {
@@ -31,7 +27,7 @@ public:
     std::vector<int>* factorsindex;  ///< Factors associated with this node
     int problemSize_;
 
-    Cluster(); //: problemSize_(0),clusterindex(0) {}
+    Cluster();
 
     virtual ~Cluster();// {}
 
@@ -194,6 +190,7 @@ protected:
 
     /// @}
 };
+
 struct EliminationDatachildFactors
 {
 
@@ -244,6 +241,7 @@ struct EliminationDatachildFactors
     }
 
 };
+
 struct EliminationDataISAM2childFactors
 {
 
@@ -282,9 +280,10 @@ void InitEliminationDataISAM2childFactors(EliminationDataISAM2childFactors *curr
 RealGaussianFactor* EliminationPostOrderVisitor(Cluster* node, EliminationDatachildFactors* myData,
         BayesTree* result,int Eliminatetype, std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
 
-RealGaussianFactor* I2EliminationPostOrderVisitor(Cluster* node,
+RealGaussianFactor* ISAM2EliminationPostOrderVisitor(Cluster* node,
         EliminationDataISAM2childFactors* myData,
         ISAM2* result,int Eliminatetype, std::list<ISAM2Clique*>* orphans,const GaussianFactorGraph& gf);
+
 
 struct CTTraversalNode
 {
@@ -298,6 +297,7 @@ struct CTTraversalNode
     {
     }
 };
+
 
 struct CTTraversalNodeISAM2
 {
@@ -348,7 +348,7 @@ public:
                 *bbi=NULL;
             }
         }
-         for(std::vector<Factor*>::iterator bbi=childSymbolicFactors.begin();
+        for(std::vector<Factor*>::iterator bbi=childSymbolicFactors.begin();
                 bbi!=childSymbolicFactors.end(); bbi++)
         {
             if(*bbi!=NULL)

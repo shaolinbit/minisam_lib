@@ -32,49 +32,49 @@
 
 namespace gpstk
 {
-      /**
-       * This class reads the current system time and stores it in
-       * a UnixTime.
-       */
-   class SystemTime
-      : public UnixTime
-   {
-   public:
-         /**
-          * @defgroup stbo SystemTime Basic Operations
-          */
-         //@{
+/**
+ * This class reads the current system time and stores it in
+ * a UnixTime.
+ */
+class SystemTime
+    : public UnixTime
+{
+public:
+    /**
+     * @defgroup stbo SystemTime Basic Operations
+     */
+    //@{
 
-         /**
-          * Default Constructor.
-          * Reads the system clock for the current system time.
-          */
-      SystemTime()
-      {
-         setTimeSystem(TimeSystem::UTC);
-         update();
-      }
+    /**
+     * Default Constructor.
+     * Reads the system clock for the current system time.
+     */
+    SystemTime()
+    {
+        setTimeSystem(TimeSystem::UTC);
+        update();
+    }
 
-         /// Virtual Destructor.
-      virtual ~SystemTime()
-      {}
+    /// Virtual Destructor.
+    virtual ~SystemTime()
+    {}
 
-         /**
-          * Copy Constructor.
-          * @param right a reference to the SystemTime object to copy.
-          */
-      SystemTime( const SystemTime& right )
-            : UnixTime( right )
-      {}
+    /**
+     * Copy Constructor.
+     * @param right a reference to the SystemTime object to copy.
+     */
+    SystemTime( const SystemTime& right )
+        : UnixTime( right )
+    {}
 
-         //@}
+    //@}
 
-         /**
-          * Update this object to the current system time.
-          * @return a reference to this SystemTime
-          */
-      SystemTime& update();
-   };
+    /**
+     * Update this object to the current system time.
+     * @return a reference to this SystemTime
+     */
+    SystemTime& update();
+};
 
 }
 

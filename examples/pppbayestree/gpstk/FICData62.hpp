@@ -5,11 +5,11 @@
 /**
  * @file FICData62.hpp
  * Augment the FICData class to provide the ability to load
- * the FICData specifically for Block 62.  This may seem 
+ * the FICData specifically for Block 62.  This may seem
  * counter-intuitive (usually we're READING FIC and converting
  * to internal storage) but it's helpful in preparing to WRITE
  * FIC in the creation process.
- */ 
+ */
 
 #ifndef GPSTK_FICDATA62_HPP
 #define GPSTK_FICDATA62_HPP
@@ -31,7 +31,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -39,13 +39,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -61,21 +61,21 @@
 
 namespace gpstk
 {
-   class FICData62 : public FICData
-   {
-   public:
-         /// Default constructor
-      FICData62( const gpstk::FICData162 rawsf );
-      
-         /// Destructor
-      virtual ~FICData62() {}
-   protected:
-      static const double UNUSED_F;
-      static const long UNUSED_I;
-      
-   }; // class FICData62
+class FICData62 : public FICData
+{
+public:
+    /// Default constructor
+    FICData62( const gpstk::FICData162 rawsf );
 
-   //@}
+    /// Destructor
+    virtual ~FICData62() {}
+protected:
+    static const double UNUSED_F;
+    static const long UNUSED_I;
+
+}; // class FICData62
+
+//@}
 
 } // namespace
 

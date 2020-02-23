@@ -1,30 +1,16 @@
 #ifndef MANIFOLDPREINTEGRATION_H
 #define MANIFOLDPREINTEGRATION_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  *  @file  ManifoldPreintegration.h
- *  @author Luca Carlone
- *  @author Stephen Williams
- *  @author Richard Roberts
- *  @author Vadim Indelman
- *  @author David Jensen
- *  @author Frank Dellaert
  **/
 #pragma once
 
+#include "../navigation/PreintegrationParams.h"
+#include "../navigation/ImuBias.h"
 #include "../navigation/NavState.h"
-#include "../navigation/PreintegrationBase.h"
+#include "../mat/Matrix.h"
+#include "../mat/MatCal.h"
 
 namespace minisam
 {
@@ -33,24 +19,22 @@ namespace minisam
  * IMU pre-integration on NavSatet manifold.
  * This corresponds to the original RSS paper (with one difference: V is rotated)
  */
-class ManifoldPreintegration : public PreintegrationBase
+class ManifoldPreintegration :public minimatrix// public PreintegrationBase
 {
-protected:
+public:
 
     /**
      * Pre-integrated navigation state, from frame i to frame j
      * Note: relative position does not take into account velocity at time i, see deltap+, in [2]
      * Note: velocity is now also in frame i, as opposed to deltaVij in [2]
      */
-    NavState deltaXij_;
-    Eigen::Matrix3d delRdelBiasOmega_; ///< Jacobian of preintegrated rotation w.r.t. angular rate bias
-    Eigen::Matrix3d delPdelBiasAcc_;   ///< Jacobian of preintegrated position w.r.t. acceleration bias
-    Eigen::Matrix3d delPdelBiasOmega_; ///< Jacobian of preintegrated position w.r.t. angular rate bias
-    Eigen::Matrix3d delVdelBiasAcc_;   ///< Jacobian of preintegrated velocity w.r.t. acceleration bias
-    Eigen::Matrix3d delVdelBiasOmega_; ///< Jacobian of preintegrated velocity w.r.t. angular rate bias
-
     /// Default constructor for serialization
-    ManifoldPreintegration()
+    ManifoldPreintegration():
+#ifdef USE_QUATERNIONS
+        minimatrix(35,3)
+#else
+        minimatrix(34,3)
+#endif
     {
         resetIntegration();
     }
@@ -64,102 +48,154 @@ public:
      *  @param p    Parameters, typically fixed in a single application
      *  @param bias Current estimate of acceleration and rotation rate biases
      */
-    ManifoldPreintegration( PreintegrationParams* p,
-                            const ConstantBias& biasHat = ConstantBias());
+    ManifoldPreintegration(const PreintegrationParams& p,
+                           const ConstantBias& biasHat = ConstantBias());
+    ManifoldPreintegration(const ManifoldPreintegration& other);
 
+    ManifoldPreintegration(const minimatrix& other);
     /// @}
 
     /// @name Basic utilities
     /// @{
     /// Re-initialize PreintegratedMeasurements
-    void resetIntegration() override;
+    void resetIntegration();
 
     /// @}
 
     /// @name Instance variables access
     /// @{
-    NavState deltaXij() const override
+    NavState deltaXij() const;
+
+    Rot3   deltaRij() const
     {
-        return deltaXij_;
+        return deltaXij().attitude();
     }
-    Rot3     deltaRij() const override
+    minivector  deltaPij() const
     {
-        return deltaXij_.attitude();
+#ifdef USE_QUATERNIONS
+        minivector t_=minimatrix_row(*this,33);
+#else
+        minivector t_=minimatrix_row(*this,32);
+#endif
+        return t_;
     }
-    Eigen::Vector3d  deltaPij() const override
+    minivector  deltaVij() const
     {
-        return deltaXij_.position();
+#ifdef USE_QUATERNIONS
+        minivector v_=minimatrix_row(*this,34);
+#else
+        minivector v_=minimatrix_row(*this,33);
+#endif
+        return v_;
     }
-    Eigen::Vector3d  deltaVij() const override
+    double deltaTij() const
     {
-        return deltaXij_.velocity();
+        return data[39];
+    }
+    PreintegrationParams p() const
+    {
+        minimatrix PreintegrationParams_=minimatrix_blockmatrix(*this,0,0,11,3);
+        return PreintegrationParams(&PreintegrationParams_);
     }
 
-    Eigen::Matrix3d  delRdelBiasOmega() const
+    minimatrix  delRdelBiasOmega() const
     {
+        minimatrix delRdelBiasOmega_=minimatrix_blockmatrix(*this,14,0,3,3);
         return delRdelBiasOmega_;
     }
-    Eigen::Matrix3d  delPdelBiasAcc() const
+    minimatrix  delPdelBiasAcc() const
     {
+        minimatrix delPdelBiasAcc_=minimatrix_blockmatrix(*this,17,0,3,3);
         return delPdelBiasAcc_;
     }
-    Eigen::Matrix3d  delPdelBiasOmega() const
+    minimatrix  delPdelBiasOmega() const
     {
+        minimatrix delPdelBiasOmega_=minimatrix_blockmatrix(*this,20,0,3,3);
         return delPdelBiasOmega_;
     }
-    Eigen::Matrix3d  delVdelBiasAcc() const
+    minimatrix  delVdelBiasAcc() const
     {
+        minimatrix delVdelBiasAcc_=minimatrix_blockmatrix(*this,23,0,3,3);
         return delVdelBiasAcc_;
     }
-    Eigen::Matrix3d  delVdelBiasOmega() const
+    minimatrix  delVdelBiasOmega() const
     {
+        minimatrix delVdelBiasOmega_=minimatrix_blockmatrix(*this,26,0,3,3);
         return delVdelBiasOmega_;
     }
-    void  SetdelRdelBiasOmega(const Eigen::Matrix3d& n3d )
+    void  SetdelRdelBiasOmega(const minimatrix& n3d )
     {
-        delRdelBiasOmega_=n3d;
+        minimatrix delRdelBiasOmega_=minimatrix_blockmatrix_var(this,14,0,3,3);
+        minimatrix_memcpy(&delRdelBiasOmega_,n3d);
     }
-    void    SetdelPdelBiasAcc(const Eigen::Matrix3d& n3d )
+    void    SetdelPdelBiasAcc(const minimatrix& n3d )
     {
-        delPdelBiasAcc_=n3d;
+        minimatrix delPdelBiasAcc_=minimatrix_blockmatrix_var(this,17,0,3,3);
+        minimatrix_memcpy(&delPdelBiasAcc_,n3d);
     }
-    void  SetdelPdelBiasOmega(const Eigen::Matrix3d& n3d )
+    void  SetdelPdelBiasOmega(const minimatrix& n3d )
     {
-        delPdelBiasOmega_=n3d;
+        minimatrix delPdelBiasOmega_=minimatrix_blockmatrix_var(this,20,0,3,3);
+        minimatrix_memcpy(&delPdelBiasOmega_,n3d);
+
     }
-    void  SetdelVdelBiasAcc(const Eigen::Matrix3d& n3d )
+    void  SetdelVdelBiasAcc(const minimatrix& n3d )
     {
-        delVdelBiasAcc_=n3d;
+        minimatrix delVdelBiasAcc_=minimatrix_blockmatrix_var(this,23,0,3,3);
+        minimatrix_memcpy(&delVdelBiasAcc_,n3d);
     }
-    void   SetdelVdelBiasOmega(const Eigen::Matrix3d& n3d )
+    void   SetdelVdelBiasOmega(const minimatrix& n3d )
     {
-        delVdelBiasOmega_=n3d;
+        minimatrix delVdelBiasOmega_=minimatrix_blockmatrix_var(this,26,0,3,3);
+        minimatrix_memcpy(&delVdelBiasOmega_,n3d);
     }
     /// @}
 
     /// @name Main functionality
     /// @{
+    void integrateMeasurement(const minivector& measuredAcc,
+                              const minivector& measuredOmega, const double dt);
 
+
+    /// Predict state at time j
+    NavState predict(const NavState& state_i, const ConstantBias& bias_i,
+                     minimatrix& H1,
+                     minimatrix& H2) const;
+
+
+    NavState predict(const NavState& state_i, const ConstantBias& bias_i) const;
+
+    /// Calculate error given navStates
+    minivector computeError(const NavState& state_i, const NavState& state_j,
+                            const ConstantBias& bias_i,
+                            minimatrix& H1, minimatrix& H2,
+                            minimatrix& H3) const;
+    minivector computeError(const NavState& state_i, const NavState& state_j,
+                            const ConstantBias& bias_i) const;
+
+    /// Compute errors w.r.t. preintegrated measurements and jacobians wrt pose_i, vel_i, bias_i, pose_j, bias_j
+    minivector computeErrorAndJacobians(const minimatrix* pose_i, const minimatrix* vel_i,
+                                        const minimatrix* pose_j, const minimatrix* vel_j,
+                                        const ConstantBias& bias_i, minimatrix& H1, minimatrix& H2,
+                                        minimatrix& H3, minimatrix& H4, minimatrix& H5) const;
+
+    minivector computeErrorAndJacobians(const minimatrix* pose_i, const minimatrix* vel_i,
+                                        const minimatrix* pose_j, const minimatrix* vel_j,
+                                        const ConstantBias& bias_i) const;
     /// Update preintegrated measurements and get derivatives
     /// It takes measured quantities in the j frame
     /// Modifies preintegrated quantities in place after correcting for bias and possibly sensor pose
-    void update(const Eigen::Vector3d& measuredAcc, const Eigen::Vector3d& measuredOmega, const double dt,
-                Eigen::MatrixXd* A, Eigen::MatrixXd* B, Eigen::MatrixXd* C) override;
+    void update(const minivector& measuredAcc, const minivector& measuredOmega, const double dt,
+                minimatrix* A, minimatrix* B, minimatrix* C) ;
 
     /// Given the estimate of the bias, return a NavState tangent vector
     /// summarizing the preintegrated IMU measurements so far
-    Eigen::VectorXd biasCorrectedDelta(const Eigen::VectorXd& bias_i,
-                                       Eigen::MatrixXd* H = NULL) const override;
+    minivector biasCorrectedDelta(const ConstantBias& bias_i,
+                                  minimatrix* H = NULL) const ;
 
-    /** Dummy clone for MATLAB */
-    virtual ManifoldPreintegration* clone() const
+    ManifoldPreintegration* clone() const
     {
-        ManifoldPreintegration* Mfp=new ManifoldPreintegration(p(),biasHat());
-        Mfp->SetdelRdelBiasOmega(delRdelBiasOmega());
-        Mfp->SetdelPdelBiasAcc(delPdelBiasAcc());
-        Mfp->SetdelPdelBiasOmega(delPdelBiasOmega());
-        Mfp->SetdelVdelBiasAcc(delVdelBiasAcc());
-        Mfp->SetdelVdelBiasOmega(delVdelBiasOmega());
+        ManifoldPreintegration* Mfp=new ManifoldPreintegration(*this);
         return Mfp;
     }
 

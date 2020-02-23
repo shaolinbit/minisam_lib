@@ -54,80 +54,85 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      //@{
+/** @addtogroup GPSsolutions */
+//@{
 
-      /**
-       * Class to assign weights to satellites based on their URA Index (IURA).
-       */
-   class SimpleIURAWeight : public WeightBase
-   {
-   public:
+/**
+ * Class to assign weights to satellites based on their URA Index (IURA).
+ */
+class SimpleIURAWeight : public WeightBase
+{
+public:
 
-         /// Empty constructor
-      SimpleIURAWeight(void) { valid = false; };
-
-
-         /** Compute and return a vector with the weights for the given SVs.
-          *
-          * @param time           Epoch weights will be computed for
-          * @param Satellites     Vector of satellites
-          * @param bcEph          Satellite broadcast ephemeris
-          * 
-          * @return
-          *  Number of satellites with valid weights
-          *
-          * \note
-          * Method isValid() will return false if some satellite does not have
-          * a valid weight. Also, its PRN will be set to a negative value.
-          *
-          */
-      virtual int getWeights( CommonTime& time,
-                              Vector<SatID>& Satellites,
-                              GPSEphemerisStore& bcEph )
-         throw(InvalidWeights);
+    /// Empty constructor
+    SimpleIURAWeight(void)
+    {
+        valid = false;
+    };
 
 
-         /** Compute and return a vector with the weights for the given SVs.
-          *
-          * @param time           Epoch weights will be computed for
-          * @param Satellites     Vector of satellites
-          * @param preciseEph     Satellite precise ephemeris
-          * 
-          * @return
-          *  Number of satellites with valid weights
-          *
-          * \note
-          * Method isValid() will return false if some satellite does not have a
-          * valid weight. Also, its PRN will be set to a negative value.
-          *
-          * \note
-          * This method assigns an URA of 0.1 m to all satellites.
-          *
-          */
-      virtual int getWeights( CommonTime& time,
-                              Vector<SatID>& Satellites,
-                              TabularSatStore<Xvt>& preciseEph )
-         throw(InvalidWeights);
-
-         /// Vector of weights for these satellites
-      Vector<double> weightsVector;
-
-         /// Vector with the PRN of satellites with weights available for computing.
-      Vector<SatID> availableSV;
-
-         /// Vector with the PRN of satellites rejected or with no proper weights.
-      Vector<SatID> rejectedSV;
-
-         /// Return validity of weights
-      virtual bool isValid(void)
-      { return valid; }
+    /** Compute and return a vector with the weights for the given SVs.
+     *
+     * @param time           Epoch weights will be computed for
+     * @param Satellites     Vector of satellites
+     * @param bcEph          Satellite broadcast ephemeris
+     *
+     * @return
+     *  Number of satellites with valid weights
+     *
+     * \note
+     * Method isValid() will return false if some satellite does not have
+     * a valid weight. Also, its PRN will be set to a negative value.
+     *
+     */
+    virtual int getWeights( CommonTime& time,
+                            Vector<SatID>& Satellites,
+                            GPSEphemerisStore& bcEph )
+    throw(InvalidWeights);
 
 
-   }; // End of class 'SimpleIURAWeight'
+    /** Compute and return a vector with the weights for the given SVs.
+     *
+     * @param time           Epoch weights will be computed for
+     * @param Satellites     Vector of satellites
+     * @param preciseEph     Satellite precise ephemeris
+     *
+     * @return
+     *  Number of satellites with valid weights
+     *
+     * \note
+     * Method isValid() will return false if some satellite does not have a
+     * valid weight. Also, its PRN will be set to a negative value.
+     *
+     * \note
+     * This method assigns an URA of 0.1 m to all satellites.
+     *
+     */
+    virtual int getWeights( CommonTime& time,
+                            Vector<SatID>& Satellites,
+                            TabularSatStore<Xvt>& preciseEph )
+    throw(InvalidWeights);
+
+    /// Vector of weights for these satellites
+    Vector<double> weightsVector;
+
+    /// Vector with the PRN of satellites with weights available for computing.
+    Vector<SatID> availableSV;
+
+    /// Vector with the PRN of satellites rejected or with no proper weights.
+    Vector<SatID> rejectedSV;
+
+    /// Return validity of weights
+    virtual bool isValid(void)
+    {
+        return valid;
+    }
 
 
-      //@}
+}; // End of class 'SimpleIURAWeight'
+
+
+//@}
 
 
 }  // End of namespace gpstk

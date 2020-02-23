@@ -38,13 +38,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -58,46 +58,46 @@
 
 namespace gpstk
 {
-   class OrbElemFIC9 : public OrbElemLNav
-   {
-   public:
-         /// Default constructor
-      OrbElemFIC9();
-        
-        /**
-         *Construct an object from an existing FIC 9 data record
-         * @throw InvalidParameter if FICData object is not a Block 9 record.
-         */ 
-      OrbElemFIC9( const FICData& fic9 )
-	 throw( InvalidParameter); 
+class OrbElemFIC9 : public OrbElemLNav
+{
+public:
+    /// Default constructor
+    OrbElemFIC9();
 
-         /// Destructor
-      virtual ~OrbElemFIC9() {}
+    /**
+     *Construct an object from an existing FIC 9 data record
+     * @throw InvalidParameter if FICData object is not a Block 9 record.
+     */
+    OrbElemFIC9( const FICData& fic9 )
+    throw( InvalidParameter);
 
-         /// Clone function
-      virtual OrbElemFIC9* clone() const;
+    /// Destructor
+    virtual ~OrbElemFIC9() {}
 
-        /**
-         * Load the data FIC 9 data record into an existing object.
-         * All data already present are replaced.
-         * @throw InvalidParameter if FICData object is not a Block 9 record.
-         */
-      void loadData( const FICData& fic9 )
-	 throw( InvalidParameter); 
+    /// Clone function
+    virtual OrbElemFIC9* clone() const;
 
-       virtual std::string getName() const
-       {
-          return "OrbElemFIC9";
-       }
+    /**
+     * Load the data FIC 9 data record into an existing object.
+     * All data already present are replaced.
+     * @throw InvalidParameter if FICData object is not a Block 9 record.
+     */
+    void loadData( const FICData& fic9 )
+    throw( InvalidParameter);
 
-       virtual std::string getNameLong() const
-       {
-          return "FIC Block 9";
-       }
-      
-   }; // end class OrbElemFIC9
+    virtual std::string getName() const
+    {
+        return "OrbElemFIC9";
+    }
 
-   //@}
+    virtual std::string getNameLong() const
+    {
+        return "FIC Block 9";
+    }
+
+}; // end class OrbElemFIC9
+
+//@}
 
 } // end namespace
 

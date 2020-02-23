@@ -1,24 +1,9 @@
 #ifndef PROJECTIONFACTOR_H
 #define PROJECTIONFACTOR_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file ProjectionFactor.h
  * @brief Basic bearing factor from 2D measurement
- * @author Chris Beall
- * @author Richard Roberts
- * @author Frank Dellaert
- * @author Alex Cunningham
  */
 #pragma once
 
@@ -33,23 +18,20 @@ namespace minisam
  */
 class GenericProjectionFactor: public NoiseModelFactor2
 {
-protected:
+public:
 
     // Keep a copy of measurement and calibration for I/O
-    Eigen::Vector2d measured_;                    ///< 2D measurement
+    minivector measured_;                    ///< 2D measurement
     Cal3_S2* K_;  ///<  pointer to calibration object
     Pose3* body_P_sensor_; ///< The pose of the sensor in the body frame
-
-    // verbosity handling for Cheirality Exceptions
-    bool throwCheirality_; ///< If true, rethrows Cheirality exceptions (default: false)
-    bool verboseCheirality_; ///< If true, prints text for Cheirality exceptions (default: false)
 
 public:
 
     /// Default constructor
     GenericProjectionFactor() :
-        measured_(0, 0), throwCheirality_(false), verboseCheirality_(false),NoiseModelFactor2(2)
+        measured_(minivector(2,0.0)), NoiseModelFactor2(2),K_(NULL),body_P_sensor_(NULL)//,throwCheirality_(false), verboseCheirality_(false),
     {
+
     }
 
     /**
@@ -62,11 +44,13 @@ public:
      * @param K  pointer to the constant calibration
      * @param body_P_sensor is the transform from body to sensor frame (default identity)
      */
-    GenericProjectionFactor(const Eigen::Vector2d& measured, GaussianNoiseModel* model,
+    GenericProjectionFactor(const minivector& measured, GaussianNoiseModel* model,
                             int poseKey, int pointKey,  Cal3_S2* K,
                             Pose3* body_P_sensor=NULL) :
-        NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor),
-        throwCheirality_(false), verboseCheirality_(false) {}
+        NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor)//,throwCheirality_(false), verboseCheirality_(false)
+        {
+
+        }
 
     /**
      * Constructor with exception-handling flags
@@ -79,86 +63,99 @@ public:
      * @param throwCheirality determines whether Cheirality exceptions are rethrown
      * @param verboseCheirality determines whether exceptions are printed for Cheirality
      * @param body_P_sensor is the transform from body to sensor frame  (default identity)
-     */
-    GenericProjectionFactor(const  Eigen::Vector2d& measured, GaussianNoiseModel* model,
+
+    GenericProjectionFactor(const  minivector& measured, GaussianNoiseModel* model,
                             int poseKey, int pointKey,  Cal3_S2* K,
-                            bool throwCheirality, bool verboseCheirality,
-                            Pose3*  body_P_sensor) :
-        NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor),
-        throwCheirality_(throwCheirality), verboseCheirality_(verboseCheirality) {}
+                           Pose3*  body_P_sensor,// bool throwCheirality, bool verboseCheirality,
+                            ) :
+        NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor)//,throwCheirality_(throwCheirality), verboseCheirality_(verboseCheirality)
+        {
+
+        } */
 
     /** Virtual destructor */
     virtual ~GenericProjectionFactor() {}
 
     /// Evaluate error h(x)-z
-    Eigen::VectorXd evaluateError(const Pose3& pose, const Eigen::Vector3d& point,
-                                  Eigen::MatrixXd& H1, Eigen::MatrixXd& H2) const
+    minivector evaluateError(const minimatrix* pose, const minimatrix* point,
+                             minimatrix& H1, minimatrix& H2) const
     {
         try
         {
-            Eigen::MatrixXd* fdf=NULL;
             if(body_P_sensor_!=NULL)
             {
-                Eigen::MatrixXd H0= (*body_P_sensor_).inverse().AdjointMap();
-                PinholeCameraCal3S2 camera(pose*(*body_P_sensor_), *K_);
+                minimatrix H0= body_P_sensor_->inverse().AdjointMap();
+                Pose3 ppose(pose);
+                PinholeCameraCal3S2 camera(ppose.multiply(*body_P_sensor_), *K_);
 
-                Eigen::Vector2d reprojectionError(camera.projectPoint(point, &H1, &H2, fdf) - measured_);
-                H1 = H1 * H0;
+                minivector reprojectionError=camera.projectPoint(point, &H1, &H2, NULL);
+                minivector_sub(&reprojectionError,measured_);
+
+                //H1 = H1 * H0;;
+                minimatrix temph(H1.size1,H1.size2);
+                minimatrix_memcpy(&temph,H1);
+                miniblas_dgemm(blasNoTrans,blasNoTrans,1.0,temph,H0,0.0,&H1);
+
+
                 return reprojectionError;
             }
             else
             {
                 PinholeCameraCal3S2 camera(pose, *K_);
-                return camera.projectPoint(point, &H1, &H2, fdf) - measured_;
+                //return camera.projectPoint(point, &H1, &H2, fdf) - measured_;
+                minivector reprojectionError=camera.projectPoint(point, &H1, &H2, NULL);
+                minivector_sub(&reprojectionError,measured_);
+                return reprojectionError;
             }
         }
         catch( exception& e)
         {
-            H1 = Eigen::MatrixXd::Zero(2,6);
-            H2 = Eigen::MatrixXd::Zero(2,3);
-            if (verboseCheirality_)
-                std::cout << ": Landmark ";//<< DefaultKeyFormatter(this->key2())
-            std::cout<< " moved behind camera "  << std::endl;
-            if (throwCheirality_)
-                throw e;
+            minimatrix_resize(&H1,2,6);
+            minimatrix_set_zero(&H1);
+            minimatrix_resize(&H2,2,3);
+            minimatrix_set_zero(&H2);
+            std::cout << ": Landmark "<< this->key2()<< "  moved behind camera "  << std::endl;
+            throw e;
         }
-        return Eigen::Vector2d::Constant(2.0 * K_->fx());
+        return minivector_2dim(2.0*K_->fx(),2.0*K_->fx());
     }
 
     /// Evaluate error h(x)-z and optionally derivatives
-    Eigen::VectorXd evaluateError(const Pose3& pose, const Eigen::Vector3d& point) const
+    minivector evaluateError(const minimatrix* pose, const minimatrix* point) const
     {
         try
         {
+
+            Pose3 ppose(pose);
+            minivector ppoint(point);
             if(body_P_sensor_!=NULL)
             {
-                Eigen::MatrixXd H0= (*body_P_sensor_).inverse().AdjointMap();
-                PinholeCameraCal3S2 camera(pose*(*body_P_sensor_), *K_);
-
-                Eigen::Vector2d reprojectionError(camera.projectPoint(point) - measured_);
+                PinholeCameraCal3S2 camera(ppose.multiply(*body_P_sensor_), *K_);
+                minivector reprojectionError=camera.projectPoint(ppoint,NULL,NULL,NULL);
+                minivector_sub(&reprojectionError,measured_);
                 // H1 = H1 * H0;
                 return reprojectionError;
             }
             else
             {
-                PinholeCameraCal3S2 camera(pose, *K_);
-                return camera.projectPoint(point) - measured_;
+                PinholeCameraCal3S2 camera(ppose, *K_);
+                minivector reprojectionError=camera.projectPoint(ppoint,NULL,NULL,NULL);
+                minivector_sub(&reprojectionError,measured_);
+                return reprojectionError;
             }
         }
         catch( exception& e)
         {
-            if (verboseCheirality_)
-                std::cout << ": Landmark ";//<< DefaultKeyFormatter(this->key2())
+                std::cout << ": Landmark ";
             std::cout<< " moved behind camera "  << std::endl;
-            if (throwCheirality_)
                 throw e;
         }
-        return Eigen::Vector2d::Constant(2.0 * K_->fx());
+        return minivector_2dim(2.0*K_->fx(),2.0*K_->fx());
     }
 
 
     /** return the measurement */
-    const Eigen::Vector2d& measured() const
+    const minivector& measured() const
     {
         return measured_;
     }
@@ -169,86 +166,40 @@ public:
         return K_;
     }
 
-    /** return verbosity */
+    /** return verbosity
     inline bool verboseCheirality() const
     {
         return verboseCheirality_;
     }
 
-    /** return flag for throwing cheirality exceptions */
+    // return flag for throwing cheirality exceptions
     inline bool throwCheirality() const
     {
         return throwCheirality_;
-    }
-
-    //nonsense for compling;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Pose3>& x) const
+    }*/
+     virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x,
+                                       std::vector<minimatrix> &H) const
     {
-        Eigen::VectorXd xd;
-        xd.setZero(6);
-        return xd;
+        std::map<int,minimatrix*>::const_iterator itb1=x.find(key1());
+        std::map<int,minimatrix*>::const_iterator itb2=x.find(key2());
+
+        return evaluateError(itb1->second,itb2->second,
+                             *(H.begin()),*(H.begin()+1));
     }
-    //nonsense for compling;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Pose3>& x,std::vector<Eigen::MatrixXd>& H) const
+
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const
     {
-        {
-            Eigen::VectorXd xd;
-            xd.setZero(6);
-            return xd;
-        }
-    }
-    //nonsense for compling;
-    virtual Eigen::VectorXd
-    evaluateError(const Eigen::VectorXd& X1, const Eigen::VectorXd X2) const
-    {
-        Eigen::VectorXd xd;
-        xd.setZero(6);
-        return xd;
-    }
-//nonsense for compling;
-    virtual Eigen::VectorXd
-    evaluateError(const Eigen::VectorXd& X1, const Eigen::VectorXd& X2, Eigen::MatrixXd& H1,Eigen::MatrixXd& H2 ) const
-    {
-        Eigen::VectorXd xd;
-        xd.setZero(6);
-        return xd;
+        std::map<int,minimatrix*>::const_iterator itb1=x.find(key1());
+        std::map<int,minimatrix*>::const_iterator itb2=x.find(key2());
 
-    }
-#ifdef GMF_Using_Pose3
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Pose3>& x1,
-                                            const std::map<int,Eigen::VectorXd>& x2,
-                                            std::vector<Eigen::MatrixXd>& H) const override
-    {
-        std::map<int,Pose3>::const_iterator xbegin=x1.find(key1());;
-        Pose3 x11=xbegin->second;
-        std::map<int,Eigen::VectorXd>::const_iterator  xsecond=x2.find(key2());;
-        Eigen::VectorXd x22=xsecond->second;
-
-        // return evaluateError(x1, x2);
-
-        return evaluateError(x11, x22, *(H.begin()), *(H.begin()+1));
-
-
-
+        return evaluateError(itb1->second,itb2->second);
     }
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Pose3>& x1,
-                                            const std::map<int,Eigen::VectorXd>& x2) const
-    {
-        std::map<int,Pose3>::const_iterator xbegin=x1.find(key1());;
-        Pose3 x11=xbegin->second;
-        std::map<int,Eigen::VectorXd>::const_iterator  xsecond=x2.find(key2());;
-        Eigen::VectorXd x22=xsecond->second;
 
-        // return evaluateError(x1, x2);
-
-        return evaluateError(x11, x22);
-    }
-#endif // GMF_Using_Pose3
-    virtual NonlinearFactor* clone()const
+    virtual NoiseModelFactor* clone()const
     {
         GenericProjectionFactor* newfactor=new GenericProjectionFactor( measured_,noiseModel_,key1(),key2(),K_,
-                throwCheirality_, verboseCheirality_,body_P_sensor_);
+               body_P_sensor_ );
         return newfactor;
     }
 

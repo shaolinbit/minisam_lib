@@ -32,34 +32,36 @@ namespace fs = boost::filesystem;
 //#ifndef MATLAB_MEX_FILE
 /* *************************************************************************/
 //this function should be deleted. No use.
-string findExampleDataFile(const string& name)
+std::string findExampleDataFile(const string& name,const std::string& path)
 {
-  // Search source tree and installed location
-  std::vector<string> rootsToSearch;
+    // Search source tree and installed location
+    std::vector<string> rootsToSearch;
 
-  // Constants below are defined by CMake, see gtsam/gtsam/CMakeLists.txt
-  //rootsToSearch.push_back(GTSAM_SOURCE_TREE_DATASET_DIR);
-  rootsToSearch.push_back("examples_tuning\\data");//windows setting.
-  rootsToSearch.push_back("examples_tuning/data");//ubuntu setting.
+    // Constants below are defined by CMake, see gtsam/gtsam/CMakeLists.txt
+    //rootsToSearch.push_back("examples_tuning\\gpsdata");//windows setting.
+    rootsToSearch.push_back("examples_tuning/gpsdata");//ubuntu setting.
+    rootsToSearch.push_back(path);
 
-  // Search for filename as given, and with .graph and .txt extensions
-  std::vector<string> namesToSearch;
-  namesToSearch.push_back(name);
-  namesToSearch.push_back(name + ".graph");
-  namesToSearch.push_back(name + ".txt");
-  namesToSearch.push_back(name + ".out");
+    // Search for filename as given, and with .graph and .txt extensions
+    std::vector<string> namesToSearch;
+    namesToSearch.push_back(name);
+    namesToSearch.push_back(name + ".graph");
+    namesToSearch.push_back(name + ".txt");
+    namesToSearch.push_back(name + ".out");
 
-  // Find first name that exists
-  for(const fs::path& root: rootsToSearch) {
-    for(const fs::path& name: namesToSearch) {
-    //  cout<< (root / name).string()<<endl;
-      if (fs::is_regular_file(root / name))
-        return (root / name).string();
+    // Find first name that exists
+    for(const fs::path& root: rootsToSearch)
+    {
+        for(const fs::path& name: namesToSearch)
+        {
+            //  cout<< (root / name).string()<<endl;
+            if (fs::is_regular_file(root / name))
+                return (root / name).string();
+        }
     }
-  }
 
-  // If we did not return already, then we did not find the file
-  throw invalid_argument(
-      "gtsam::findExampleDataFile could not find a matching file in ../examples_tuning/data");
+    // If we did not return already, then we did not find the file
+    throw invalid_argument(
+        "gtsam::findExampleDataFile could not find a matching file in ../examples_tuning/data");
 }
 

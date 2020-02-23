@@ -49,129 +49,137 @@
 
 namespace gpstk
 {
-   using namespace std;
+using namespace std;
 
-   CNavUTC::CNavUTC()
-      :CNavDataElement(),
-       A0(0.0), 
-       A1(0.0),
-       A2(0.0),
-       deltaTls(0),
-       Tot(0L),
-       WNot(0),
-       WNlsf(0),
-       DN(0),
-       deltaTlsf(0)
-   {
-   }
+CNavUTC::CNavUTC()
+    :CNavDataElement(),
+     A0(0.0),
+     A1(0.0),
+     A2(0.0),
+     deltaTls(0),
+     Tot(0L),
+     WNot(0),
+     WNlsf(0),
+     DN(0),
+     deltaTlsf(0)
+{
+}
 
-   CNavUTC::CNavUTC(const PackedNavBits& message33)
-      throw( InvalidParameter)
-   {
-      loadData(message33);
-   }
+CNavUTC::CNavUTC(const PackedNavBits& message33)
+throw( InvalidParameter)
+{
+    loadData(message33);
+}
 
-   CNavUTC* CNavUTC::clone() const
-   {
-      return new CNavUTC (*this); 
-   }
+CNavUTC* CNavUTC::clone() const
+{
+    return new CNavUTC (*this);
+}
 
-   bool CNavUTC::isSameData(const CNavDataElement* right) const      
-   {
-      if (const CNavUTC* rp = dynamic_cast<const CNavUTC*>(right))
-      {
-         if (ctEpoch  !=rp->ctEpoch)   return false;
-         if (A0       !=rp->A0)        return false;
-         if (A1       !=rp->A1)        return false;
-         if (A2       !=rp->A2)        return false;
-         if (deltaTls !=rp->deltaTls)  return false;
-         // Note: Already tested Tot and WNot (indirectly) by ctEpoch test.
-         if (WNlsf    !=rp->WNlsf)     return false;
-         if (DN       !=rp->DN)        return false;
-         if (deltaTlsf!=rp->deltaTlsf) return false;
-         return true;      
-      }
-      return false;
-   }
-   
-   void CNavUTC::loadData(const PackedNavBits& message33)
-      throw(InvalidParameter)
-   {
-         // First, verify the correct message type is being passed in. 
-      long msgType = message33.asUnsignedLong(14,6,1);
-      if(msgType!=33)
-      {
-         char errStr[80];
-         sprintf(errStr,"Expected CNAV MsgType 33.  Found MsgType %ld",msgType);
-         std::string tstr(errStr);
-         InvalidParameter exc(tstr);
-         GPSTK_THROW(exc);    
-      } 
-      obsID     = message33.getobsID();
-      satID     = message33.getsatSys();
-      ctXmit    = message33.getTransmitTime();
- 
-      A0 = message33.asSignedDouble(127,16,-35);
-      A1 = message33.asSignedDouble(143,13,-51);
-      A2 = message33.asSignedDouble(156, 7,-68);
+bool CNavUTC::isSameData(const CNavDataElement* right) const
+{
+    if (const CNavUTC* rp = dynamic_cast<const CNavUTC*>(right))
+    {
+        if (ctEpoch  !=rp->ctEpoch)
+            return false;
+        if (A0       !=rp->A0)
+            return false;
+        if (A1       !=rp->A1)
+            return false;
+        if (A2       !=rp->A2)
+            return false;
+        if (deltaTls !=rp->deltaTls)
+            return false;
+        // Note: Already tested Tot and WNot (indirectly) by ctEpoch test.
+        if (WNlsf    !=rp->WNlsf)
+            return false;
+        if (DN       !=rp->DN)
+            return false;
+        if (deltaTlsf!=rp->deltaTlsf)
+            return false;
+        return true;
+    }
+    return false;
+}
 
-      deltaTls  = message33.asLong(163, 8, 1);
-      Tot       = message33.asUnsignedLong(171,16,16);
-      WNot      = message33.asUnsignedLong(187,13, 1);
-      WNlsf     = message33.asUnsignedLong(200,13, 1);
-      DN        = message33.asUnsignedLong(213, 4, 1);
-      deltaTlsf = message33.asLong(217, 8, 1);
+void CNavUTC::loadData(const PackedNavBits& message33)
+throw(InvalidParameter)
+{
+    // First, verify the correct message type is being passed in.
+    long msgType = message33.asUnsignedLong(14,6,1);
+    if(msgType!=33)
+    {
+        char errStr[80];
+        sprintf(errStr,"Expected CNAV MsgType 33.  Found MsgType %ld",msgType);
+        std::string tstr(errStr);
+        InvalidParameter exc(tstr);
+        GPSTK_THROW(exc);
+    }
+    obsID     = message33.getobsID();
+    satID     = message33.getsatSys();
+    ctXmit    = message33.getTransmitTime();
 
-      ctEpoch   = GPSWeekSecond(WNot, Tot, TimeSystem::GPS);
+    A0 = message33.asSignedDouble(127,16,-35);
+    A1 = message33.asSignedDouble(143,13,-51);
+    A2 = message33.asSignedDouble(156, 7,-68);
 
-      dataLoadedFlag = true;   
-   } // end of loadData()
+    deltaTls  = message33.asLong(163, 8, 1);
+    Tot       = message33.asUnsignedLong(171,16,16);
+    WNot      = message33.asUnsignedLong(187,13, 1);
+    WNlsf     = message33.asUnsignedLong(200,13, 1);
+    DN        = message33.asUnsignedLong(213, 4, 1);
+    deltaTlsf = message33.asLong(217, 8, 1);
 
-   void CNavUTC::dumpBody(ostream& s) const
-      throw( InvalidRequest )
-   {
-      if (!dataLoaded())
-      {
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      }
-    
-      s << endl
-        << "           UTC CORRECTION PARAMETERS"
-        << endl
-        << "Parameter        Value" << endl;
+    ctEpoch   = GPSWeekSecond(WNot, Tot, TimeSystem::GPS);
 
-      s.setf(ios::scientific, ios::floatfield);
-      s.setf(ios::right, ios::adjustfield);
-      s.setf(ios::uppercase);
-      s.precision(8);
-      s.fill(' ');
+    dataLoadedFlag = true;
+} // end of loadData()
 
-      s << "A(0-n):         " << setw(16) << A0 << " sec" <<endl;
-      s << "A(1-n):         " << setw(16) << A1 << " sec/sec" << endl;
-      s << "A(2-n):         " << setw(16) << A2 << " sec/sec**2" << endl;
+void CNavUTC::dumpBody(ostream& s) const
+throw( InvalidRequest )
+{
+    if (!dataLoaded())
+    {
+        InvalidRequest exc("Required data not stored.");
+        GPSTK_THROW(exc);
+    }
 
-      s.setf(ios::fixed, ios::floatfield);    
-      s.precision(0);
-      s << "dT(LS):         " << setw(16) << deltaTls  << " sec" << endl;
-      s << "WN(LSF):        " << setw(16) << WNlsf     << " weeks" << endl;
-      s << "DN:             " << setw(16) << DN        << " days" << endl;
-      s << "dT(LSF):        " << setw(16) << deltaTlsf << " sec" << endl;
-      
-   } // end of dumpBody()   
+    s << endl
+      << "           UTC CORRECTION PARAMETERS"
+      << endl
+      << "Parameter        Value" << endl;
 
-   ostream& operator<<(ostream& s, const CNavUTC& eph)
-   {
-      try
-      {
-         eph.dump(s);
-      }
-      catch(gpstk::Exception& ex)
-      {
-         GPSTK_RETHROW(ex);
-      }
-      return s;
+    s.setf(ios::scientific, ios::floatfield);
+    s.setf(ios::right, ios::adjustfield);
+    s.setf(ios::uppercase);
+    s.precision(8);
+    s.fill(' ');
 
-   } // end of operator<<
+    s << "A(0-n):         " << setw(16) << A0 << " sec" <<endl;
+    s << "A(1-n):         " << setw(16) << A1 << " sec/sec" << endl;
+    s << "A(2-n):         " << setw(16) << A2 << " sec/sec**2" << endl;
+
+    s.setf(ios::fixed, ios::floatfield);
+    s.precision(0);
+    s << "dT(LS):         " << setw(16) << deltaTls  << " sec" << endl;
+    s << "WN(LSF):        " << setw(16) << WNlsf     << " weeks" << endl;
+    s << "DN:             " << setw(16) << DN        << " days" << endl;
+    s << "dT(LSF):        " << setw(16) << deltaTlsf << " sec" << endl;
+
+} // end of dumpBody()
+
+ostream& operator<<(ostream& s, const CNavUTC& eph)
+{
+    try
+    {
+        eph.dump(s);
+    }
+    catch(gpstk::Exception& ex)
+    {
+        GPSTK_RETHROW(ex);
+    }
+    return s;
+
+} // end of operator<<
 
 } // end namespace

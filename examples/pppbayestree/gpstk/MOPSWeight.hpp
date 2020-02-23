@@ -51,142 +51,146 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      //@{
+/** @addtogroup GPSsolutions */
+//@{
 
-      /** Class to assign weights to satellites based on the Appendix J
-       *  of MOPS document RTCA DO-229D.
-       *
-       * This class implements an algorithm to assign weights to satellites
-       * based on the RTCA "Minimum Operational Performance Standards" (MOPS),
-       * version C (RTCA/DO-229D), sections J.2.3. "Variance of Ionospheric
-       * Delay", J.2.4. "Variance of Airborne Receiver Errors" and J.2.5.
-       * "Variance of Tropospheric errors".
-       *
-       * It is meant to be used with class "MOPSTropModel".
-       *
-       */
-   class MOPSWeight: WeightBase
-   {
-   public:
-
-
-         /// Empty constructor
-      MOPSWeight(void)
-      { valid = false; };
+/** Class to assign weights to satellites based on the Appendix J
+ *  of MOPS document RTCA DO-229D.
+ *
+ * This class implements an algorithm to assign weights to satellites
+ * based on the RTCA "Minimum Operational Performance Standards" (MOPS),
+ * version C (RTCA/DO-229D), sections J.2.3. "Variance of Ionospheric
+ * Delay", J.2.4. "Variance of Airborne Receiver Errors" and J.2.5.
+ * "Variance of Tropospheric errors".
+ *
+ * It is meant to be used with class "MOPSTropModel".
+ *
+ */
+class MOPSWeight: WeightBase
+{
+public:
 
 
-         /** Computes a vector with the weights for the given satellites.
-          *
-          * @param time               Epoch weights will be computed for.
-          * @param Satellites         Vector of satellites.
-          * @param bcEph              Satellite broadcast ephemeris.
-          * @param ionoCorrections    Ionospheric corrections computed using
-          *                           Klobuchar model.
-          * @param elevationVector    Vector of elevations, in degrees.
-          * @param azimuthVector      Vector of azimuths, in degrees.
-          * @param rxPosition         Position of the receiver.
-          * @param rxClass            Integer indicating receiver class
-          *                           according MOPS-C. It is 2 by default
-          *                           (conservative setting).
-          *
-          * @return Number of satellites with valid weights.
-          *
-          * \note
-          * Method isValid() will return 'false' if some satellite does not have
-          * a valid weight. Also, its PRN will be set to a negative value.
-          *
-          */
-      virtual int getWeights( CommonTime& time,
-                              Vector<SatID>& Satellites,
-                              GPSEphemerisStore& bcEph,
-                              Vector<double>& ionoCorrections,
-                              Vector<double>& elevationVector,
-                              Vector<double>& azimuthVector,
-                              Position rxPosition,
-                              int rxClass = 2 )
-         throw(InvalidWeights);
+    /// Empty constructor
+    MOPSWeight(void)
+    {
+        valid = false;
+    };
 
 
-         /** Computes a vector with the weights for the given satellites.
-          *
-          * @param time               Epoch weights will be computed for.
-          * @param Satellites         Vector of satellites.
-          * @param preciseEph         Satellite precise ephemeris.
-          * @param ionoCorrections    Ionospheric corrections computed using
-          *                           Klobuchar model.
-          * @param elevationVector    Vector of elevations, in degrees.
-          * @param azimuthVector      Vector of azimuths, in degrees.
-          * @param rxPosition         Position of the receiver.
-          * @param rxClass            Integer indicating receiver class.
-          *                           according MOPS-C. It is 2 by default
-          *                           (conservative setting).
-          *
-          * @return Number of satellites with valid weights.
-          *
-          * \note
-          * Method isValid() will return 'false' if some satellite does not have
-          * a valid weight. Also, its PRN will be set to a negative value.
-          *
-          */
-      virtual int getWeights( CommonTime& time,
-                              Vector<SatID>& Satellites,
-                              TabularSatStore<Xvt>& preciseEph,
-                              Vector<double>& ionoCorrections,
-                              Vector<double>& elevationVector,
-                              Vector<double>& azimuthVector,
-                              Position rxPosition,
-                              int rxClass = 2 )
-         throw(InvalidWeights);
+    /** Computes a vector with the weights for the given satellites.
+     *
+     * @param time               Epoch weights will be computed for.
+     * @param Satellites         Vector of satellites.
+     * @param bcEph              Satellite broadcast ephemeris.
+     * @param ionoCorrections    Ionospheric corrections computed using
+     *                           Klobuchar model.
+     * @param elevationVector    Vector of elevations, in degrees.
+     * @param azimuthVector      Vector of azimuths, in degrees.
+     * @param rxPosition         Position of the receiver.
+     * @param rxClass            Integer indicating receiver class
+     *                           according MOPS-C. It is 2 by default
+     *                           (conservative setting).
+     *
+     * @return Number of satellites with valid weights.
+     *
+     * \note
+     * Method isValid() will return 'false' if some satellite does not have
+     * a valid weight. Also, its PRN will be set to a negative value.
+     *
+     */
+    virtual int getWeights( CommonTime& time,
+                            Vector<SatID>& Satellites,
+                            GPSEphemerisStore& bcEph,
+                            Vector<double>& ionoCorrections,
+                            Vector<double>& elevationVector,
+                            Vector<double>& azimuthVector,
+                            Position rxPosition,
+                            int rxClass = 2 )
+    throw(InvalidWeights);
 
 
-         /// Vector of weights for these satellites
-      Vector<double> weightsVector;
+    /** Computes a vector with the weights for the given satellites.
+     *
+     * @param time               Epoch weights will be computed for.
+     * @param Satellites         Vector of satellites.
+     * @param preciseEph         Satellite precise ephemeris.
+     * @param ionoCorrections    Ionospheric corrections computed using
+     *                           Klobuchar model.
+     * @param elevationVector    Vector of elevations, in degrees.
+     * @param azimuthVector      Vector of azimuths, in degrees.
+     * @param rxPosition         Position of the receiver.
+     * @param rxClass            Integer indicating receiver class.
+     *                           according MOPS-C. It is 2 by default
+     *                           (conservative setting).
+     *
+     * @return Number of satellites with valid weights.
+     *
+     * \note
+     * Method isValid() will return 'false' if some satellite does not have
+     * a valid weight. Also, its PRN will be set to a negative value.
+     *
+     */
+    virtual int getWeights( CommonTime& time,
+                            Vector<SatID>& Satellites,
+                            TabularSatStore<Xvt>& preciseEph,
+                            Vector<double>& ionoCorrections,
+                            Vector<double>& elevationVector,
+                            Vector<double>& azimuthVector,
+                            Position rxPosition,
+                            int rxClass = 2 )
+    throw(InvalidWeights);
 
 
-         /// Vector with the PRN of satellites with weights available
-         /// for computing.
-      Vector<SatID> availableSV;
+    /// Vector of weights for these satellites
+    Vector<double> weightsVector;
 
 
-         /// Vector with the PRN of satellites rejected or with
-         /// no proper weights.
-      Vector<SatID> rejectedSV;
+    /// Vector with the PRN of satellites with weights available
+    /// for computing.
+    Vector<SatID> availableSV;
 
 
-         /// Return validity of weights
-      virtual bool isValid(void)
-      { return valid; }
+    /// Vector with the PRN of satellites rejected or with
+    /// no proper weights.
+    Vector<SatID> rejectedSV;
 
 
-   private:
+    /// Return validity of weights
+    virtual bool isValid(void)
+    {
+        return valid;
+    }
 
 
-         /// Compute satellites' weights.
-      void Compute( int goodSV,
-                    SimpleIURAWeight& sIura,
-                    Vector<SatID>& Satellites,
-                    Vector<double>& ionoCorrections,
-                    Vector<double>& elevationVector,
-                    Vector<double>& azimuthVector,
-                    Position rxPosition,
-                    int rxClass )
-         throw(InvalidWeights);
+private:
 
 
-         /// Compute ionospheric sigma^2 according to Appendix J.2.3 and
-         /// Appendix A.4.4.10.4 in MOPS-C.
-      double sigma2iono( double& ionoCorrection,
-                         double& elevation,
-                         double& azimuth,
-                         Position rxPosition )
-         throw(InvalidWeights);
+    /// Compute satellites' weights.
+    void Compute( int goodSV,
+                  SimpleIURAWeight& sIura,
+                  Vector<SatID>& Satellites,
+                  Vector<double>& ionoCorrections,
+                  Vector<double>& elevationVector,
+                  Vector<double>& azimuthVector,
+                  Position rxPosition,
+                  int rxClass )
+    throw(InvalidWeights);
 
 
-   }; // End of class 'MOPSWeight'
+    /// Compute ionospheric sigma^2 according to Appendix J.2.3 and
+    /// Appendix A.4.4.10.4 in MOPS-C.
+    double sigma2iono( double& ionoCorrection,
+                       double& elevation,
+                       double& azimuth,
+                       Position rxPosition )
+    throw(InvalidWeights);
 
 
-      //@}
+}; // End of class 'MOPSWeight'
+
+
+//@}
 
 
 }  // End of namespace gpstk

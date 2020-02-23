@@ -52,40 +52,41 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   //-----------------------------------------------------------------------------
-   // See notes in the .hpp. This function is designed to be called AFTER all elements
-   // are loaded. It can then make adjustments to time relationships based on
-   // inter-comparisons between sets of elements that cannot be performed until the
-   // ordering has been determined.
-   void GalEphemerisStore::rationalize(void)
-   {
-   }
+//-----------------------------------------------------------------------------
+// See notes in the .hpp. This function is designed to be called AFTER all elements
+// are loaded. It can then make adjustments to time relationships based on
+// inter-comparisons between sets of elements that cannot be performed until the
+// ordering has been determined.
+void GalEphemerisStore::rationalize(void)
+{
+}
 
-   //-----------------------------------------------------------------------------
-   // Add all ephemerides to an existing list<GalEphemeris>.
-   // @return the number of ephemerides added.
-   int GalEphemerisStore::addToList(list<GalEphemeris>& gallist, SatID sat) const
-   {
-      // get the list from OrbitEphStore
-      list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemGalileo));
+//-----------------------------------------------------------------------------
+// Add all ephemerides to an existing list<GalEphemeris>.
+// @return the number of ephemerides added.
+int GalEphemerisStore::addToList(list<GalEphemeris>& gallist, SatID sat) const
+{
+    // get the list from OrbitEphStore
+    list<OrbitEph*> oelst;
+    OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemGalileo));
 
-      // pull out the Gal ones
-      int n(0);
-      list<OrbitEph*>::const_iterator it;
-      for(it = oelst.begin(); it != oelst.end(); ++it) {
-         OrbitEph *ptr = *it;
-         if((ptr->satID).system == SatID::systemGalileo &&
-            (sat.id == -1 || (ptr->satID).id == sat.id))
-         {
+    // pull out the Gal ones
+    int n(0);
+    list<OrbitEph*>::const_iterator it;
+    for(it = oelst.begin(); it != oelst.end(); ++it)
+    {
+        OrbitEph *ptr = *it;
+        if((ptr->satID).system == SatID::systemGalileo &&
+                (sat.id == -1 || (ptr->satID).id == sat.id))
+        {
             GalEphemeris *galptr = dynamic_cast<GalEphemeris*>(ptr);
             GalEphemeris galeph(*galptr);
             gallist.push_back(galeph);
             n++;
-         }
-      }
+        }
+    }
 
-      return n;
-   }
+    return n;
+}
 
 } // namespace

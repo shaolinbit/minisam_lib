@@ -4,16 +4,13 @@
 /**
  * @file    EliminateableFactorGraph.h
  * @brief   Variable elimination algorithms for factor graphs
- * @author  Richard Roberts
- * @date    Apr 21, 2013
  */
 
 #pragma once
 
 
-
-#include "../inference/Ordering.h"
 #include <utility>
+#include "../inference/Ordering.h"
 #include "../linear/GaussianConditional.h"
 #include "../linear/JacobianFactor.h"
 #include "../linear/GaussianFactorGraph.h"
@@ -62,7 +59,7 @@ std::pair<GaussianBayesNet*, GaussianFactorGraph*>  eliminatePartialSequentialOr
     *  Data data = otherFunctionUsingVariableIndex(graph, varIndex); // Other code that uses variable index
     *  boost::shared_ptr<GaussianBayesTree> result = graph.eliminateMultifrontal(EliminateQR, boost::none, varIndex);
     *  \endcode
-    *  */
+    */
 BayesTree* eliminateMultifrontal(
     const std::vector<int>& ordering,
     const int Eliminatefunction,
@@ -92,16 +89,18 @@ BayesTree* eliminateMultifrontal(
 GaussianBayesNet* marginalMultifrontalBayesNet(const GaussianFactorGraph& gf,
         std::vector<int>& variables,
         const int Eliminatefunction);
-/** Compute the marginal factor graph of the requested variables. */
+//Compute the marginal factor graph of the requested variables.
 GaussianFactorGraph* marginal(
     const std::vector<int>& variables,
     const  int EliminatefunctionType,
     const VariableIndex& variableIndex,const GaussianFactorGraph& gf);
 
-/** Compute the marginal factor graph of the requested variables. */
+
+// Compute the marginal factor graph of the requested variables.
 GaussianFactorGraph* marginalgf(const GaussianFactorGraph& gf,
                                 const std::vector<int>& variables,
                                 const  int EliminatefunctionType);
+
 
 std::pair<BayesTree*, GaussianFactorGraph*>
 eliminatePartialMultifrontalKey(const std::vector<int>& variables,
@@ -111,8 +110,6 @@ std::pair<BayesTree*, GaussianFactorGraph*>
 eliminatePartialMultifrontalKey(
     const std::vector<int>& variables, const int Eliminatefunction,const GaussianFactorGraph& gf) ;
 
-std::vector<int> OrderingColamdConstrainedFirst(const GaussianFactorGraph& graph,
-        const std::vector<int>& constrainFirst, bool forceOrder=false);
 
 std::pair<BayesTree*, GaussianFactorGraph*>
 eliminatePartialMultifrontal(const std::vector<int>& ordering,
@@ -121,7 +118,8 @@ eliminatePartialMultifrontal(const std::vector<int>& ordering,
 std::pair<BayesTree*, GaussianFactorGraph*>
 eliminatePartialMultifrontal(const std::vector<int>& ordering,
                              const int Eliminatefunction,const GaussianFactorGraph& gf);
-
+std::vector<int> OrderingColamdConstrainedFirst(const GaussianFactorGraph& graph,
+        const std::vector<int>& constrainFirst, bool forceOrder=false);
 
 };
 #endif // EliminateableFactorGraph_H_INCLUDED

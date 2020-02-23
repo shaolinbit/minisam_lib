@@ -14,22 +14,11 @@
 2. Only keep the minimum functions for isam2update.
 3. Only support pose3 in this version.
 */
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
 
 /**
  * @file    ISAM2.h
  * @brief   Incremental update functionality (ISAM2) for BayesTree, with fluid
  * relinearization.
- * @author  Michael Kaess, Richard Roberts, Frank Dellaert
  */
 namespace minisam
 {
@@ -103,38 +92,15 @@ public:
      * @param extraReelimKeys is an optional set of nonlinear keys that iSAM2 will re-eliminate, regardless
      * of the size of the linear delta. This allows the provided keys to be reordered.
      * @return An ISAM2Result struct containing information about the update*/
-
-#ifdef GMF_Using_Pose3
     ISAM2Result update(NonlinearFactorGraph& newFactors,
-                       const std::map<int,Eigen::VectorXd>& newTheta,
-                       const std::map<int,Pose3>& newposetheta,
+                       const std::map<int,minimatrix*>& newTheta,
                        ISAM2Data& isam2data,
                        std::vector<int>* removeFactorIndices=NULL,
-                       std::map<int,int> *constrainedKeys=NULL,//const boost::optional<FastMap<Key,int> >& constrainedKeys = boost::none,
-                       std::list<int> *noRelinKeys=NULL,//const boost::optional<FastList<Key> >& noRelinKeys = boost::none,
-                       std::list<int> *extraReelimKeys=NULL,//const boost::optional<FastList<Key> >& extraReelimKeys = boost::none,
+                       std::map<int,int> *constrainedKeys=NULL,
+                       std::list<int> *noRelinKeys=NULL,
+                       std::list<int> *extraReelimKeys=NULL,
                        bool force_relinearize = false);
-#else
-    ISAM2Result update(NonlinearFactorGraph& newFactors,
-                       const std::map<int,Eigen::VectorXd>& newTheta,
-                       const std::map<int,Pose2>& newposetheta,
-                       ISAM2Data& isam2data,
-                       std::vector<int>* removeFactorIndices=NULL,
-                       std::map<int,int> *constrainedKeys=NULL,//const boost::optional<FastMap<Key,int> >& constrainedKeys = boost::none,
-                       std::list<int> *noRelinKeys=NULL,//const boost::optional<FastList<Key> >& noRelinKeys = boost::none,
-                       std::list<int> *extraReelimKeys=NULL,//const boost::optional<FastList<Key> >& extraReelimKeys = boost::none,
-                       bool force_relinearize = false);
-#endif // GMF_Using_Pose3
-    /** Compute an estimate from the incomplete linear delta computed during the last update.
-     * This delta is incomplete because it was not updated below wildfire_threshold.  If only
-     * a single variable is needed, it is faster to call calculateEstimate(const KEY&).
-     */
-
-#ifdef GMF_Using_Pose3
     void calculateEstimate(ISAM2Data& isam2data);
-#else
-    void calculateEstimate(ISAM2Data& isam2data);
-#endif
 
     /** Compute an estimate for a single variable using its incomplete linear delta computed
      * during the last update.  This is faster than calling the no-argument version of
@@ -142,24 +108,14 @@ public:
      * @param key
      * @return
      */
-    Eigen::VectorXd calculateEstimate(ISAM2Data& isam2data,int key);
-#ifdef GMF_Using_Pose3
-    Pose3 calculateEstimatePose(ISAM2Data& isam2data,int key);
-#else
-    Pose2 calculateEstimatePose(ISAM2Data& isam2data,int key);
-#endif // GMF_Using_Pose3
-
-    /** Compute an estimate using a complete delta computed by a full back-substitution.
-     */
-    std::map<int,Eigen::VectorXd> calculateBestEstimate() const;
-
+    minimatrix* calculateEstimate(ISAM2Data& isam2data,int key);
     /** Access the current delta, computed during the last call to update */
     void getDelta(ISAM2Data& isam2data);
 
-    std::map<int,Eigen::VectorXd> gradientAtZero() const;
+    std::map<int,minivector> gradientAtZero() const;
 
     /** Compute the linear error */
-    double error(const std::map<int,Eigen::VectorXd>& x) const;
+    double error(const std::map<int,minivector>& x) const;
     mutable int lastBacksubVariableCount;
 
 
@@ -209,7 +165,7 @@ public:
      * Remove path from clique to root and return that path as factors
      * plus a list of orphaned subtree roots. Used in removeTop below.
      */
-  void removePath(ISAM2Clique* clique, std::list<int>* affectedkeys,
+    void removePath(ISAM2Clique* clique, std::list<int>* affectedkeys,
                     std::list<ISAM2Clique*> *orphans);
     /**
      * Given a list of indices, turn "contaminated" part of the tree back into a factor graph.

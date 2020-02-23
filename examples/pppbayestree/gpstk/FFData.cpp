@@ -53,50 +53,50 @@
 
 namespace gpstk
 {
-   void FFData::putRecord(FFStream& s) const
-      throw(FFStreamError, gpstk::StringUtils::StringException)
-   {
-      s.tryFFStreamPut(*this);
-   }
+void FFData::putRecord(FFStream& s) const
+throw(FFStreamError, gpstk::StringUtils::StringException)
+{
+    s.tryFFStreamPut(*this);
+}
 
-   void FFData::getRecord(FFStream& s)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
-   {
-      s.tryFFStreamGet(*this);
-   }
+void FFData::getRecord(FFStream& s)
+throw(FFStreamError, gpstk::StringUtils::StringException)
+{
+    s.tryFFStreamGet(*this);
+}
 
-   std::ostream& operator<<(std::ostream& o, const FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException)
-   {
-      FFStream* ffs = dynamic_cast<FFStream*>(&o);
-      if (ffs)
-      {
-         f.putRecord(*ffs);
-         return o;
-      }
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
-      }
+std::ostream& operator<<(std::ostream& o, const FFData& f)
+throw(FFStreamError, gpstk::StringUtils::StringException)
+{
+    FFStream* ffs = dynamic_cast<FFStream*>(&o);
+    if (ffs)
+    {
+        f.putRecord(*ffs);
+        return o;
+    }
+    else
+    {
+        FFStreamError e("operator<< stream argument must be an FFStream");
+        GPSTK_THROW(e);
+    }
 
-   }
+}
 
-   std::istream& operator>>(std::istream& i, FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException)
-   {
-      FFStream* ffs = dynamic_cast<FFStream*>(&i);
-      if (ffs)
-      {
-         f.getRecord(*ffs);
-         return i;
-      }
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
-      }
+std::istream& operator>>(std::istream& i, FFData& f)
+throw(FFStreamError, gpstk::StringUtils::StringException)
+{
+    FFStream* ffs = dynamic_cast<FFStream*>(&i);
+    if (ffs)
+    {
+        f.getRecord(*ffs);
+        return i;
+    }
+    else
+    {
+        FFStreamError e("operator<< stream argument must be an FFStream");
+        GPSTK_THROW(e);
+    }
 
-   }
+}
 }
 

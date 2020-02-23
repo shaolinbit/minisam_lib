@@ -35,8 +35,8 @@
 
 #include "minisam/geometry/Rot3.h"
 #include "minisam/geometry/Pose3.h"
-#include "minisam/slam/PriorFactorPose3.h"
-#include "minisam/slam/BetweenFactorPose3.h"
+#include "minisam/slam/PriorFactor.h"
+#include "minisam/slam/BetweenFactor.h"
 #include "minisam/nonlinear/NonlinearFactorGraph.h"
 #include "minisam/nonlinear/ISAM2.h"
 
@@ -48,15 +48,16 @@ private:
     NonlinearFactorGraph gtSAMgraph;
     NonlinearFactorGraph nullgraph;
    // std::map<int,Eigen::VectorXd> initialEstimateV,isamCurrentEstimateV;
-    std::map<int,Pose3> initialEstimatePose;//,isamCurrentEstimatePose;
+    std::map<int,minimatrix*> initialEstimatePose;//,isamCurrentEstimatePose;
     ISAM2 *isam;
     ISAM2Data isam2data;
-    std::map<int,Eigen::VectorXd> NULLV;
-    std::map<int,Pose3> NULLPose;
+    std::map<int,minimatrix*> NULLV;
+    //std::map<int,Pose3> NULLPose;
 
-    DiagonalNoiseModel* priorNoise;
-    DiagonalNoiseModel* odometryNoise;
-    DiagonalNoiseModel* constraintNoise;
+    GaussianNoiseModel* priorNoise;
+    GaussianNoiseModel* odometryNoise;
+    //GaussianNoiseModel* constraintNoise;
+    std::vector<GaussianNoiseModel*> constraintNoiseVector;
 
     ros::NodeHandle nh;
 
@@ -262,9 +263,18 @@ public:
     }
     ~mapOptimization()
     {
+        for(GaussianNoiseModel* bfn:constraintNoiseVector)
+        {
+            delete  bfn;
+        }
+        constraintNoiseVector.clear();
+
+        delete priorNoise;
+        delete odometryNoise;
      isam->clearall();
-     isam2data.clearpose();
+     isam2data.clearvalues();
      isam2data.clearfactors();
+     delete isam;
 
     }
 
@@ -347,11 +357,13 @@ public:
             imuPitch[i] = 0;
         }
 
-        Eigen::VectorXd Vector6(6);
-        Vector6 << 1e-6, 1e-6, 1e-6, 1e-8, 1e-8, 1e-6;
+        //Eigen::VectorXd Vector6(6);
+        //Vector6 << 1e-6, 1e-6, 1e-6, 1e-8, 1e-8, 1e-6;
+        minivector Vector6(6,1e-6);
+        Vector6.data[3]=1e-8;Vector6.data[4]=1e-8;
         //priorNoise = noiseModel::Diagonal::Variances(Vector6);
-        priorNoise = DiagonalNoiseModel::Variances(Vector6);
-        odometryNoise = DiagonalNoiseModel::Variances(Vector6);
+        priorNoise = GaussianNoiseModel::Variances(Vector6);
+        odometryNoise = GaussianNoiseModel::Variances(Vector6);
 
         matA0 = cv::Mat (5, 3, CV_32F, cv::Scalar::all(0));
         matB0 = cv::Mat (5, 1, CV_32F, cv::Scalar::all(-1));
@@ -875,21 +887,25 @@ public:
         Eigen::Affine3f tWrong = pclPointToAffine3fCameraToLidar(cloudKeyPoses6D->points[latestFrameIDLoopCloure]);
         Eigen::Affine3f tCorrect = correctionLidarFrame * tWrong;
         pcl::getTranslationAndEulerAngles (tCorrect, x, y, z, roll, pitch, yaw);
-        Pose3 poseFrom = Pose3(Rot3::RzRyRx(roll, pitch, yaw), Eigen::Vector3d(x, y, z));
+        Pose3 poseFrom (Rot3::RzRyRx(roll, pitch, yaw), minivector(x, y, z));
         Pose3 poseTo = pclPointTogtsamPose3(cloudKeyPoses6D->points[closestHistoryFrameID]);
-        Eigen::VectorXd Vector6(6);
+
         float noiseScore = icp.getFitnessScore();
-        Vector6 << noiseScore, noiseScore, noiseScore, noiseScore, noiseScore, noiseScore;
-        constraintNoise = DiagonalNoiseModel::Variances(Vector6);
+       // Vector6 << noiseScore, noiseScore, noiseScore, noiseScore, noiseScore, noiseScore;
+         minivector Vector6(6,noiseScore);
+        GaussianNoiseModel* constraintNoise = GaussianNoiseModel::Variances(Vector6);
+        constraintNoiseVector.push_back(constraintNoise);
 
         std::lock_guard<std::mutex> lock(mtx);
 
-        BetweenFactorPose3* bp=new BetweenFactorPose3(latestFrameIDLoopCloure, closestHistoryFrameID, poseFrom.between(poseTo), constraintNoise);
+        minimatrix posefrombeween=poseFrom.between(&poseTo);
+
+        BetweenFactor* bp=new BetweenFactor(latestFrameIDLoopCloure, closestHistoryFrameID, new Pose3(posefrombeween), constraintNoise);
        // gtSAMgraph.add(BetweenFactor<Pose3>(latestFrameIDLoopCloure, closestHistoryFrameID, poseFrom.between(poseTo), constraintNoise));
 
         gtSAMgraph.push_back(bp);
-        isam->update(gtSAMgraph,NULLV,NULLPose,isam2data);
-        isam->update(nullgraph,NULLV,NULLPose,isam2data);
+        isam->update(gtSAMgraph,NULLV,isam2data);
+        isam->update(nullgraph,NULLV,isam2data);
         gtSAMgraph.resize(0);
 
         aLoopIsClosed = true;
@@ -897,7 +913,7 @@ public:
 
     Pose3 pclPointTogtsamPose3(PointTypePose thisPoint){
     	return Pose3(Rot3::RzRyRx(double(thisPoint.yaw), double(thisPoint.roll), double(thisPoint.pitch)),
-                           Eigen::Vector3d(double(thisPoint.z),   double(thisPoint.x),    double(thisPoint.y)));
+                           minivector(double(thisPoint.z),   double(thisPoint.x),    double(thisPoint.y)));
     }
 
     Eigen::Affine3f pclPointToAffine3fCameraToLidar(PointTypePose thisPoint){
@@ -1322,31 +1338,41 @@ public:
        //     gtSAMgraph.add(PriorFactor<Pose3>(0, Pose3(Rot3::RzRyRx(transformTobeMapped[2], transformTobeMapped[0], transformTobeMapped[1]),
        //                                                		 Eigen::Vector3d(transformTobeMapped[5], transformTobeMapped[3], transformTobeMapped[4])), priorNoise));
 
-            PriorFactorPose3* pp=new PriorFactorPose3(0, Pose3(Rot3::RzRyRx(transformTobeMapped[2], transformTobeMapped[0], transformTobeMapped[1]),
-                                                       		 Eigen::Vector3d(transformTobeMapped[5], transformTobeMapped[3], transformTobeMapped[4])), priorNoise);
+            PriorFactor* pp=new PriorFactor(0,new Pose3(Rot3::RzRyRx(transformTobeMapped[2], transformTobeMapped[0], transformTobeMapped[1]),
+                                                                 minivector(transformTobeMapped[5], transformTobeMapped[3], transformTobeMapped[4])), priorNoise);
             gtSAMgraph.push_back(pp);
-            initialEstimatePose.insert(std::make_pair(0, Pose3(Rot3::RzRyRx(transformTobeMapped[2], transformTobeMapped[0], transformTobeMapped[1]),
-                                                  Eigen::Vector3d(transformTobeMapped[5], transformTobeMapped[3], transformTobeMapped[4]))));
+            initialEstimatePose.insert(std::make_pair(0,new Pose3(Rot3::RzRyRx(transformTobeMapped[2], transformTobeMapped[0], transformTobeMapped[1]),
+                                                  minivector(transformTobeMapped[5], transformTobeMapped[3], transformTobeMapped[4]))));
             for (int i = 0; i < 6; ++i)
             	transformLast[i] = transformTobeMapped[i];
         }
         else{
             Pose3 poseFrom(Rot3::RzRyRx(transformLast[2], transformLast[0], transformLast[1]),
-                                                Eigen::Vector3d(transformLast[5], transformLast[3], transformLast[4]));
-            Pose3 poseTo(Rot3::RzRyRx(transformAftMapped[2], transformAftMapped[0], transformAftMapped[1]),
-                                                Eigen::Vector3d(transformAftMapped[5], transformAftMapped[3], transformAftMapped[4]));
-            BetweenFactorPose3* bp=new  BetweenFactorPose3(cloudKeyPoses3D->points.size()-1, cloudKeyPoses3D->points.size(), poseFrom.between(poseTo), odometryNoise);
-           // gtSAMgraph.add(BetweenFactor<Pose3>(cloudKeyPoses3D->points.size()-1, cloudKeyPoses3D->points.size(), poseFrom.between(poseTo), odometryNoise));
+                    minivector(transformLast[5], transformLast[3], transformLast[4]));
+            Pose3* poseTo=new Pose3(Rot3::RzRyRx(transformAftMapped[2], transformAftMapped[0], transformAftMapped[1]),
+                   minivector(transformAftMapped[5], transformAftMapped[3], transformAftMapped[4]));
+
+            minimatrix posefrombeween=poseFrom.between(poseTo);
+
+            BetweenFactor* bp=new  BetweenFactor(cloudKeyPoses3D->points.size()-1, cloudKeyPoses3D->points.size(),
+                                                new Pose3(posefrombeween), odometryNoise);
+
+           // gtSAMgraph.add(BetweenFactor<Pose3>(cloudKeyPoses3D->points.size()-1, cloudKeyPoses3D->points.size(),
+            //poseFrom.between(poseTo), odometryNoise));
             gtSAMgraph.push_back(bp);
-            initialEstimatePose.insert(std::make_pair(cloudKeyPoses3D->points.size(), Pose3(Rot3::RzRyRx(transformAftMapped[2], transformAftMapped[0], transformAftMapped[1]),
-                                                Eigen::Vector3d(transformAftMapped[5], transformAftMapped[3], transformAftMapped[4]))));
+           // initialEstimatePose.insert(std::make_pair(cloudKeyPoses3D->points.size(),
+           //                                           Pose3(Rot3::RzRyRx(transformAftMapped[2],
+           //                                                 transformAftMapped[0], transformAftMapped[1]),
+           //                                     minivector(transformAftMapped[5], transformAftMapped[3], transformAftMapped[4]))));
+            initialEstimatePose.insert(std::make_pair(cloudKeyPoses3D->points.size(),
+                                                      poseTo));
         }
 
-        isam->update(gtSAMgraph,NULLV,initialEstimatePose,isam2data);
-        isam->update(nullgraph,NULLV,NULLPose,isam2data);
+        isam->update(gtSAMgraph,initialEstimatePose,isam2data);
+        isam->update(nullgraph,NULLV,isam2data);
 
         gtSAMgraph.resize(0);
-		initialEstimatePose.clear();
+        initialEstimatePose.clear();
 
         PointType thisPose3D;
         PointTypePose thisPose6D;
@@ -1354,10 +1380,10 @@ public:
 
         //isam->calculateEstimate(isam2data,&isamCurrentEstimatePose);
         isam->calculateEstimate(isam2data);
-        latestEstimate = isam2data.resultPose_.at(isam2data.resultPose_.size()-1);
-
+        //latestEstimate = isam2data.resulttheta_.at(isam2data.resulttheta_.size()-1);
+        minimatrix_memcpy(&latestEstimate,isam2data.resulttheta_.at(isam2data.resulttheta_.size()-1));
         thisPose3D.x = latestEstimate.translation().y();
-        thisPose3D.y = latestEstimate.translation().z();
+        thisPose3D.y = latestEstimate.translation().data[2];
         thisPose3D.z = latestEstimate.translation().x();
         thisPose3D.intensity = cloudKeyPoses3D->points.size();
         cloudKeyPoses3D->push_back(thisPose3D);
@@ -1377,7 +1403,7 @@ public:
             transformAftMapped[1] = latestEstimate.rotation().yaw();
             transformAftMapped[2] = latestEstimate.rotation().roll();
             transformAftMapped[3] = latestEstimate.translation().y();
-            transformAftMapped[4] = latestEstimate.translation().z();
+            transformAftMapped[4] = latestEstimate.translation().data[2];
             transformAftMapped[5] = latestEstimate.translation().x();
 
             for (int i = 0; i < 6; ++i){
@@ -1405,20 +1431,23 @@ public:
             recentSurfCloudKeyFrames.   clear();
             recentOutlierCloudKeyFrames.clear();
 
+            Pose3 temppose;
+
             //int numPoses = isamCurrentEstimatePose.size();
-            int numPoses = isam2data.resultPose_.size();
+            int numPoses = isam2data.resulttheta_.size();
 			for (int i = 0; i < numPoses; ++i)
 			{
-                                cloudKeyPoses3D->points[i].x = isam2data.resultPose_.at(i).translation().y();
-                                cloudKeyPoses3D->points[i].y = isam2data.resultPose_.at(i).translation().z();
-                                cloudKeyPoses3D->points[i].z = isam2data.resultPose_.at(i).translation().x();
+                    minimatrix_memcpy(&temppose,isam2data.resulttheta_.at(i));
+                                cloudKeyPoses3D->points[i].x = temppose.translation().y();
+                                cloudKeyPoses3D->points[i].y = temppose.translation().data[2];
+                                cloudKeyPoses3D->points[i].z = temppose.translation().x();
 
 				cloudKeyPoses6D->points[i].x = cloudKeyPoses3D->points[i].x;
 	            cloudKeyPoses6D->points[i].y = cloudKeyPoses3D->points[i].y;
-	            cloudKeyPoses6D->points[i].z = cloudKeyPoses3D->points[i].z;
-                    cloudKeyPoses6D->points[i].roll  = isam2data.resultPose_.at(i).rotation().pitch();
-                    cloudKeyPoses6D->points[i].pitch = isam2data.resultPose_.at(i).rotation().yaw();
-                    cloudKeyPoses6D->points[i].yaw   = isam2data.resultPose_.at(i).rotation().roll();
+                    cloudKeyPoses6D->points[i].z = cloudKeyPoses3D->points[i].data[2];
+                    cloudKeyPoses6D->points[i].roll  = temppose.rotation().pitch();
+                    cloudKeyPoses6D->points[i].pitch = temppose.rotation().yaw();
+                    cloudKeyPoses6D->points[i].yaw   = temppose.rotation().roll();
 			}
 
 	    	aLoopIsClosed = false;

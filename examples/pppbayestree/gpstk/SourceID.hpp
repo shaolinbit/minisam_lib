@@ -42,148 +42,156 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
+/** @addtogroup DataStructures */
 
-   class SourceID
-   {
-   public:
+class SourceID
+{
+public:
 
-         /// The type of source.
-      enum SourceType
-      {
-         Unknown,
-         GPS,        ///< GPS data
-         Galileo,    ///< Galileo data
-         Glonass,    ///< Glonass data
-         Geosync,    ///< Geostationary data
-         LEO,        ///< LEO data
-         Transit,    ///< Transit data
-         Compass,    ///< Compass data
-         Mixed,      ///< Mixed data
-         UserDefined,///< UserDefined
-         DGPS,       ///< Differential GPS data
-         RTK,        ///< Real Time Kinematic data
-         INS,        ///< Inertial System data
-         Last,       ///< used to extend this...
-         Placeholder = Last+1000
-      };
-
-
-         /// empty constructor, creates an unknown source data object
-      SourceID()
-         : type(Unknown), sourceName("")
-      {};
+    /// The type of source.
+    enum SourceType
+    {
+        Unknown,
+        GPS,        ///< GPS data
+        Galileo,    ///< Galileo data
+        Glonass,    ///< Glonass data
+        Geosync,    ///< Geostationary data
+        LEO,        ///< LEO data
+        Transit,    ///< Transit data
+        Compass,    ///< Compass data
+        Mixed,      ///< Mixed data
+        UserDefined,///< UserDefined
+        DGPS,       ///< Differential GPS data
+        RTK,        ///< Real Time Kinematic data
+        INS,        ///< Inertial System data
+        Last,       ///< used to extend this...
+        Placeholder = Last+1000
+    };
 
 
-         /// Explicit constructor
-      SourceID( SourceType st,
-                std::string name )
-         : type(st), sourceName(name)
-      {};
+    /// empty constructor, creates an unknown source data object
+    SourceID()
+        : type(Unknown), sourceName("")
+    {};
 
 
-         /// Copy constructor
-      SourceID(const SourceID& s)
-         : type(s.type), sourceName(s.sourceName)
-      {};
+    /// Explicit constructor
+    SourceID( SourceType st,
+              std::string name )
+        : type(st), sourceName(name)
+    {};
 
 
-         /// Equality operator requires all fields to be the same.
-      virtual bool operator==(const SourceID& right) const;
+    /// Copy constructor
+    SourceID(const SourceID& s)
+        : type(s.type), sourceName(s.sourceName)
+    {};
 
 
-         /// Ordering is arbitrary but required to be able to use a SourceID
-         /// as an index to a std::map. If an application needs
-         /// some other ordering, inherit and override this function.
-      virtual bool operator<(const SourceID& right) const;
+    /// Equality operator requires all fields to be the same.
+    virtual bool operator==(const SourceID& right) const;
 
 
-         /// Inequality operator
-      bool operator!=(const SourceID& right) const
-      { return !(operator==(right)); }
+    /// Ordering is arbitrary but required to be able to use a SourceID
+    /// as an index to a std::map. If an application needs
+    /// some other ordering, inherit and override this function.
+    virtual bool operator<(const SourceID& right) const;
 
 
-         /// 'Greater than' operator
-      bool operator>(const SourceID& right) const
-      {  return (!operator<(right) && !operator==(right)); }
+    /// Inequality operator
+    bool operator!=(const SourceID& right) const
+    {
+        return !(operator==(right));
+    }
 
 
-         /// 'Less or equal than' operator
-      bool operator<=(const SourceID& right) const
-      { return (operator<(right) || operator==(right)); }
+    /// 'Greater than' operator
+    bool operator>(const SourceID& right) const
+    {
+        return (!operator<(right) && !operator==(right));
+    }
 
 
-         /// 'Greater or equal than' operator
-      bool operator>=(const SourceID& right) const
-      { return !(operator<(right)); }
+    /// 'Less or equal than' operator
+    bool operator<=(const SourceID& right) const
+    {
+        return (operator<(right) || operator==(right));
+    }
 
 
-         /// Assignment operator
-      SourceID& operator=(const SourceID& right);
+    /// 'Greater or equal than' operator
+    bool operator>=(const SourceID& right) const
+    {
+        return !(operator<(right));
+    }
 
 
-         /// Convenience output method
-      virtual std::ostream& dump(std::ostream& s) const;
+    /// Assignment operator
+    SourceID& operator=(const SourceID& right);
 
 
-         /// Returns true if this is a valid SourceID. Basically just
-         /// checks that none of the fields are undefined.
-      virtual bool isValid() const;
+    /// Convenience output method
+    virtual std::ostream& dump(std::ostream& s) const;
 
 
-         /// Destructor
-      virtual ~SourceID() {};
+    /// Returns true if this is a valid SourceID. Basically just
+    /// checks that none of the fields are undefined.
+    virtual bool isValid() const;
 
 
-         /// Method to create a new source type.
-      static SourceType newSourceType(const std::string& s);
+    /// Destructor
+    virtual ~SourceID() {};
 
 
-         // Fields
-
-         /// Type of the data source (GPS receiver, Inertial system, etc)
-      SourceType  type;
+    /// Method to create a new source type.
+    static SourceType newSourceType(const std::string& s);
 
 
-         /// Name of the data source
-      std::string sourceName;
+    // Fields
+
+    /// Type of the data source (GPS receiver, Inertial system, etc)
+    SourceType  type;
 
 
-   private:
+    /// Name of the data source
+    std::string sourceName;
 
 
-      static std::map< SourceType, std::string > stStrings;
+private:
 
 
-   public:
-
-      #ifndef SWIG
-      class Initializer
-      {
-      public:
-         Initializer();
-      };
-
-      static Initializer SourceIDsingleton;
-      #endif
-
-   }; // End of class 'SourceID'
+    static std::map< SourceType, std::string > stStrings;
 
 
+public:
 
-   namespace StringUtils
-   {
+#ifndef SWIG
+    class Initializer
+    {
+    public:
+        Initializer();
+    };
 
-         /// Convert this object to a string representation
-      std::string asString(const SourceID& p);
+    static Initializer SourceIDsingleton;
+#endif
 
-   }
+}; // End of class 'SourceID'
 
 
 
-      /// Stream output for SourceID
-   std::ostream& operator<<( std::ostream& s,
-                             const SourceID& p );
+namespace StringUtils
+{
+
+/// Convert this object to a string representation
+std::string asString(const SourceID& p);
+
+}
+
+
+
+/// Stream output for SourceID
+std::ostream& operator<<( std::ostream& s,
+                          const SourceID& p );
 
 
 

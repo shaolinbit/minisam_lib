@@ -7,7 +7,6 @@
 
 #include "nonlinear/ISAM2.h"
 #include "nonlinear/NonlinearFactorGraph.h"
-//#include "nonlinear/LevenbergMarquardtOptimizer.h"
 #include "inference/Symbol.h"
 
 #include "slam/PriorFactor.h"
@@ -100,7 +99,7 @@ int main(int argc, char* argv[])
     int nThreads(-1), phase_break, break_count(0), nextKey, dec_int, itsBelowThree=0, count=0;
     bool printECEF, printENU, printAmb, printUpdateRate, first_ob(true), usingP1(false);
 
-    FILE *fprealtime=fopen("examples_tuning/data/pppgpsposbackcount.txt","w+");
+    FILE *fprealtime=fopen("examples_tuning/gpsdata/pppgpsposbackcount.txt","w+");
 
     cout.precision(12);
 
@@ -117,7 +116,7 @@ int main(int argc, char* argv[])
     po::notify(vm);*/
 
     ConfDataReader confReader;
-    confReader.open("examples_tuning/data/phastball.conf");
+    confReader.open("examples_tuning/gpsdata/phastball.conf");
     ISAM2Data isam2data;
 
     /*if (confFile.empty() ) {
@@ -151,8 +150,8 @@ int main(int argc, char* argv[])
 
     //usingP1 = (vm.count("usingP1")>0);
 
-    Eigen::Vector3d nomXYZ(xn, yn, zn);
-    Eigen::Vector3d prop_xyz = nomXYZ;
+    minivector nomXYZ(xn, yn, zn);
+    minivector prop_xyz = nomXYZ;
 
 
     /*#ifdef USE_TBB
@@ -188,45 +187,63 @@ int main(int argc, char* argv[])
 
     string value;
 
-    Eigen::VectorXd prior_nonBias(5);
-    prior_nonBias<<0.0, 0.0, 0.0, 0.0, 0.0;
+    minivector prior_nonBias(5,0.0);
+    //prior_nonBias<<0.0, 0.0, 0.0, 0.0, 0.0;
 
     double bias_state(0.0);
-    Eigen::VectorXd phase_arc(34);
-    phase_arc.setZero();
-    Eigen::VectorXd bias_counter(34);
-    bias_counter.setZero();
+    minivector phase_arc(34,0.0);
+    //phase_arc.setZero();
+    minivector bias_counter(34,0.0);
+   // bias_counter.setZero();
 
     for (int i=1; i<34; i++)
     {
-        bias_counter(i) = bias_counter(i-1) + 10000;
+        bias_counter.data[i] = bias_counter.data[i-1] + 10000;
     }
 
-    Eigen::VectorXd initEst5(5);
-    initEst5<<0.0, 0.0, 0.0, 0.0, 0.0;
+    minivector* initEst5=new minivector(5);
+    minivector_set_zero(initEst5);
+   // initEst5<<0.0, 0.0, 0.0, 0.0, 0.0;
 
-    Eigen::VectorXd between_nonBias_State(5);
-    between_nonBias_State<<0.0, 0.0, 0.0, 0.0, 0.0;
+    minivector*  between_nonBias_State=new minivector(5);
+    minivector_set_zero(between_nonBias_State);
+    //between_nonBias_State<<0.0, 0.0, 0.0, 0.0, 0.0;
 
     //Values initial_values;
-    std::map<int,Eigen::VectorXd> initial_values;
-    std::map<int,Pose3> initial_valuesP;
+    std::map<int,minimatrix*> initial_values;
+   // std::map<int,Pose3> initial_valuesP;
     //Values result;
    // std::map<int,Eigen::VectorXd> result;
 
-    Eigen::VectorXd BiasinitNoise(5);
-    BiasinitNoise<<10.0, 10.0, 10.0, 3e8, 1e-1;
-    DiagonalNoiseModel* nonBias_InitNoise=new DiagonalNoiseModel(BiasinitNoise.cwiseSqrt());
+    minivector BiasinitNoise(5);
+    BiasinitNoise.data[0]=10.0;BiasinitNoise.data[1]=10.0;BiasinitNoise.data[2]=10.0;
+    BiasinitNoise.data[3]=3e8;BiasinitNoise.data[4]=1e-1;
+    //BiasinitNoise<<10.0, 10.0, 10.0, 3e8, 1e-1;
+    minivector_cwisesqrt(&BiasinitNoise);
+   // GaussianNoiseModel* nonBias_InitNoise=new GaussianNoiseModel(BiasinitNoise.cwiseSqrt());
+    GaussianNoiseModel* nonBias_InitNoise=new GaussianNoiseModel(BiasinitNoise);
+
+    minivector nonBiasProcessNoise(5);
+    nonBiasProcessNoise.data[0]=0.1;nonBiasProcessNoise.data[1]=0.1;nonBiasProcessNoise.data[2]=0.1;
+    nonBiasProcessNoise.data[3]=3e6;nonBiasProcessNoise.data[4]=3e-5;
+    minivector_cwisesqrt(&nonBiasProcessNoise);
+
+     GaussianNoiseModel* nonBias_ProcessNoise=new GaussianNoiseModel(nonBiasProcessNoise);
 
 
-    Eigen::VectorXd nonBiasProcessNoise(5);
-    nonBiasProcessNoise<<0.1, 0.1, 0.1, 3e6, 3e-5;
-    Eigen::VectorXd init_Noise(1);
-    init_Noise<<100;
 
-    string obs_path = findExampleDataFile(gnssFile);
-    string p1p2_path = findExampleDataFile(p1p2File);
-    string p1c1_path = findExampleDataFile(p1c1File);
+    //0.1, 0.1, 0.1, 3e6, 3e-5;
+    minivector init_Noise(1,100);//init_Noise[0]=100;
+    //init_Noise<<100;
+    minivector_cwisesqrt(&init_Noise);
+
+     GaussianNoiseModel* initNoise=new GaussianNoiseModel(init_Noise);
+
+    string obs_path = findExampleDataFile(gnssFile,"examples_tuning/gpsdata");
+    string p1p2_path = findExampleDataFile(p1p2File,"examples_tuning/gpsdata");
+    string p1c1_path = findExampleDataFile(p1c1File,"examples_tuning/gpsdata");
+
+
 
     if ( obs_path.empty() )
     {
@@ -246,11 +263,11 @@ int main(int argc, char* argv[])
     string delimiter = " ";
     while ((pos = sp3File.find(delimiter)) != string::npos)
     {
-        path = findExampleDataFile(sp3File.substr(0,pos));
+        path = findExampleDataFile(sp3File.substr(0,pos),"examples_tuning/gpsdata");
         SP3EphList.loadFile(path);
         sp3File.erase(0, pos + delimiter.length());
     }
-    path = findExampleDataFile(sp3File);
+    path = findExampleDataFile(sp3File,"examples_tuning/gpsdata");
     SP3EphList.loadFile(path);
 
     // Set flags to reject satellites with bad or absent positional
@@ -441,7 +458,7 @@ int main(int argc, char* argv[])
             satX = (*it).second.getValue(TypeID::satX);
             satY = (*it).second.getValue(TypeID::satY);
             satZ = (*it).second.getValue(TypeID::satZ);
-            Eigen::Vector3d satXYZ(satX,satY,satZ);
+            minivector satXYZ(satX,satY,satZ);
             double range, rangeRes;
             range = (*it).second.getValue(TypeID::PC);
             rangeRes = (*it).second.getValue(TypeID::prefitC);
@@ -458,48 +475,61 @@ int main(int argc, char* argv[])
                 PriorFactor* npn=new PriorFactor(Symbol('X',count).key(), initEst5,  nonBias_InitNoise);
 
                 graph.push_back(npn);
-                initial_values.insert(std::make_pair(Symbol('X',count).key(), initEst5));
+                initial_values.insert(std::make_pair(Symbol('X',count).key(), new minivector(initEst5)));
 
             }
 
-            if (phase_arc[svn]!=phase_break)
+            if (phase_arc.data[svn]!=phase_break)
             {
                 bias_state = phase - range;
                 if (count > startKey)
                 {
-                    bias_counter[svn] = bias_counter[svn] +1;
+                    bias_counter.data[svn] = bias_counter.data[svn] +1;
                 }
-                Eigen::VectorXd biasb(1);
-                biasb<<bias_state;
+                minivector *biasb=new minivector(1);
+                biasb->data[0]=bias_state;
+               // biasb<<bias_state;
 
-                DiagonalNoiseModel* initNoise=new DiagonalNoiseModel(init_Noise.cwiseSqrt());
-                PriorFactor* nphb=new PriorFactor(Symbol('B',bias_counter[svn]).key(),biasb,initNoise);
+                //GaussianNoiseModel* initNoise=new GaussianNoiseModel(init_Noise.cwiseSqrt());
+
+
+                PriorFactor* nphb=new PriorFactor(Symbol('B',bias_counter.data[svn]).key(),
+                biasb,initNoise);
                 graph.push_back(nphb);
-                initial_values.insert(std::make_pair(Symbol('B',bias_counter[svn]).key(), biasb));
-                phase_arc[svn] = phase_break;
+                initial_values.insert(std::make_pair(Symbol('B',bias_counter.data[svn]).key(), new minivector(biasb)));
+                phase_arc.data[svn] = phase_break;
             }
             // Generate pseudorange factor
-            Eigen::VectorXd gpsRangeFactorvec(1);
-            gpsRangeFactorvec<<elDepWeight(satXYZ, nomXYZ, rangeWeight);
-            DiagonalNoiseModel* ngpsrfn=new DiagonalNoiseModel(gpsRangeFactorvec.cwiseSqrt());
-            PseudorangeFactor* ngpsrf=new PseudorangeFactor(Symbol('X',count).key(), rangeRes, satXYZ, nomXYZ,ngpsrfn);
+            minivector gpsRangeFactorvec(1,sqrt(elDepWeight(satXYZ, nomXYZ, rangeWeight)));
+
+            //gpsRangeFactorvec<<elDepWeight(satXYZ, nomXYZ, rangeWeight);
+            //GaussianNoiseModel* ngpsrfn=new GaussianNoiseModel(gpsRangeFactorvec.cwiseSqrt());
+            GaussianNoiseModel* ngpsrfn=new GaussianNoiseModel(gpsRangeFactorvec);
+            PseudorangeFactor* ngpsrf=new PseudorangeFactor(Symbol('X',count).key(), rangeRes,
+             new minivector(satXYZ), new minivector(nomXYZ),ngpsrfn);
 
             graph.push_back(ngpsrf);
-            gpsRangeFactorvec(0)=elDepWeight(satXYZ, nomXYZ, phaseWeight);
-            DiagonalNoiseModel* ngpspfn2=new DiagonalNoiseModel(gpsRangeFactorvec.cwiseSqrt());
-            PhaseFactor* ngpspf=new PhaseFactor(Symbol('X',count).key(), Symbol('B',bias_counter[svn]).key(),phaseRes, satXYZ, nomXYZ,ngpspfn2);
+            gpsRangeFactorvec.data[0]=sqrt(elDepWeight(satXYZ, nomXYZ, phaseWeight));
+            GaussianNoiseModel* ngpspfn2=new GaussianNoiseModel(gpsRangeFactorvec);
+            //GaussianNoiseModel* ngpspfn2=new GaussianNoiseModel(gpsRangeFactorvec.cwiseSqrt());
+            PhaseFactor* ngpspf=new PhaseFactor(Symbol('X',count).key(),
+             Symbol('B',bias_counter.data[svn]).key(),phaseRes, new minivector(satXYZ),
+             new minivector( nomXYZ),ngpspfn2);
             graph.push_back(ngpspf);
 
             prn_vec.push_back(svn);
         }
         if (count > startKey )
         {
-            DiagonalNoiseModel* nonBias_ProcessNoise=new DiagonalNoiseModel(nonBiasProcessNoise.cwiseSqrt());
-            BetweenFactor* nbfnbs=new BetweenFactor(Symbol('X',count).key(),Symbol('X',count-1).key(), between_nonBias_State, nonBias_ProcessNoise);
+           // GaussianNoiseModel* nonBias_ProcessNoise=
+           // new GaussianNoiseModel(nonBiasProcessNoise.cwiseSqrt());
+
+            BetweenFactor* nbfnbs=new BetweenFactor(Symbol('X',count).key(),
+            Symbol('X',count-1).key(), new minivector(between_nonBias_State), nonBias_ProcessNoise);
             graph.push_back(nbfnbs);
         }
 
-        isam.update(graph, initial_values,initial_valuesP,isam2data);
+        isam.update(graph, initial_values,isam2data);
         //result = isam.calculateEstimate(isam2data);
         isam.calculateEstimate(isam2data);
 
@@ -507,24 +537,29 @@ int main(int argc, char* argv[])
 
 
         //prior_nonBias =result.at(Symbol('X',count).key());
-        prior_nonBias =isam2data.resulttheta_.at(Symbol('X',count).key());
+        //prior_nonBias =isam2data.result.at(Symbol('X',count).key());
+        minimatrix_memcpy(&prior_nonBias,isam2data.resulttheta_.at(Symbol('X',count).key()));
 
-        Eigen::Vector3d delta_xyz(prior_nonBias(0), prior_nonBias(1), prior_nonBias(2));
-        Position deltaPos(prior_nonBias(0), prior_nonBias(1), prior_nonBias(2));
-        prop_xyz = nomXYZ - delta_xyz;
+        minivector delta_xyz(prior_nonBias.data[0], prior_nonBias.data[1], prior_nonBias.data[2]);
+        Position deltaPos(prior_nonBias.data[0], prior_nonBias.data[1], prior_nonBias.data[2]);
+        //prop_xyz = nomXYZ - delta_xyz;
+        minivector_sub(&prop_xyz,nomXYZ,delta_xyz);
         nominalPos -= deltaPos;
 
         if (printECEF)
         {
-            cout << "xyz " << gpstime.week << " " << gpstime.sow << " " << prop_xyz.x() << " " << prop_xyz.y() << " " << prop_xyz.z() << endl;
+            cout << "xyz " << gpstime.week << " " << gpstime.sow << " " << prop_xyz.x() <<
+            " " << prop_xyz.y() << " " << prop_xyz.data[2] << endl;
         }
 
         if (printENU)
         {
-            Eigen::Vector3d enu = xyz2enu(prop_xyz, nomXYZ);
-            cout << "enu " << gpstime.week << " " << gpstime.sow << " " << enu.x() << " " << enu.y() << " " << enu.z() << endl;
+            minivector enu = xyz2enu(prop_xyz, nomXYZ);
+            cout << "enu " << gpstime.week << " " << gpstime.sow << " " <<
+            enu.x() << " " << enu.y() << " " << enu.data[2] << endl;
             fprintf(fprealtime,"%d %.15f %.15f %.15f %.15f %d\n",
-                    gpstime.week,gpstime.sow,enu.x(),enu.y(),enu.z(),isam.lastBacksubVariableCount);
+                    gpstime.week,gpstime.sow,enu.x(),enu.y(),enu.data[2],
+                    isam.lastBacksubVariableCount);
         }
 
         if (printAmb)
@@ -534,7 +569,9 @@ int main(int argc, char* argv[])
                 cout << "amb. " << gpstime.week << " " << gpstime.sow << " ";
                 cout << prn_vec[k] << " ";
                 //cout << result.at(Symbol('B',bias_counter[prn_vec[k]]).key()) << endl;
-                cout << isam2data.resulttheta_.at(Symbol('B',bias_counter[prn_vec[k]]).key()) << endl;
+                minimatrix_print(isam2data.resulttheta_.at(Symbol('B',
+                bias_counter.data[prn_vec[k]]).key()));
+                cout << endl;
             }
         }
 
@@ -550,25 +587,45 @@ int main(int argc, char* argv[])
         initial_values.clear();
         prn_vec.clear();
         count++;
-        initial_values.insert(std::make_pair(Symbol('X',count).key(), prior_nonBias));
-       /* if(count>10)
+        initial_values.insert(std::make_pair(Symbol('X',count).key(),
+        new minivector(prior_nonBias)));
+       if(count>20000)
         {
          isam.clearall();
-    isam2data.clearpose();
+    isam2data.clearvalues();
     isam2data.clearfactors();
     delete parameters.optimizationParamsGaussNewton;
-    return 0;
-        }*/
+    delete between_nonBias_State;
+    delete nonBias_InitNoise;
+    delete initNoise;
+     delete nonBias_ProcessNoise;
+     for(auto& dlt:initial_values)
+    {
+       if(dlt.second!=NULL)
+       delete dlt.second;
     }
-    ofstream bs("examples_tuning/data/gnsstree.dot");
-    isam.saveGraph(bs);
+    return 0;
+        }
+    }
+   // ofstream bs("examples_tuning/data/gnsstree.dot");
+    //isam.saveGraph(bs);
 
     isam.clearall();
-    isam2data.clearpose();
+    isam2data.clearvalues();
     isam2data.clearfactors();
     delete parameters.optimizationParamsGaussNewton;
+    delete between_nonBias_State;
+    delete nonBias_InitNoise;
+    delete initNoise;
+    delete nonBias_ProcessNoise;
+    for(auto& dlt:initial_values)
+    {
+       if(dlt.second!=NULL)
+       delete dlt.second;
+    }
 
     return 0;
 }
 /* ************************************************************************* */
+
 

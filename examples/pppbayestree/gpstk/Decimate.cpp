@@ -47,82 +47,84 @@
 namespace gpstk
 {
 
-      // Returns a string identifying this object.
-   std::string Decimate::getClassName() const
-   { return "Decimate"; }
+// Returns a string identifying this object.
+std::string Decimate::getClassName() const
+{
+    return "Decimate";
+}
 
 
 
-      /* Sets sampling interval.
-       *
-       * @param sampleInterval      Sampling interval, in seconds.
-       */
-   Decimate& Decimate::setSampleInterval(const double sampleInterval)
-   {
+/* Sets sampling interval.
+ *
+ * @param sampleInterval      Sampling interval, in seconds.
+ */
+Decimate& Decimate::setSampleInterval(const double sampleInterval)
+{
 
-         // Make sure that sample interval is positive
-      if( sampleInterval >= 0.0 )
-      {
-         sampling = sampleInterval;
-      }
+    // Make sure that sample interval is positive
+    if( sampleInterval >= 0.0 )
+    {
+        sampling = sampleInterval;
+    }
 
-      return (*this);
+    return (*this);
 
-   }  // End of method 'Decimate::setSampleInterval()'
-
-
-
-      /* Sets tolerance, in seconds.
-       *
-       * @param tol                 Tolerance, in seconds.
-       */
-   Decimate& Decimate::setTolerance(const double tol)
-   {
-
-         // Make sure that tolerance is positive
-      if( tol >= 0.0 )
-      {
-         tolerance = tol;
-      }
-
-      return (*this);
-
-   }  // End of method 'Decimate::setTolerance()'
+}  // End of method 'Decimate::setSampleInterval()'
 
 
 
-      /* Returns a satTypeValueMap object, adding the new data generated when
-       * calling this object.
-       *
-       * @param time      Epoch corresponding to the data.
-       * @param gData     Data object holding the data.
-       */
-   satTypeValueMap& Decimate::Process( const CommonTime& time,
-                                       satTypeValueMap& gData )
-      throw(DecimateEpoch)
-   {
+/* Sets tolerance, in seconds.
+ *
+ * @param tol                 Tolerance, in seconds.
+ */
+Decimate& Decimate::setTolerance(const double tol)
+{
 
-         // Set a threshold
-      double threshold( std::abs(sampling - tolerance) );
+    // Make sure that tolerance is positive
+    if( tol >= 0.0 )
+    {
+        tolerance = tol;
+    }
 
-         // Check if current epoch - lastEpoch is NOT within threshold,
-         // implying that it must be decimated
-      if ( !(std::abs(time - lastEpoch) > threshold) )
-      {
+    return (*this);
 
-            // If epoch must be decimated, we issue an Exception
-         DecimateEpoch e("This epoch must be decimated.");
+}  // End of method 'Decimate::setTolerance()'
 
-         GPSTK_THROW(e);
 
-      }
 
-         // Update reference epoch
-      lastEpoch = time;
+/* Returns a satTypeValueMap object, adding the new data generated when
+ * calling this object.
+ *
+ * @param time      Epoch corresponding to the data.
+ * @param gData     Data object holding the data.
+ */
+satTypeValueMap& Decimate::Process( const CommonTime& time,
+                                    satTypeValueMap& gData )
+throw(DecimateEpoch)
+{
 
-      return gData;
+    // Set a threshold
+    double threshold( std::abs(sampling - tolerance) );
 
-   }  // End of method 'Decimate::Process()'
+    // Check if current epoch - lastEpoch is NOT within threshold,
+    // implying that it must be decimated
+    if ( !(std::abs(time - lastEpoch) > threshold) )
+    {
+
+        // If epoch must be decimated, we issue an Exception
+        DecimateEpoch e("This epoch must be decimated.");
+
+        GPSTK_THROW(e);
+
+    }
+
+    // Update reference epoch
+    lastEpoch = time;
+
+    return gData;
+
+}  // End of method 'Decimate::Process()'
 
 
 }  // End of namespace gpstk

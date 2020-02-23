@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -28,11 +28,11 @@
  * @file VectorBase.cpp
  * Initialize static members of base Vector class
  */
- 
+
 #include "VectorBase.hpp"
 
 namespace gpstk
 {
-      // initialize static members
-   double RefVectorBaseHelper::zeroTolerance = 10e-10;
+// initialize static members
+double RefVectorBaseHelper::zeroTolerance = 10e-10;
 }  // namespace gpstk

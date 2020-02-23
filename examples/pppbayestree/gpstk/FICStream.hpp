@@ -24,7 +24,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -32,13 +32,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -60,37 +60,40 @@
 
 namespace gpstk
 {
-      /** 
-       * This is a stream used to obtain data from a binary FIC File.
-       * 
-       * \sa fic_test.cpp and fic_read_write.cpp for an example.
-       *
-       * \sa FICData and FICHeader.
-       */
-   class FICStream : public FFBinaryStream, public FICStreamBase
-   {
-   public:
-         /// default constructor
-      FICStream() {}
+/**
+ * This is a stream used to obtain data from a binary FIC File.
+ *
+ * \sa fic_test.cpp and fic_read_write.cpp for an example.
+ *
+ * \sa FICData and FICHeader.
+ */
+class FICStream : public FFBinaryStream, public FICStreamBase
+{
+public:
+    /// default constructor
+    FICStream() {}
 
-         /**
-          * Constructor
-          * @param fn the name of the FIC file to be opened
-          * @param mode the ios::openmode to be used on \a fn
-          */
-      FICStream(const char* fn,
-                std::ios::openmode mode=std::ios::in|std::ios::binary)
-            : FFBinaryStream(fn, mode)
-         {}
+    /**
+     * Constructor
+     * @param fn the name of the FIC file to be opened
+     * @param mode the ios::openmode to be used on \a fn
+     */
+    FICStream(const char* fn,
+              std::ios::openmode mode=std::ios::in|std::ios::binary)
+        : FFBinaryStream(fn, mode)
+    {}
 
-         /// destructor per the coding standards
-      virtual ~FICStream() {}
+    /// destructor per the coding standards
+    virtual ~FICStream() {}
 
-         /// overrides open to reset the header
-      virtual void open(const char* fn, std::ios::openmode mode)
-         { FFBinaryStream::open(fn, mode); FICStreamBase::open(); }
+    /// overrides open to reset the header
+    virtual void open(const char* fn, std::ios::openmode mode)
+    {
+        FFBinaryStream::open(fn, mode);
+        FICStreamBase::open();
+    }
 
-   }; // class FICStream
+}; // class FICStream
 } // namespace gpstk
 
 #endif

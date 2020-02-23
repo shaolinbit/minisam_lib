@@ -39,26 +39,26 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
-      //@{
+/** @addtogroup math */
+//@{
 
-      /// This is a base class for statistical distributions.
-   class BaseDistribution
-   {
-   public:
-
-
-         /// Computes the probability density function
-      virtual double pdf(double x) = 0;
+/// This is a base class for statistical distributions.
+class BaseDistribution
+{
+public:
 
 
-         /// Computes the cumulative distribution function
-      virtual double cdf(double x) = 0;
+    /// Computes the probability density function
+    virtual double pdf(double x) = 0;
 
 
-   };  // End of class "BaseDistribution"
+    /// Computes the cumulative distribution function
+    virtual double cdf(double x) = 0;
 
-      //@}
+
+};  // End of class "BaseDistribution"
+
+//@}
 
 }  // End of namespace gpstk
 #endif   // BASEDISTRIBUTION_HPP

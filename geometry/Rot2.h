@@ -1,26 +1,16 @@
 #ifndef  ROT2_H
 #define  ROT2_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file Rot2.h
  * @brief 2D rotation
- * @date Dec 9, 2009
- * @author Frank Dellaert
+ * @date
+ * @author
  */
 #pragma once
-#include "../base/Matrix.h"
-#include "../base/MatCal.h"
+#include "../mat/Matrix.h"
+#include "../mat/MatCal.h"
+#include <assert.h>
 /**
  * Rotation matrix
  * NOTE: the angle theta is in radians unless explicitly stated
@@ -30,28 +20,75 @@
 namespace minisam
 {
 
-class Rot2
+class Rot2:public minivector
 {
-
-    /** we store cos(theta) and sin(theta) */
-    double c_, s_;
-
+public:
     /** normalize to make sure cos and sin form unit vector */
     Rot2& normalize();
 
     /** private constructor from cos/sin */
-    inline Rot2(double c, double s) : c_(c), s_(s) {}
+    inline Rot2(double c, double s) : minivector(2)
+    {
+        dimension=1;
+        data[0]=c;
+        data[1]=s;
+    }
 
-public:
 
     /// @name Constructors and named constructors
     /// @{
 
     /** default constructor, zero rotation */
-    Rot2() : c_(1.0), s_(0.0) {}
+    Rot2() : minivector(2)
+    {
+        dimension=1;
+        data[0]=1.0;
+        data[1]=0.0;
+    }
 
     /// Constructor from angle in radians == exponential map at identity
-    Rot2(double theta) : c_(cos(theta)), s_(sin(theta)) {}
+    Rot2(double theta): minivector(2)
+    {
+        dimension=1;
+        data[0]=cos(theta);
+        data[1]=sin(theta);
+    }
+
+    Rot2(const Rot2& rr) : minivector(2)
+    {
+        dimension=1;
+        data[0]=rr.data[0];
+        data[1]=rr.data[1];
+    }
+
+    Rot2(const minivector& rr) : minivector(2)
+    {
+        assert(rr.size1==2);
+        data[0]=minivector_get(&rr,0);
+        data[1]=minivector_get(&rr,1);
+        dimension=1;
+    }
+    Rot2(const minivector* m_memory)
+    {
+        size1=m_memory->size1;
+        size2=1;
+        prd=m_memory->prd;
+        data=m_memory->data;
+        owner=0;
+        dimension=m_memory->dimension;
+    }
+
+     Rot2(const minimatrix* m_memory)
+    {
+    size1=m_memory->size1;
+    size2=m_memory->size2;
+    prd=m_memory->prd;
+    data=m_memory->data;
+    owner=0;
+    dimension=1;
+    }
+
+
 
     /// Named constructor from angle in radians
     static Rot2 fromAngle(double theta)
@@ -76,7 +113,7 @@ public:
      * @param H optional reference for Jacobian
      * @return 2D rotation \f$ \in SO(2) \f$
      */
-    static Rot2 relativeBearing(const Eigen::Vector2d& d,Eigen::MatrixXd* H=NULL);
+    static Rot2 relativeBearing(const minivector& d,minimatrix* H=NULL);
     /** Named constructor that behaves as atan2, i.e., y,x order (!) and normalizes */
     static Rot2 atan2(double y, double x);
 
@@ -93,13 +130,14 @@ public:
     /** The inverse rotation - negative angle */
     Rot2 inverse() const
     {
-        return Rot2(c_, -s_);
+        return Rot2(data[0], -data[1]);
     }
 
-    /** Compose - make a new rotation by adding angles */
-    Rot2 operator*(const Rot2& R) const
+     Rot2 multiply(const Rot2& R) const
     {
-        return fromCosSin(c_ * R.c_ - s_ * R.s_, s_ * R.c_ + c_ * R.s_);
+        //return fromCosSin(c_ * R.c_ - s_ * R.s_, s_ * R.c_ + c_ * R.s_);
+        return fromCosSin(data[0] * R.data[0] - data[1] * R.data[1],
+        data[1] * R.data[0] + data[0] * R.data[1]);
     }
 
     /// @}
@@ -107,37 +145,44 @@ public:
     /// @{
 
     /// Exponential map at identity - create a rotation from canonical coordinates
-    static Rot2 Expmap(const Eigen::VectorXd& v);
-    static Rot2 Expmap(const Eigen::VectorXd& v,Eigen::MatrixXd* H);
+    static Rot2 Expmap(const minivector& v);
+    Rot2* ExpmapP(const minivector& v);
+    static Rot2 Expmap(const minivector& v,minimatrix* H);
     /// Log map at identity - return the canonical coordinates of this rotation
     static double Logmap(const Rot2& r);
-    static double Logmap(const Rot2& r, Eigen::MatrixXd* H);
+    static double Logmap(const Rot2& r, minimatrix* H);
     /** Calculate Adjoint map */
-    Eigen::MatrixXd AdjointMap() const
+    minimatrix AdjointMap() const
     {
-        return Eigen::MatrixXd::Identity(1,1);
+        minimatrix ajm(1,1);
+        ajm.data[0]=1.0;
+        return ajm;
     }
 
     /// Left-trivialized derivative of the exponential map
-    static Eigen::MatrixXd ExpmapDerivative()
+    static minimatrix ExpmapDerivative()
     {
-        return Eigen::MatrixXd::Identity(1,1);
+        minimatrix exmd(1,1);
+        exmd.data[0]=1.0;
+        return exmd;
     }
 
     /// Left-trivialized derivative inverse of the exponential map
-    static Eigen::MatrixXd LogmapDerivative()
+    static minimatrix LogmapDerivative()
     {
-        return Eigen::MatrixXd::Identity(1,1);
+        minimatrix logmd(1,1);
+        logmd.data[0]=1.0;
+        return logmd;
     }
 
     // Chart at origin simply uses exponential map and its inverse
     struct ChartAtOrigin
     {
-        static Rot2 retract(const Eigen::VectorXd& v)
+        static Rot2 retract(const minivector& v)
         {
             return Expmap(v);
         }
-        static Rot2 retract(const Eigen::VectorXd& v,Eigen::MatrixXd* H)
+        static Rot2 retract(const minivector& v,minimatrix* H)
         {
             return Expmap(v,H);
         }
@@ -145,7 +190,7 @@ public:
         {
             return Logmap(r);
         }
-        static double Local(const Rot2& r,Eigen::MatrixXd* H)
+        static double Local(const Rot2& r,minimatrix* H)
         {
             return Logmap(r,H);
         }
@@ -158,39 +203,80 @@ public:
     /**
      * rotate point from rotated coordinate frame to world \f$ p^w = R_c^w p^c \f$
      */
-    Eigen::Vector2d rotate(const Eigen::Vector2d& p) const;
-    Eigen::Vector2d rotate(const Eigen::Vector2d& p,Eigen::MatrixXd* H1,
-                           Eigen::Matrix2d* H2) const;
-    /** syntactic sugar for rotate */
-    inline Eigen::Vector2d operator*(const Eigen::Vector2d& p) const
+    minivector rotate(const minivector& p) const;
+    minivector rotate(const minivector& p,minimatrix* H1,
+                      minimatrix* H2) const;
+    /** syntactic sugar for rotate
+    inline minivector operator*(const minivector& p) const
+    }*/
+    inline minivector multiplyvector(const minivector& p) const
     {
         return rotate(p);
     }
+
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    {
+        Rot2 g(mpose);
+        double re= Rot2::ChartAtOrigin::Local(g);
+        minivector result(1);
+        result.data[0]=re;
+        return result;
+    }
+
+    virtual minimatrix* Retract(const minimatrix* mpose)
+    {
+        minivector v(mpose);
+        return ExpmapP(v);
+    }
+
+    virtual minimatrix between(const minimatrix* mpose) const
+    {
+        Rot2 X2(mpose);
+        Rot2 result=this->inverse().multiply(X2);
+        return result;
+
+    }
+    virtual minimatrix between(const minimatrix* mpose,minimatrix& H1,minimatrix& H2) const
+    {
+        Rot2 X2(mpose);
+        Rot2 result=this->inverse().multiply(X2);
+        minimatrix_resize(&H1,1,1);
+        minimatrix_memcpy(&H1,result.inverse().AdjointMap());
+        minimatrix_scale(&H1,-1.0);
+        minimatrix_resize(&H2,1,1);
+        minimatrix_set_identity(&H2);
+
+        return result;
+
+    }
+
 
     /**
      * rotate point from world to rotated frame \f$ p^c = (R_c^w)^T p^w \f$
      */
 
-    Eigen::Vector2d unrotate(const Eigen::Vector2d& p) const;
-    Eigen::Vector2d unrotate(const Eigen::Vector2d& p,
-                             Eigen::MatrixXd* H1,
-                             Eigen::Matrix2d* H2) const;
+    minivector unrotate(const minivector& p) const;
+    minivector unrotate(const minivector& p,
+                        minimatrix* H1,
+                        minimatrix* H2) const;
     /// @}
     /// @name Standard Interface
     /// @{
 
     /// Creates a unit vector as a Point2
-    inline Eigen::Vector2d unit() const
+    inline minivector unit() const
     {
-        Eigen::Vector2d p2;
-        p2<<c_,s_;
+        minivector p2(2);
+        p2.data[0]=data[0];
+        p2.data[1]=data[1];
+
         return p2;
     }
 
     /** return angle (RADIANS) */
     double theta() const
     {
-        return ::atan2(s_, c_);
+        return std::atan2(data[1], data[0]);
     }
 
     /** return angle (DEGREES) */
@@ -203,19 +289,19 @@ public:
     /** return cos */
     inline double c() const
     {
-        return c_;
+        return data[0];
     }
 
     /** return sin */
     inline double s() const
     {
-        return s_;
+        return data[1];
     }
 
     /** return 2*2 rotation matrix */
-    Eigen::Matrix2d matrix() const;
+    minimatrix matrix() const;
     /** return 2*2 transpose (inverse) rotation matrix   */
-    Eigen::Matrix2d transpose() const;
+    minimatrix transpose() const;
 
     friend std::ostream &operator<<(std::ostream &os, const Rot2& p);
 

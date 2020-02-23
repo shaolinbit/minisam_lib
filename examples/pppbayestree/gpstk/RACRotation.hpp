@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -40,23 +40,23 @@
 
 namespace gpstk
 {
-   class RACRotation : public gpstk::Matrix<double>
-   {
-      public:
-            // Constructors
-         RACRotation( const gpstk::Triple& SVPositionVector,
-                      const gpstk::Triple& SVVelocityVector);
-         RACRotation(const gpstk::Xvt& xvt);
-         
-            // Methods
-         gpstk::Vector<double> convertToRAC( const gpstk::Vector<double>& inV );
-         gpstk::Triple         convertToRAC( const gpstk::Triple& inVec );
-         gpstk::Xvt            convertToRAC( const gpstk::Xvt& in );
-                                  
-            // Utilities
-      protected:
-         void compute( const gpstk::Triple& SVPositionVector,
-                       const gpstk::Triple& SVVelocityVector);
-   };
-}   
-#endif      
+class RACRotation : public gpstk::Matrix<double>
+{
+public:
+    // Constructors
+    RACRotation( const gpstk::Triple& SVPositionVector,
+                 const gpstk::Triple& SVVelocityVector);
+    RACRotation(const gpstk::Xvt& xvt);
+
+    // Methods
+    gpstk::Vector<double> convertToRAC( const gpstk::Vector<double>& inV );
+    gpstk::Triple         convertToRAC( const gpstk::Triple& inVec );
+    gpstk::Xvt            convertToRAC( const gpstk::Xvt& in );
+
+    // Utilities
+protected:
+    void compute( const gpstk::Triple& SVPositionVector,
+                  const gpstk::Triple& SVVelocityVector);
+};
+}
+#endif

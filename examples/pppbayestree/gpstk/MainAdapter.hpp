@@ -2,7 +2,7 @@
 
 /**
  * @file MainAdapter.hpp
- * Easy writing programs in the GPS toolkit. 
+ * Easy writing programs in the GPS toolkit.
  */
 
 #ifndef GPSTK_MAINADAPTER_HPP
@@ -37,55 +37,57 @@
 namespace gpstk
 {
 
-      /** @addgroup appframegroup */
-       
-      //@{
+/** @addgroup appframegroup */
 
-      /**
-       * This is an assist class for the macros 'GPSTK_START_MAIN()'
-       * the type T should be a subclass of the class 'BasicFramework'.
-       */
-   template<typename T>
-   class MainAdapter
-   {
-   public:
-      virtual int run(int argc, char* argv[])
-      {
-         try
-         {
+//@{
+
+/**
+ * This is an assist class for the macros 'GPSTK_START_MAIN()'
+ * the type T should be a subclass of the class 'BasicFramework'.
+ */
+template<typename T>
+class MainAdapter
+{
+public:
+    virtual int run(int argc, char* argv[])
+    {
+        try
+        {
             T program;
-            if (!program.initialize(argc, argv, true)) return 0;
-            if (!program.run()) return 1;
+            if (!program.initialize(argc, argv, true))
+                return 0;
+            if (!program.run())
+                return 1;
 
             return 0;
-         }
-         catch(Exception& e)
-         {
+        }
+        catch(Exception& e)
+        {
             std::cerr << "Problem: "<< e << std::endl;
-         }
-         catch(std::exception& e)
-         {
+        }
+        catch(std::exception& e)
+        {
             std::cerr << "Problem: "<< e.what() << std::endl;
-         }
-         catch(...)
-         {
+        }
+        catch(...)
+        {
             std::cerr << "Problem: " << "Unknown error." << std::endl;
-         }
+        }
 
-         return -1;
-      }
+        return -1;
+    }
 
-   }; // End of class 'MainAdapter'
+}; // End of class 'MainAdapter'
 
 
-   /// A typical way to use this class follows:
-   /// 
-   /// @code
-   /// class PhDRTK: public BasicFramework;
-   /// 
-   /// GPSTK_START_MAIN(PhDRTK);
-   /// @endcode
-   
+/// A typical way to use this class follows:
+///
+/// @code
+/// class PhDRTK: public BasicFramework;
+///
+/// GPSTK_START_MAIN(PhDRTK);
+/// @endcode
+
 #define GPSTK_START_MAIN(T)         \
    int main(int argc, char* argv[]) \
    {                                \
@@ -93,7 +95,7 @@ namespace gpstk
       return M.run(argc,argv);      \
    }                                \
 
-      // @}
+// @}
 
 }  // End of namespace gpstk
 

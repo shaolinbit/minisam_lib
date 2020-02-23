@@ -1,21 +1,9 @@
 #ifndef ISAM2CLIQUE_H_INCLUDED
 #define ISAM2CLIQUE_H_INCLUDED
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    ISAM2Clique.h
  * @brief   Specialized iSAM2 Clique
- * @author  Michael Kaess, Richard Roberts
  */
 
 
@@ -40,8 +28,8 @@ public:
     int problemSize_;
 
     RealGaussianFactor* cachedFactor_;
-    Eigen::VectorXd* gradientContribution_;
-    std::map<int, std::map<int,Eigen::VectorXd>::iterator>* solnPointers_;
+    minivector gradientContribution_;
+    std::map<int, std::map<int,minivector>::iterator>* solnPointers_;
 
     bool setErased;
     bool isroot;
@@ -58,7 +46,7 @@ public:
         problemSize_(other.problemSize_),
         children_(other.children_),
         gradientContribution_(other.gradientContribution_),
-        cachedSeparatorMarginal_(other.cachedSeparatorMarginal_), cachedFactor_(other.cachedFactor_),//  gradientContribution_(other.gradientContribution_),
+        cachedSeparatorMarginal_(other.cachedSeparatorMarginal_), cachedFactor_(other.cachedFactor_),
         solnPointers_(other.solnPointers_),
         setErased(other.setErased) {}
 
@@ -94,7 +82,7 @@ public:
     RealGaussianFactor* cachedFactor();
 
     /** Access the gradient contribution */
-    const Eigen::VectorXd gradientContribution() const;
+     minivector gradientContribution() const;
 
     /// @}
     /// @name Advanced Interface

@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Dagoberto Salazar - gAGE. 2006
 //
 //============================================================================
@@ -39,60 +39,65 @@
 
 namespace gpstk
 {
-    /// Thrown when some problem appeared when computing DOP
-    /// @ingroup exceptiongroup
-    NEW_EXCEPTION_CLASS(InvalidDOP, gpstk::Exception);
+/// Thrown when some problem appeared when computing DOP
+/// @ingroup exceptiongroup
+NEW_EXCEPTION_CLASS(InvalidDOP, gpstk::Exception);
 
 
-    /** @addtogroup GPSsolutions */
-    //@{
+/** @addtogroup GPSsolutions */
+//@{
 
 
-    /** This class encapsulates the computation of DOP, given the Covariance matrix 
-     *  of an equation system.
-     */
-    class DOP
+/** This class encapsulates the computation of DOP, given the Covariance matrix
+ *  of an equation system.
+ */
+class DOP
+{
+public:
+    /// Return validity of results
+    bool isValid(void)
     {
-    public:
-        /// Return validity of results
-        bool isValid(void)
-            { return valid; }
+        return valid;
+    }
 
-        /// Geometric Dilution of Precision
-        double GDOP;
+    /// Geometric Dilution of Precision
+    double GDOP;
 
-        /// Position Dilution of Precision
-        double PDOP;
+    /// Position Dilution of Precision
+    double PDOP;
 
-        /// Time Dilution of Precision
-        double TDOP;
+    /// Time Dilution of Precision
+    double TDOP;
 
-        /// Implicit constructor
-        DOP() throw(InvalidDOP) { valid = false; };
-
-
-        /** Compute the DOP values associated with the given Covariance Matrix
-         * @param covarianceMatrix      Covariance matrix for the equation system
-         *
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
-        virtual int Compute(const Matrix<double>& covarianceMatrix) throw(InvalidDOP);
+    /// Implicit constructor
+    DOP() throw(InvalidDOP)
+    {
+        valid = false;
+    };
 
 
-        /// Destructor
-        virtual ~DOP() {};
+    /** Compute the DOP values associated with the given Covariance Matrix
+     * @param covarianceMatrix      Covariance matrix for the equation system
+     *
+     * @return
+     *  0 if OK
+     *  -1 if problems arose
+     */
+    virtual int Compute(const Matrix<double>& covarianceMatrix) throw(InvalidDOP);
 
 
-    protected:
-        bool valid;         // true only if results are valid
+    /// Destructor
+    virtual ~DOP() {};
 
-   }; // end class SolverBase
-   
 
-   //@}
-   
+protected:
+    bool valid;         // true only if results are valid
+
+}; // end class SolverBase
+
+
+//@}
+
 }
 
 #endif

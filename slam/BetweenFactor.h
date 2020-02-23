@@ -3,7 +3,6 @@
 
 /**
  *  @file  BetweenFactor.h
- *  @author
  **/
 #pragma once
 #include "../nonlinear/NonlinearFactor.h"
@@ -11,14 +10,13 @@ namespace minisam
 {
 /**
  * A class for a measurement predicted by "between(config[key1],config[key2])"
- * @tparam VALUE the Value type
  * @addtogroup SLAM
  */
 class BetweenFactor: public NoiseModelFactor2
 {
 
-private:
-    Eigen::VectorXd measured_; /** The measurement */
+public:
+    minimatrix* measured_;
 
 public:
 
@@ -26,58 +24,55 @@ public:
     BetweenFactor() {}
 
     /** Constructor */
-    BetweenFactor(int key1, int key2, const Eigen::VectorXd measured,
+    BetweenFactor(int key1, int key2, minimatrix* measured,
                   GaussianNoiseModel* model) :
         NoiseModelFactor2(model, key1, key2), measured_(measured)
     {
     }
 
-    ~BetweenFactor() {}
-
-
-    virtual Eigen::VectorXd evaluateError(const Eigen::VectorXd& p1, const Eigen::VectorXd& p2) const
+    ~BetweenFactor()
     {
-        Eigen::VectorXd hx = p2-p1; // h(x)
-        return (hx-measured_);
+        delete measured_;
     }
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x1,
-                                            const std::map<int, Eigen::VectorXd>& x2,
-                                            std::vector<Eigen::MatrixXd> &H) const
+
+    virtual minivector evaluateError(const minimatrix* p1, const minimatrix* p2) const
     {
-        std::map<int,Eigen::VectorXd>::const_iterator itb1=x2.find(key1());
-        std::map<int,Eigen::VectorXd>::const_iterator itb2=x2.find(key2());
+        minimatrix hx =p1->between(p2);
+        minimatrix resultm=measured_->LocalCoordinates(&hx);
+        return minivector(resultm);
+    }
+    virtual  minivector evaluateError(const minimatrix* p1,const minimatrix* p2,
+                                      minimatrix& H1,minimatrix& H2) const
+    {
+        minimatrix hx =p1->between(p2,H1,H2);
+        minimatrix resultm=measured_->LocalCoordinates(&hx);
+        return minivector(resultm);
+    }
+
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x,
+                                       std::vector<minimatrix> &H) const
+    {
+        std::map<int,minimatrix*>::const_iterator itb1=x.find(key1());
+        std::map<int,minimatrix*>::const_iterator itb2=x.find(key2());
 
         return evaluateError(itb1->second,itb2->second,
                              *(H.begin()),*(H.begin()+1));
     }
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x1,
-                                            const std::map<int, Eigen::VectorXd>& x2) const
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const
     {
-        std::map<int,Eigen::VectorXd>::const_iterator itb1=x2.find(key1());
-        std::map<int,Eigen::VectorXd>::const_iterator itb2=x2.find(key2());
+        std::map<int,minimatrix*>::const_iterator itb1=x.find(key1());
+        std::map<int,minimatrix*>::const_iterator itb2=x.find(key2());
 
         return evaluateError(itb1->second,itb2->second);
     }
 
-    virtual  Eigen::VectorXd evaluateError(const Eigen::VectorXd& p1,
-                                           const Eigen::VectorXd& p2, Eigen::MatrixXd& H1,Eigen::MatrixXd& H2) const
-    {
-        Eigen::VectorXd hx = p2-p1; // h(x)
-        int rankn=p1.rows();
-        H1=Eigen::MatrixXd(rankn,rankn);
-        H1.setIdentity();
-        H1=-(H1);
-        H2=Eigen::MatrixXd(rankn,rankn);
-        H2.setIdentity();
 
-        return (hx-measured_);
-    }
     /** return the measured */
-    const Eigen::VectorXd measured() const
+    const minimatrix& measured() const
     {
-        return measured_;
+        return *measured_;
     }
 
     /** number of variables attached to this factor */

@@ -34,146 +34,146 @@
 namespace gpstk
 {
 
-   std::map< SourceID::SourceType, std::string > SourceID::stStrings;
+std::map< SourceID::SourceType, std::string > SourceID::stStrings;
 
 
-   SourceID::Initializer SourceIDsingleton;
+SourceID::Initializer SourceIDsingleton;
 
 
-   SourceID::Initializer::Initializer()
-   {
-      stStrings[Unknown]      = "UnknownSource";
-      stStrings[GPS]          = "GPS";
-      stStrings[Galileo]      = "Galileo";
-      stStrings[Glonass]      = "Glonass";
-      stStrings[Geosync]      = "Geosync";
-      stStrings[LEO]          = "LEO";
-      stStrings[Transit]      = "Transit";
-      stStrings[Compass]      = "Compass";
-      stStrings[Mixed]        = "Mixed";
-      stStrings[UserDefined]  = "UserDefined";
-      stStrings[DGPS]         = "DGPS";
-      stStrings[RTK]          = "RTK";
-      stStrings[INS]          = "INS";
-      
-   }
+SourceID::Initializer::Initializer()
+{
+    stStrings[Unknown]      = "UnknownSource";
+    stStrings[GPS]          = "GPS";
+    stStrings[Galileo]      = "Galileo";
+    stStrings[Glonass]      = "Glonass";
+    stStrings[Geosync]      = "Geosync";
+    stStrings[LEO]          = "LEO";
+    stStrings[Transit]      = "Transit";
+    stStrings[Compass]      = "Compass";
+    stStrings[Mixed]        = "Mixed";
+    stStrings[UserDefined]  = "UserDefined";
+    stStrings[DGPS]         = "DGPS";
+    stStrings[RTK]          = "RTK";
+    stStrings[INS]          = "INS";
 
-
-
-      // Assignment operator
-   SourceID& SourceID::operator=(const SourceID& right)
-   {
-
-      if ( this == &right )
-      {
-         return (*this);
-      }
-
-      type = right.type;
-      sourceName = right.sourceName;
-
-      return *this;
-
-   }  // End of 'SourceID::operator=()'
+}
 
 
 
-      // Convenience output method
-   std::ostream& SourceID::dump(std::ostream& s) const
-   {
+// Assignment operator
+SourceID& SourceID::operator=(const SourceID& right)
+{
 
-      s << SourceID::stStrings[type] << " "
-        << sourceName;
+    if ( this == &right )
+    {
+        return (*this);
+    }
 
-      return s;
+    type = right.type;
+    sourceName = right.sourceName;
 
-   }  // End of method 'SourceID::dump()'
+    return *this;
 
-
-
-      // Returns true if this is a valid SourceID. Basically just
-      // checks that none of the fields are undefined.
-   bool SourceID::isValid() const
-   {
-
-      return !(type==Unknown || sourceName=="");
-
-   }  // End of method 'SourceID::isValid()'
+}  // End of 'SourceID::operator=()'
 
 
 
-      // Method to create a new source type.
-   SourceID::SourceType SourceID::newSourceType(const std::string& s)
-   {
+// Convenience output method
+std::ostream& SourceID::dump(std::ostream& s) const
+{
 
-      SourceType newId =
-         static_cast<SourceType>(SourceID::stStrings.rbegin()->first + 1);
+    s << SourceID::stStrings[type] << " "
+      << sourceName;
 
-      SourceID::stStrings[newId] = s;
+    return s;
 
-      return newId;
-
-   }  // End of method 'SourceID::newSourceType()'
+}  // End of method 'SourceID::dump()'
 
 
 
-      // Equality operator requires all fields to be the same.
-   bool SourceID::operator==(const SourceID& right) const
-   {
+// Returns true if this is a valid SourceID. Basically just
+// checks that none of the fields are undefined.
+bool SourceID::isValid() const
+{
 
-      return (type==right.type && sourceName==right.sourceName);
+    return !(type==Unknown || sourceName=="");
 
-   }  // End of 'SourceID::operator==()'
-
-
-
-      // Ordering is arbitrary but required to be able to use a SourceID
-      // as an index to a std::map. If an application needs
-      // some other ordering, inherit and override this function.
-   bool SourceID::operator<(const SourceID& right) const
-   {
-
-      if (type == right.type)
-      {
-         return sourceName < right.sourceName;
-      }
-      else
-      {
-         return type < right.type;
-      }
-
-   }  // End of 'SourceID::operator<()'
+}  // End of method 'SourceID::isValid()'
 
 
 
-   namespace StringUtils
-   {
+// Method to create a new source type.
+SourceID::SourceType SourceID::newSourceType(const std::string& s)
+{
 
-         // convert this object to a string representation
-      std::string asString(const SourceID& p)
-      {
+    SourceType newId =
+        static_cast<SourceType>(SourceID::stStrings.rbegin()->first + 1);
 
-         std::ostringstream oss;
-         p.dump(oss);
+    SourceID::stStrings[newId] = s;
 
-         return oss.str();
+    return newId;
 
-      }  // End of function 'asString()'
-
-   }  // End of namespace StringUtils
+}  // End of method 'SourceID::newSourceType()'
 
 
 
-      // Stream output for SourceID
-   std::ostream& operator<<( std::ostream& s,
-                             const SourceID& p )
-   {
+// Equality operator requires all fields to be the same.
+bool SourceID::operator==(const SourceID& right) const
+{
 
-      p.dump(s);
+    return (type==right.type && sourceName==right.sourceName);
 
-      return s;
+}  // End of 'SourceID::operator==()'
 
-   }  // End of 'operator<<'
+
+
+// Ordering is arbitrary but required to be able to use a SourceID
+// as an index to a std::map. If an application needs
+// some other ordering, inherit and override this function.
+bool SourceID::operator<(const SourceID& right) const
+{
+
+    if (type == right.type)
+    {
+        return sourceName < right.sourceName;
+    }
+    else
+    {
+        return type < right.type;
+    }
+
+}  // End of 'SourceID::operator<()'
+
+
+
+namespace StringUtils
+{
+
+// convert this object to a string representation
+std::string asString(const SourceID& p)
+{
+
+    std::ostringstream oss;
+    p.dump(oss);
+
+    return oss.str();
+
+}  // End of function 'asString()'
+
+}  // End of namespace StringUtils
+
+
+
+// Stream output for SourceID
+std::ostream& operator<<( std::ostream& s,
+                          const SourceID& p )
+{
+
+    p.dump(s);
+
+    return s;
+
+}  // End of 'operator<<'
 
 
 }  // End of namespace gpstk

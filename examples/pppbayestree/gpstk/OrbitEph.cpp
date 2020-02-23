@@ -58,363 +58,400 @@
 
 using namespace std;
 
-namespace gpstk {
+namespace gpstk
+{
 
-   // Returns true if the time, ct, is within the period of validity of
-   // this OrbitEph object.
-   // throw Invalid Request if the required data has not been stored.
-   bool OrbitEph::isValid(const CommonTime& ct) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
-      if(ct < beginValid || ct > endValid) return false;
-      return true;
-   }
+// Returns true if the time, ct, is within the period of validity of
+// this OrbitEph object.
+// throw Invalid Request if the required data has not been stored.
+bool OrbitEph::isValid(const CommonTime& ct) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
+    if(ct < beginValid || ct > endValid)
+        return false;
+    return true;
+}
 
-   // Compute the satellite clock bias (seconds) at the given time
-   // throw Invalid Request if the required data has not been stored.
-   double OrbitEph::svClockBias(const CommonTime& t) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+// Compute the satellite clock bias (seconds) at the given time
+// throw Invalid Request if the required data has not been stored.
+double OrbitEph::svClockBias(const CommonTime& t) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      double dtc, elaptc;
-      elaptc = t - ctToc;
-      dtc = af0 + elaptc * (af1 + elaptc * af2);
-      return dtc;
-   }
+    double dtc, elaptc;
+    elaptc = t - ctToc;
+    dtc = af0 + elaptc * (af1 + elaptc * af2);
+    return dtc;
+}
 
-   // Compute the satellite clock drift (sec/sec) at the given time
-   // throw Invalid Request if the required data has not been stored.
-   double OrbitEph::svClockDrift(const CommonTime& t) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+// Compute the satellite clock drift (sec/sec) at the given time
+// throw Invalid Request if the required data has not been stored.
+double OrbitEph::svClockDrift(const CommonTime& t) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      double drift, elaptc;
-      elaptc = t - ctToc;
-      drift = af1 + elaptc * af2;
-      return drift;
-   }
+    double drift, elaptc;
+    elaptc = t - ctToc;
+    drift = af1 + elaptc * af2;
+    return drift;
+}
 
-   // Compute satellite position at the given time.
-   // throw Invalid Request if the required data has not been stored.
-   Xvt OrbitEph::svXvt(const CommonTime& t) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+// Compute satellite position at the given time.
+// throw Invalid Request if the required data has not been stored.
+Xvt OrbitEph::svXvt(const CommonTime& t) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      Xvt sv;
-      double ea;              // eccentric anomaly
-      double delea;           // delta eccentric anomaly during iteration
-      double elapte;          // elapsed time since Toe
-      double elaptc;          // elapsed time since Toc
-      double dtc,dtr,q,sinea,cosea;
+    Xvt sv;
+    double ea;              // eccentric anomaly
+    double delea;           // delta eccentric anomaly during iteration
+    double elapte;          // elapsed time since Toe
+    double elaptc;          // elapsed time since Toc
+    double dtc,dtr,q,sinea,cosea;
 #pragma unused(elaptc,dtr,dtc)
-       
-      double GSTA,GCTA;
-      double amm;
-      double meana;           // mean anomaly
-      double F,G;             // temporary real variables
-      double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
-      double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
-      double xef,yef,zef,dek,dlk,div,domk,duv,drv;
-      double dxp,dyp,vxef,vyef,vzef;
 
-      GPSEllipsoid ell;
-      double sqrtgm = SQRT(ell.gm());
-      double twoPI = 2.0e0 * PI;
-      double lecc;            // eccentricity
-      double tdrinc;          // dt inclination
-      double Ahalf = SQRT(A); // A is semi-major axis of orbit
-      double ToeSOW = GPSWeekSecond(ctToe).sow;    // SOW is time-system-independent
+    double GSTA,GCTA;
+    double amm;
+    double meana;           // mean anomaly
+    double F,G;             // temporary real variables
+    double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
+    double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
+    double xef,yef,zef,dek,dlk,div,domk,duv,drv;
+    double dxp,dyp,vxef,vyef,vzef;
 
-      lecc = ecc;
-      tdrinc = idot;
+    GPSEllipsoid ell;
+    double sqrtgm = SQRT(ell.gm());
+    double twoPI = 2.0e0 * PI;
+    double lecc;            // eccentricity
+    double tdrinc;          // dt inclination
+    double Ahalf = SQRT(A); // A is semi-major axis of orbit
+    double ToeSOW = GPSWeekSecond(ctToe).sow;    // SOW is time-system-independent
 
-      // Compute time since ephemeris & clock epochs
-      elapte = t - ctToe;
+    lecc = ecc;
+    tdrinc = idot;
 
-      // Compute A at time of interest (LNAV: Adot==0)
-      double Ak = A + Adot * elapte;
+    // Compute time since ephemeris & clock epochs
+    elapte = t - ctToe;
 
-      // Compute mean motion (LNAV: dndot==0)
-      double dnA = dn + 0.5*dndot*elapte;
-      amm  = (sqrtgm / (A*Ahalf)) + dnA;     // Eqn specifies A0, not Ak
+    // Compute A at time of interest (LNAV: Adot==0)
+    double Ak = A + Adot * elapte;
 
-      // In-plane angles
-      //     meana - Mean anomaly
-      //     ea    - Eccentric anomaly
-      //     truea - True anomaly
-      meana = M0 + elapte * amm;
-      meana = fmod(meana, twoPI);
-      ea = meana + lecc * ::sin(meana);
+    // Compute mean motion (LNAV: dndot==0)
+    double dnA = dn + 0.5*dndot*elapte;
+    amm  = (sqrtgm / (A*Ahalf)) + dnA;     // Eqn specifies A0, not Ak
 
-      int loop_cnt = 1;
-      do  {
-         F = meana - (ea - lecc * ::sin(ea));
-         G = 1.0 - lecc * ::cos(ea);
-         delea = F/G;
-         ea = ea + delea;
-         loop_cnt++;
-      } while ((fabs(delea) > 1.0e-11) && (loop_cnt <= 20));
+    // In-plane angles
+    //     meana - Mean anomaly
+    //     ea    - Eccentric anomaly
+    //     truea - True anomaly
+    meana = M0 + elapte * amm;
+    meana = fmod(meana, twoPI);
+    ea = meana + lecc * ::sin(meana);
 
-      // Compute clock corrections
-      sv.relcorr = svRelativity(t);
-      sv.clkbias = svClockBias(t);
-      sv.clkdrift = svClockDrift(t);
-      sv.frame = ReferenceFrame::WGS84;
+    int loop_cnt = 1;
+    do
+    {
+        F = meana - (ea - lecc * ::sin(ea));
+        G = 1.0 - lecc * ::cos(ea);
+        delea = F/G;
+        ea = ea + delea;
+        loop_cnt++;
+    }
+    while ((fabs(delea) > 1.0e-11) && (loop_cnt <= 20));
 
-      // Compute true anomaly
-      q     = SQRT(1.0e0 - lecc*lecc);
-      sinea = ::sin(ea);
-      cosea = ::cos(ea);
-      G     = 1.0e0 - lecc * cosea;
+    // Compute clock corrections
+    sv.relcorr = svRelativity(t);
+    sv.clkbias = svClockBias(t);
+    sv.clkdrift = svClockDrift(t);
+    sv.frame = ReferenceFrame::WGS84;
 
-      //  G*SIN(TA) AND G*COS(TA)
-      GSTA  = q * sinea;
-      GCTA  = cosea - lecc;
+    // Compute true anomaly
+    q     = SQRT(1.0e0 - lecc*lecc);
+    sinea = ::sin(ea);
+    cosea = ::cos(ea);
+    G     = 1.0e0 - lecc * cosea;
 
-      //  True anomaly
-      truea = atan2 (GSTA, GCTA);
+    //  G*SIN(TA) AND G*COS(TA)
+    GSTA  = q * sinea;
+    GCTA  = cosea - lecc;
 
-      // Argument of lat and correction terms (2nd harmonic)
-      alat  = truea + w;
-      talat = 2.0e0 * alat;
-      c2al  = ::cos(talat);
-      s2al  = ::sin(talat);
+    //  True anomaly
+    truea = atan2 (GSTA, GCTA);
 
-      du  = c2al * Cuc +  s2al * Cus;
-      dr  = c2al * Crc +  s2al * Crs;
-      di  = c2al * Cic +  s2al * Cis;
+    // Argument of lat and correction terms (2nd harmonic)
+    alat  = truea + w;
+    talat = 2.0e0 * alat;
+    c2al  = ::cos(talat);
+    s2al  = ::sin(talat);
 
-      // U = updated argument of lat, R = radius, AINC = inclination
-      U    = alat + du;
-      R    = Ak*G  + dr;
-      AINC = i0 + tdrinc * elapte  +  di;
+    du  = c2al * Cuc +  s2al * Cus;
+    dr  = c2al * Crc +  s2al * Crs;
+    di  = c2al * Cic +  s2al * Cis;
 
-      //  Longitude of ascending node (ANLON)
-      ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
-              elapte - ell.angVelocity() * ToeSOW;
+    // U = updated argument of lat, R = radius, AINC = inclination
+    U    = alat + du;
+    R    = Ak*G  + dr;
+    AINC = i0 + tdrinc * elapte  +  di;
 
-      // In plane location
-      cosu = ::cos(U);
-      sinu = ::sin(U);
-      xip  = R * cosu;
-      yip  = R * sinu;
+    //  Longitude of ascending node (ANLON)
+    ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
+            elapte - ell.angVelocity() * ToeSOW;
 
-      //  Angles for rotation to earth fixed
-      can  = ::cos(ANLON);
-      san  = ::sin(ANLON);
-      cinc = ::cos(AINC);
-      sinc = ::sin(AINC);
+    // In plane location
+    cosu = ::cos(U);
+    sinu = ::sin(U);
+    xip  = R * cosu;
+    yip  = R * sinu;
 
-      // Earth fixed coordinates in meters
-      xef  =  xip*can  -  yip*cinc*san;
-      yef  =  xip*san  +  yip*cinc*can;
-      zef  =              yip*sinc;
-      sv.x[0] = xef;
-      sv.x[1] = yef;
-      sv.x[2] = zef;
+    //  Angles for rotation to earth fixed
+    can  = ::cos(ANLON);
+    san  = ::sin(ANLON);
+    cinc = ::cos(AINC);
+    sinc = ::sin(AINC);
 
-      // Compute velocity of rotation coordinates
-      dek = amm * Ak / R;
-      dlk = Ahalf * q * sqrtgm / (R*R);
-      div = tdrinc - 2.0e0 * dlk * (Cic  * s2al - Cis * c2al);
-      domk = OMEGAdot - ell.angVelocity();
-      duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al));
-      drv = Ak * lecc * dek * sinea - 2.e0 * dlk * (Crc * s2al - Crs * c2al);
-      dxp = drv*cosu - R*sinu*duv;
-      dyp = drv*sinu + R*cosu*duv;
+    // Earth fixed coordinates in meters
+    xef  =  xip*can  -  yip*cinc*san;
+    yef  =  xip*san  +  yip*cinc*can;
+    zef  =              yip*sinc;
+    sv.x[0] = xef;
+    sv.x[1] = yef;
+    sv.x[2] = zef;
 
-      // Calculate velocities
-      vxef = dxp*can - xip*san*domk - dyp*cinc*san
-               + yip*(sinc*san*div - cinc*can*domk);
-      vyef = dxp*san + xip*can*domk + dyp*cinc*can
-               - yip*(sinc*can*div + cinc*san*domk);
-      vzef = dyp*sinc + yip*cinc*div;
+    // Compute velocity of rotation coordinates
+    dek = amm * Ak / R;
+    dlk = Ahalf * q * sqrtgm / (R*R);
+    div = tdrinc - 2.0e0 * dlk * (Cic  * s2al - Cis * c2al);
+    domk = OMEGAdot - ell.angVelocity();
+    duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al));
+    drv = Ak * lecc * dek * sinea - 2.e0 * dlk * (Crc * s2al - Crs * c2al);
+    dxp = drv*cosu - R*sinu*duv;
+    dyp = drv*sinu + R*cosu*duv;
 
-      // Move results into output variables
-      sv.v[0] = vxef;
-      sv.v[1] = vyef;
-      sv.v[2] = vzef;
+    // Calculate velocities
+    vxef = dxp*can - xip*san*domk - dyp*cinc*san
+           + yip*(sinc*san*div - cinc*can*domk);
+    vyef = dxp*san + xip*can*domk + dyp*cinc*can
+           - yip*(sinc*can*div + cinc*san*domk);
+    vzef = dyp*sinc + yip*cinc*div;
 
-      return sv;
-   }
+    // Move results into output variables
+    sv.v[0] = vxef;
+    sv.v[1] = vyef;
+    sv.v[2] = vzef;
 
-   // Compute satellite relativity correction (sec) at the given time
-   // throw Invalid Request if the required data has not been stored.
-   double OrbitEph::svRelativity(const CommonTime& t) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+    return sv;
+}
 
-      GPSEllipsoid ell;
-      double twoPI  = 2.0 * PI;
-      double sqrtgm = SQRT(ell.gm());
-      double elapte = t - ctToe;
+// Compute satellite relativity correction (sec) at the given time
+// throw Invalid Request if the required data has not been stored.
+double OrbitEph::svRelativity(const CommonTime& t) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      // Compute A at time of interest
-      double Ak = A + Adot*elapte;                 // LNAV: Adot==0
-      double dnA = dn + 0.5*dndot*elapte;          // LNAV: dndot==0
+    GPSEllipsoid ell;
+    double twoPI  = 2.0 * PI;
+    double sqrtgm = SQRT(ell.gm());
+    double elapte = t - ctToe;
+
+    // Compute A at time of interest
+    double Ak = A + Adot*elapte;                 // LNAV: Adot==0
+    double dnA = dn + 0.5*dndot*elapte;          // LNAV: dndot==0
 #pragma unused(dnA)
-       
-      double Ahalf = SQRT(A);
-      double amm = (sqrtgm / (A*Ahalf)) + dn;      // Eqn specifies A0 not Ak
-      double meana,F,G,delea;
 
-      meana = M0 + elapte * amm;
-      meana = fmod(meana, twoPI);
-      double ea = meana + ecc * ::sin(meana);
+    double Ahalf = SQRT(A);
+    double amm = (sqrtgm / (A*Ahalf)) + dn;      // Eqn specifies A0 not Ak
+    double meana,F,G,delea;
 
-      int loop_cnt = 1;
-      do {
-         F     = meana - (ea - ecc * ::sin(ea));
-         G     = 1.0 - ecc * ::cos(ea);
-         delea = F/G;
-         ea    = ea + delea;
-         loop_cnt++;
-      } while ((ABS(delea) > 1.0e-11) && (loop_cnt <= 20));
+    meana = M0 + elapte * amm;
+    meana = fmod(meana, twoPI);
+    double ea = meana + ecc * ::sin(meana);
 
-      return (REL_CONST * ecc * SQRT(Ak) * ::sin(ea));
-   }
+    int loop_cnt = 1;
+    do
+    {
+        F     = meana - (ea - ecc * ::sin(ea));
+        G     = 1.0 - ecc * ::cos(ea);
+        delea = F/G;
+        ea    = ea + delea;
+        loop_cnt++;
+    }
+    while ((ABS(delea) > 1.0e-11) && (loop_cnt <= 20));
 
-   // Dump the overhead information as a string containing a single line.
-   // @throw Invalid Request if the required data has not been stored.
-   string OrbitEph::asString(void) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+    return (REL_CONST * ecc * SQRT(Ak) * ::sin(ea));
+}
 
-      try {
-         ostringstream os;
-         string sys;
-         switch(satID.system) {
-            case SatID::systemGPS: sys = "G"; break;
-            case SatID::systemGalileo: sys = "E"; break;
-            case SatID::systemBeiDou: sys = "C"; break;
-            case SatID::systemQZSS: sys = "J"; break;
-            default:
-               os << "EPH Error - invalid satellite system "
-                  << SatID::convertSatelliteSystemToString(satID.system) << endl;
-               return os.str();
-         }
+// Dump the overhead information as a string containing a single line.
+// @throw Invalid Request if the required data has not been stored.
+string OrbitEph::asString(void) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-         CivilTime ct;
-         os << "EPH " << sys << setfill('0') << setw(2) << satID.id << setfill(' ');
-         ct = CivilTime(beginValid);
-         os << printTime(ct," | %4Y %3j %02H:%02M:%02S |");
-         ct = CivilTime(ctToe);
-         os << printTime(ct," %3j %02H:%02M:%02S |");
-         ct = CivilTime(ctToc);
-         os << printTime(ct," %3j %02H:%02M:%02S |");
-         ct = CivilTime(endValid);
-         os << printTime(ct," %3j %02H:%02M:%02S |");
+    try
+    {
+        ostringstream os;
+        string sys;
+        switch(satID.system)
+        {
+        case SatID::systemGPS:
+            sys = "G";
+            break;
+        case SatID::systemGalileo:
+            sys = "E";
+            break;
+        case SatID::systemBeiDou:
+            sys = "C";
+            break;
+        case SatID::systemQZSS:
+            sys = "J";
+            break;
+        default:
+            os << "EPH Error - invalid satellite system "
+               << SatID::convertSatelliteSystemToString(satID.system) << endl;
+            return os.str();
+        }
 
-         return os.str();
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e);
-      }
-   }
+        CivilTime ct;
+        os << "EPH " << sys << setfill('0') << setw(2) << satID.id << setfill(' ');
+        ct = CivilTime(beginValid);
+        os << printTime(ct," | %4Y %3j %02H:%02M:%02S |");
+        ct = CivilTime(ctToe);
+        os << printTime(ct," %3j %02H:%02M:%02S |");
+        ct = CivilTime(ctToc);
+        os << printTime(ct," %3j %02H:%02M:%02S |");
+        ct = CivilTime(endValid);
+        os << printTime(ct," %3j %02H:%02M:%02S |");
 
-   // Utility routine for dump(); override if GPSWeekSecond is not right
-   string OrbitEph::timeDisplay(const CommonTime& t, bool showHead) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+        return os.str();
+    }
+    catch(Exception& e)
+    {
+        GPSTK_RETHROW(e);
+    }
+}
 
-      try {
-         if(showHead) return string("Week( mod)     SOW     DOW   UTD     SOD"
-                                    "   MM/DD/YYYY   HH:MM:SS SYS");
+// Utility routine for dump(); override if GPSWeekSecond is not right
+string OrbitEph::timeDisplay(const CommonTime& t, bool showHead) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-         ostringstream os;
-         WeekSecond *ptr;
-         if(     t.getTimeSystem() == TimeSystem::GAL)
+    try
+    {
+        if(showHead)
+            return string("Week( mod)     SOW     DOW   UTD     SOD"
+                          "   MM/DD/YYYY   HH:MM:SS SYS");
+
+        ostringstream os;
+        WeekSecond *ptr;
+        if(     t.getTimeSystem() == TimeSystem::GAL)
             ptr = new GALWeekSecond(t);
-         else if(t.getTimeSystem() == TimeSystem::BDT)
+        else if(t.getTimeSystem() == TimeSystem::BDT)
             ptr = new BDSWeekSecond(t);
-         else if(t.getTimeSystem() == TimeSystem::QZS)
+        else if(t.getTimeSystem() == TimeSystem::QZS)
             ptr = new QZSWeekSecond(t);
-         else 
+        else
             ptr = new GPSWeekSecond(t);
 
-         os << setw(4) << ptr->week << "(";
-         os << setw(4) << (ptr->week & ptr->bitmask()) << ")  ";
-         os << setw(6) << setfill(' ') << ptr->sow << "   ";
+        os << setw(4) << ptr->week << "(";
+        os << setw(4) << (ptr->week & ptr->bitmask()) << ")  ";
+        os << setw(6) << setfill(' ') << ptr->sow << "   ";
 
-         switch (ptr->getDayOfWeek())
-         {
-            case 0: os << "Sun-0"; break;
-            case 1: os << "Mon-1"; break;
-            case 2: os << "Tue-2"; break;
-            case 3: os << "Wed-3"; break;
-            case 4: os << "Thu-4"; break;
-            case 5: os << "Fri-5"; break;
-            case 6: os << "Sat-6"; break;
-            default: break;
-         }
+        switch (ptr->getDayOfWeek())
+        {
+        case 0:
+            os << "Sun-0";
+            break;
+        case 1:
+            os << "Mon-1";
+            break;
+        case 2:
+            os << "Tue-2";
+            break;
+        case 3:
+            os << "Wed-3";
+            break;
+        case 4:
+            os << "Thu-4";
+            break;
+        case 5:
+            os << "Fri-5";
+            break;
+        case 6:
+            os << "Sat-6";
+            break;
+        default:
+            break;
+        }
 
-         os << printTime(t,"   %3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S %P");
+        os << printTime(t,"   %3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S %P");
 
-         return os.str();
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e);
-      }
-   }
+        return os.str();
+    }
+    catch(Exception& e)
+    {
+        GPSTK_RETHROW(e);
+    }
+}
 
-   // Dump the overhead information to the given output stream.
-   // throw Invalid Request if the required data has not been stored.
-   void OrbitEph::dumpHeader(ostream& os) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+// Dump the overhead information to the given output stream.
+// throw Invalid Request if the required data has not been stored.
+void OrbitEph::dumpHeader(ostream& os) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      os << "****************************************************************"
-        << "************" << endl
-        << "Broadcast Orbit Ephemeris of class " << getName() << endl;
-      os << "Satellite: " << SatID::convertSatelliteSystemToString(satID.system)
-         << " " << setfill('0') << setw(2) << satID.id << setfill(' ') << endl;
-   }
+    os << "****************************************************************"
+       << "************" << endl
+       << "Broadcast Orbit Ephemeris of class " << getName() << endl;
+    os << "Satellite: " << SatID::convertSatelliteSystemToString(satID.system)
+       << " " << setfill('0') << setw(2) << satID.id << setfill(' ') << endl;
+}
 
-   // Dump the orbit, etc information to the given output stream.
-   // throw Invalid Request if the required data has not been stored.
-   void OrbitEph::dumpBody(ostream& os) const
-   {
-      if(!dataLoadedFlag)
-         GPSTK_THROW(InvalidRequest("Data not loaded"));
+// Dump the orbit, etc information to the given output stream.
+// throw Invalid Request if the required data has not been stored.
+void OrbitEph::dumpBody(ostream& os) const
+{
+    if(!dataLoadedFlag)
+        GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      os << "           TIMES OF INTEREST" << endl;
-      os << "              " << timeDisplay(beginValid,true) << endl;
-      os << "Begin Valid:  " << timeDisplay(beginValid) << endl;
-      os << "Clock Epoch:  " << timeDisplay(ctToc) << endl;
-      os << "Eph Epoch:    " << timeDisplay(ctToe) << endl;
-      os << "End Valid:    " << timeDisplay(endValid) << endl;
+    os << "           TIMES OF INTEREST" << endl;
+    os << "              " << timeDisplay(beginValid,true) << endl;
+    os << "Begin Valid:  " << timeDisplay(beginValid) << endl;
+    os << "Clock Epoch:  " << timeDisplay(ctToc) << endl;
+    os << "Eph Epoch:    " << timeDisplay(ctToe) << endl;
+    os << "End Valid:    " << timeDisplay(endValid) << endl;
 
-      os << scientific << setprecision(8)
-         << "           CLOCK PARAMETERS\n"
-         << "Bias T0:     " << setw(16) << af0 << " sec" << endl
-         << "Drift:       " << setw(16) << af1 << " sec/sec" << endl
-         << "Drift rate:  " << setw(16) << af2 << " sec/(sec**2)" << endl;
+    os << scientific << setprecision(8)
+       << "           CLOCK PARAMETERS\n"
+       << "Bias T0:     " << setw(16) << af0 << " sec" << endl
+       << "Drift:       " << setw(16) << af1 << " sec/sec" << endl
+       << "Drift rate:  " << setw(16) << af2 << " sec/(sec**2)" << endl;
 
-      os << "           ORBIT PARAMETERS\n"
-         << "Semi-major axis:       " << setw(16) <<  A  << " m" << endl
-         << "Motion correction:     " << setw(16) <<  dn << " rad/sec" << endl
-         << "Eccentricity:          " << setw(16) << ecc << endl
-         << "Arg of perigee:        " << setw(16) << w << " rad" << endl
-         << "Mean anomaly at epoch: " << setw(16) << M0 << " rad" << endl
-         << "Right ascension:       " << setw(16) << OMEGA0 << " rad    "
-         << setw(16) << OMEGAdot << " rad/sec" << endl
-         << "Inclination:           " << setw(16) << i0 << " rad    "
-         << setw(16) << idot << " rad/sec" << endl;
+    os << "           ORBIT PARAMETERS\n"
+       << "Semi-major axis:       " << setw(16) <<  A  << " m" << endl
+       << "Motion correction:     " << setw(16) <<  dn << " rad/sec" << endl
+       << "Eccentricity:          " << setw(16) << ecc << endl
+       << "Arg of perigee:        " << setw(16) << w << " rad" << endl
+       << "Mean anomaly at epoch: " << setw(16) << M0 << " rad" << endl
+       << "Right ascension:       " << setw(16) << OMEGA0 << " rad    "
+       << setw(16) << OMEGAdot << " rad/sec" << endl
+       << "Inclination:           " << setw(16) << i0 << " rad    "
+       << setw(16) << idot << " rad/sec" << endl;
 
-      os << "           HARMONIC CORRECTIONS\n"
-         << "Radial        Sine: " << setw(16) << Crs << " m    Cosine: "
-         << setw(16) << Crc << " m" << endl
-         << "Inclination   Sine: " << setw(16) << Cis << " rad  Cosine: "
-         << setw(16) << Cic << " rad" << endl
-         << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
-         << setw(16) << Cuc << " rad" << endl;
-   }
+    os << "           HARMONIC CORRECTIONS\n"
+       << "Radial        Sine: " << setw(16) << Crs << " m    Cosine: "
+       << setw(16) << Crc << " m" << endl
+       << "Inclination   Sine: " << setw(16) << Cis << " rad  Cosine: "
+       << setw(16) << Cic << " rad" << endl
+       << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
+       << setw(16) << Cuc << " rad" << endl;
+}
 
 /*
    // Define this OrbitEph by converting the given RINEX navigation data.
@@ -437,7 +474,7 @@ namespace gpstk {
          int week = rnd.weeknum;
          if(dt < -HALFWEEK) week++;
          else if(dt > HALFWEEK) week--;
-      
+
          //MGEX NB MGEX data has GPS week numbers in all systems except BeiDou,
          //MGEX so must implement temporary fixes: use GPS Toc for GAL and QZSS
          CommonTime gpstoc = GPSWeekSecond(week, rnd.Toc, TimeSystem::GPS);   //MGEX
@@ -485,7 +522,7 @@ namespace gpstk {
          af0 = rnd.af0;
          af1 = rnd.af1;
          af2 = rnd.af2;
-   
+
          // Major orbit parameters
          M0 = rnd.M0;
          dn = rnd.dn;
@@ -499,7 +536,7 @@ namespace gpstk {
          // modern nav msg
          dndot = 0.;
          Adot = 0.;
-   
+
          // Harmonic perturbations
          Cuc = rnd.Cuc;
          Cus = rnd.Cus;
@@ -507,7 +544,7 @@ namespace gpstk {
          Crs = rnd.Crs;
          Cic = rnd.Cic;
          Cis = rnd.Cis;
-   
+
          dataLoadedFlag = true;
          adjustValidity();
 
@@ -517,11 +554,11 @@ namespace gpstk {
    }
 */
 
-   // Output object to stream
-   ostream& operator<<(ostream& os, const OrbitEph& eph)
-   {
-      eph.dump(os);
-      return os;
-   }
+// Output object to stream
+ostream& operator<<(ostream& os, const OrbitEph& eph)
+{
+    eph.dump(os);
+    return os;
+}
 
 }  // end namespace

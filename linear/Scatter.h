@@ -1,23 +1,9 @@
 #ifndef SCATTER_H
 #define SCATTER_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    Scatter.h
  * @brief   Maps global variable indices to slot indices
- * @author  Richard Roberts
- * @author  Frank Dellaert
- * @date    June 2015
  */
 
 #include "../linear/GaussianFactorGraph.h"

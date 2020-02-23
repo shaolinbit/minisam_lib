@@ -50,250 +50,278 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
-      //@{
+/** @addtogroup DataStructures */
+//@{
 
 
-      /** This class smoothes a given code observable using the corresponding
-       *  phase observable.
-       *
-       * This class is meant to be used with the GNSS data structures objects
-       * found in "DataStructures" class.
-       *
-       * A typical way to use this class follows:
-       *
-       * @code
-       *   RinexObsStream rin("ebre0300.02o");
-       *
-       *   gnssRinex gRin;
-       *   OneFreqCSDetector markCSC1;    // We MUST mark cycle slips
-       *   CodeSmoother smoothC1;
-       *
-       *   while(rin >> gRin)
-       *   {
-       *      gRin >> markCSC1 >> smoothC1;
-       *   }
-       * @endcode
-       *
-       * The "CodeSmoother" object will visit every satellite in the GNSS data
-       * structure that is "gRin" and will smooth the given code observation
-       *  using the corresponding phase observation.
-       *
-       * By default, the algorithm will use C1 and L1 observables, and the
-       * CSL1 index will be consulted for cycle slip information. You can
-       * change these settings with the appropriate methods.
-       *
-       * When used with the ">>" operator, this class returns the same incoming
-       * data structure with the code observation smoothed (unless the
-       * 'resultType' field is changed). Be warned that if a given satellite
-       * does not have the  observations required, it will be summarily deleted
-       * from the data structure.
-       *
-       * Another important parameter is the maxWindowSize field. By default, it
-       * is set to 100 samples (you may adjust that with the setMaxWindowSize()
-       * method).
-       *
-       * A window of 100 samples is typical and appropriate when working with
-       * data sampled at 1 Hz, because then the full window will last at most
-       * 100 seconds.
-       *
-       * However, if for instance your samples are taken at 30 seconds (and you
-       * are working with C1/L1 or other ionosphere-affected observation pair),
-       * then the former value of number of samples will yield a window of 50
-       * minutes will be used and you will get badly distorted data because of
-       * ionosphere drift, among other effects.
-       *
-       * A good rule here is to make sure that the filter window lasts at most
-       * 5 minutes. Therefore, for a 30 s sampling data set you should set your
-       * smoother object like this:
-       *
-       * @code
-       *   CodeSmoother smoothC1;
-       *   smoothC1.setMaxWindowSize(8);
-       * @endcode
-       *
-       * Resulting in a 4 minutes filter window.
-       *
-       * \warning Code smoothers are objets that store their internal state,
-       * so you MUST NOT use the SAME object to process DIFFERENT data streams.
-       *
-       */
-   class CodeSmoother : public ProcessingClass
-   {
-   public:
+/** This class smoothes a given code observable using the corresponding
+ *  phase observable.
+ *
+ * This class is meant to be used with the GNSS data structures objects
+ * found in "DataStructures" class.
+ *
+ * A typical way to use this class follows:
+ *
+ * @code
+ *   RinexObsStream rin("ebre0300.02o");
+ *
+ *   gnssRinex gRin;
+ *   OneFreqCSDetector markCSC1;    // We MUST mark cycle slips
+ *   CodeSmoother smoothC1;
+ *
+ *   while(rin >> gRin)
+ *   {
+ *      gRin >> markCSC1 >> smoothC1;
+ *   }
+ * @endcode
+ *
+ * The "CodeSmoother" object will visit every satellite in the GNSS data
+ * structure that is "gRin" and will smooth the given code observation
+ *  using the corresponding phase observation.
+ *
+ * By default, the algorithm will use C1 and L1 observables, and the
+ * CSL1 index will be consulted for cycle slip information. You can
+ * change these settings with the appropriate methods.
+ *
+ * When used with the ">>" operator, this class returns the same incoming
+ * data structure with the code observation smoothed (unless the
+ * 'resultType' field is changed). Be warned that if a given satellite
+ * does not have the  observations required, it will be summarily deleted
+ * from the data structure.
+ *
+ * Another important parameter is the maxWindowSize field. By default, it
+ * is set to 100 samples (you may adjust that with the setMaxWindowSize()
+ * method).
+ *
+ * A window of 100 samples is typical and appropriate when working with
+ * data sampled at 1 Hz, because then the full window will last at most
+ * 100 seconds.
+ *
+ * However, if for instance your samples are taken at 30 seconds (and you
+ * are working with C1/L1 or other ionosphere-affected observation pair),
+ * then the former value of number of samples will yield a window of 50
+ * minutes will be used and you will get badly distorted data because of
+ * ionosphere drift, among other effects.
+ *
+ * A good rule here is to make sure that the filter window lasts at most
+ * 5 minutes. Therefore, for a 30 s sampling data set you should set your
+ * smoother object like this:
+ *
+ * @code
+ *   CodeSmoother smoothC1;
+ *   smoothC1.setMaxWindowSize(8);
+ * @endcode
+ *
+ * Resulting in a 4 minutes filter window.
+ *
+ * \warning Code smoothers are objets that store their internal state,
+ * so you MUST NOT use the SAME object to process DIFFERENT data streams.
+ *
+ */
+class CodeSmoother : public ProcessingClass
+{
+public:
 
-         /// Default constructor, setting default parameters and C1 and L1
-         /// as observables.
-      CodeSmoother() : codeType(TypeID::C1), phaseType(TypeID::L1),
-         resultType(TypeID::C1), maxWindowSize(100), csFlag(TypeID::CSL1)
-      { };
-
-
-         /** Common constructor
-          *
-          * @param codeT         Type of code to be smoothed.
-          * @param mwSize        Maximum  size of filter window, in samples.
-          */
-      CodeSmoother( const TypeID& codeT,
-                    const int& mwSize = 100 );
+    /// Default constructor, setting default parameters and C1 and L1
+    /// as observables.
+    CodeSmoother() : codeType(TypeID::C1), phaseType(TypeID::L1),
+        resultType(TypeID::C1), maxWindowSize(100), csFlag(TypeID::CSL1)
+    { };
 
 
-         /** Returns a satTypeValueMap object, adding the new data generated
-          *  when calling this object.
-          *
-          * @param gData     Data object holding the data.
-          */
-      virtual satTypeValueMap& Process(satTypeValueMap& gData)
-         throw(ProcessingException);
+    /** Common constructor
+     *
+     * @param codeT         Type of code to be smoothed.
+     * @param mwSize        Maximum  size of filter window, in samples.
+     */
+    CodeSmoother( const TypeID& codeT,
+                  const int& mwSize = 100 );
 
 
-         /** Returns a gnnsSatTypeValue object, adding the new data generated
-          *  when calling this object.
-          *
-          * @param gData    Data object holding the data.
-          */
-      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(ProcessingException)
-      { Process(gData.body); return gData; };
+    /** Returns a satTypeValueMap object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param gData     Data object holding the data.
+     */
+    virtual satTypeValueMap& Process(satTypeValueMap& gData)
+    throw(ProcessingException);
 
 
-         /** Returns a gnnsRinex object, adding the new data generated when
-          *  calling this object.
-          *
-          * @param gData    Data object holding the data.
-          */
-      virtual gnssRinex& Process(gnssRinex& gData)
-         throw(ProcessingException)
-      { Process(gData.body); return gData; };
+    /** Returns a gnnsSatTypeValue object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.body);
+        return gData;
+    };
 
 
-         /// Method to get the default code type being used.
-      virtual TypeID getCodeType() const
-      { return codeType; };
+    /** Returns a gnnsRinex object, adding the new data generated when
+     *  calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssRinex& Process(gnssRinex& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.body);
+        return gData;
+    };
 
 
-         /** Method to set the default code type to be used.
-          *
-          * @param codeT     TypeID of code to be used
-          */
-      virtual CodeSmoother& setCodeType(const TypeID& codeT)
-      { codeType = codeT; return (*this); };
+    /// Method to get the default code type being used.
+    virtual TypeID getCodeType() const
+    {
+        return codeType;
+    };
 
 
-         /// Method to get the default phase type being used.
-      virtual TypeID getPhaseType() const
-      { return phaseType; };
+    /** Method to set the default code type to be used.
+     *
+     * @param codeT     TypeID of code to be used
+     */
+    virtual CodeSmoother& setCodeType(const TypeID& codeT)
+    {
+        codeType = codeT;
+        return (*this);
+    };
 
 
-         /** Method to set the default phase type to be used.
-          *
-          * @param phaseT    TypeID of phase to be used
-          */
-      virtual CodeSmoother& setPhaseType(const TypeID& phaseT)
-      { phaseType = phaseT; return (*this); };
+    /// Method to get the default phase type being used.
+    virtual TypeID getPhaseType() const
+    {
+        return phaseType;
+    };
 
 
-         /// Method to get the default cycle slip type being used.
-      virtual TypeID getCSFlag() const
-      { return csFlag; };
+    /** Method to set the default phase type to be used.
+     *
+     * @param phaseT    TypeID of phase to be used
+     */
+    virtual CodeSmoother& setPhaseType(const TypeID& phaseT)
+    {
+        phaseType = phaseT;
+        return (*this);
+    };
 
 
-         /** Method to set the default cycle slip type to be used.
-          *
-          * @param csT   Cycle slip type to be used
-          */
-      virtual CodeSmoother& setCSFlag(const TypeID& csT)
-      { csFlag = csT; return (*this); };
+    /// Method to get the default cycle slip type being used.
+    virtual TypeID getCSFlag() const
+    {
+        return csFlag;
+    };
 
 
-         /// Method to get the default return type being used.
-      virtual TypeID getResultType() const
-      { return resultType; };
+    /** Method to set the default cycle slip type to be used.
+     *
+     * @param csT   Cycle slip type to be used
+     */
+    virtual CodeSmoother& setCSFlag(const TypeID& csT)
+    {
+        csFlag = csT;
+        return (*this);
+    };
 
 
-         /** Method to set the default return type to be used.
-          *
-          * @param returnT    TypeID to be returned
-          */
-      virtual CodeSmoother& setResultType(const TypeID& resultT)
-      { resultType = resultT; return (*this); };
+    /// Method to get the default return type being used.
+    virtual TypeID getResultType() const
+    {
+        return resultType;
+    };
 
 
-         /// Method to get the maximum size of filter window, in samples.
-      virtual int getMaxWindowSize() const
-      { return maxWindowSize; };
+    /** Method to set the default return type to be used.
+     *
+     * @param returnT    TypeID to be returned
+     */
+    virtual CodeSmoother& setResultType(const TypeID& resultT)
+    {
+        resultType = resultT;
+        return (*this);
+    };
 
 
-         /** Method to set the maximum size of filter window, in samples.
-          *
-          * @param maxSize       Maximum size of filter window, in samples.
-          */
-      virtual CodeSmoother& setMaxWindowSize(const int& maxSize);
+    /// Method to get the maximum size of filter window, in samples.
+    virtual int getMaxWindowSize() const
+    {
+        return maxWindowSize;
+    };
 
 
-         /// Returns a string identifying this object.
-      virtual std::string getClassName(void) const;
+    /** Method to set the maximum size of filter window, in samples.
+     *
+     * @param maxSize       Maximum size of filter window, in samples.
+     */
+    virtual CodeSmoother& setMaxWindowSize(const int& maxSize);
 
 
-         /// Destructor
-      virtual ~CodeSmoother() {};
+    /// Returns a string identifying this object.
+    virtual std::string getClassName(void) const;
 
 
-   private:
-
-         /// Type of code observation to be used.
-      TypeID codeType;
+    /// Destructor
+    virtual ~CodeSmoother() {};
 
 
-         /// Type of phase observation to be used.
-      TypeID phaseType;
+private:
+
+    /// Type of code observation to be used.
+    TypeID codeType;
 
 
-         /// Type assigned to the resulting smoothed code.
-      TypeID resultType;
+    /// Type of phase observation to be used.
+    TypeID phaseType;
 
 
-         /// Maximum size of filter window, in samples.
-      int maxWindowSize;
+    /// Type assigned to the resulting smoothed code.
+    TypeID resultType;
 
 
-         /// Cycle slip flag. It MUST be present.
-         /// @sa OneFreqCSDetector.hpp class.
-      TypeID csFlag;
+    /// Maximum size of filter window, in samples.
+    int maxWindowSize;
 
 
-         /// A structure used to store filter data for a SV.
-      struct filterData
-      {
-            // Default constructor initializing the data in the structure
-         filterData() : windowSize(1), previousCode(0.0), previousPhase(0.0) {};
-
-         int windowSize;       ///< The filter window size.
-         double previousCode;  ///< Accumulated mean bias (pseudorange - phase).
-         double previousPhase; ///< Accumulated mean bias sigma squared.
-      };
+    /// Cycle slip flag. It MUST be present.
+    /// @sa OneFreqCSDetector.hpp class.
+    TypeID csFlag;
 
 
-         /// Map holding the information regarding every satellite
-      std::map<SatID, filterData> SmoothingData;
+    /// A structure used to store filter data for a SV.
+    struct filterData
+    {
+        // Default constructor initializing the data in the structure
+        filterData() : windowSize(1), previousCode(0.0), previousPhase(0.0) {};
+
+        int windowSize;       ///< The filter window size.
+        double previousCode;  ///< Accumulated mean bias (pseudorange - phase).
+        double previousPhase; ///< Accumulated mean bias sigma squared.
+    };
 
 
-         /** Compute the smoothed code observable.
-          *
-          * @param sat        Satellite object.
-          * @param code       Code measurement.
-          * @param phase      Phase measurement.
-          * @param flag       Cycle slip flag.
-          */
-      virtual double getSmoothing( const SatID& sat,
-                                   const double& code,
-                                   const double& phase,
-                                   const double& flag );
+    /// Map holding the information regarding every satellite
+    std::map<SatID, filterData> SmoothingData;
 
 
-   }; // End of class 'CodeSmoother'
+    /** Compute the smoothed code observable.
+     *
+     * @param sat        Satellite object.
+     * @param code       Code measurement.
+     * @param phase      Phase measurement.
+     * @param flag       Cycle slip flag.
+     */
+    virtual double getSmoothing( const SatID& sat,
+                                 const double& code,
+                                 const double& phase,
+                                 const double& flag );
 
-      //@}
+
+}; // End of class 'CodeSmoother'
+
+//@}
 
 }  // End of namespace gpstk
 

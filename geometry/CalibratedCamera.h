@@ -1,22 +1,12 @@
 #ifndef  CALIBRATEDCAMERA_H
 #define  CALIBRATEDCAMERA_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
 
 /**
  * @file CalibratedCamera.h
  * @brief Calibrated camera for which only pose is unknown
- * @date Aug 17, 2009
- * @author Frank Dellaert
+ * @date
+ * @author
  */
 #pragma once
 
@@ -30,70 +20,21 @@ namespace minisam
  * @addtogroup geometry
  * \nosubgrouping
  */
-class PinholeBase
+class PinholeBase:public Pose3
 {
-private:
-
-    Pose3 pose_; ///< 3D pose of camera
-
-protected:
-
-    /// @name Derivatives
-    /// @{
-
-    /**
-     * Calculate Jacobian with respect to pose
-     * @param pn projection in normalized coordinates
-     * @param d disparity (inverse depth)
-     */
-    static Eigen::MatrixXd Dpose(const Eigen::Vector2d& pn, double d);
-
-    /**
-     * Calculate Jacobian with respect to point
-     * @param pn projection in normalized coordinates
-     * @param d disparity (inverse depth)
-     * @param Rt transposed rotation matrix
-     */
-    static Eigen::MatrixXd Dpoint(const Eigen::Vector2d& pn, double d, const Eigen::Matrix3d& Rt);
-
-    /// @}
 
 public:
-    /// @name Static functions
-    /// @{
-
-    /**
-     * Create a level pose at the given 2D pose and height
-     * @param K the calibration
-     * @param pose2 specifies the location and viewing direction
-     * (theta 0 = looking in direction of positive X axis)
-     * @param height camera height
-     */
-    static Pose3 LevelPose(const Pose2& pose2, double height);
-
-    /**
-     * Create a camera pose at the given eye position looking at a target point in the scene
-     * with the specified up direction vector.
-     * @param eye specifies the camera position
-     * @param target the point to look at
-     * @param upVector specifies the camera up direction vector,
-     *        doesn't need to be on the image plane nor orthogonal to the viewing axis
-     */
-    static Pose3 LookatPose(const Eigen::Vector3d& eye, const Eigen::Vector3d& target,
-                            const Eigen::Vector3d& upVector);
-
-    /// @}
     /// @name Standard Constructors
     /// @{
 
     /** default constructor */
-    PinholeBase()
+    PinholeBase():Pose3()
     {
     }
 
     /** constructor with pose */
     explicit PinholeBase(const Pose3& pose) :
-        pose_(pose)
+        Pose3(pose)
     {
     }
 
@@ -101,8 +42,8 @@ public:
     /// @name Advanced Constructors
     /// @{
 
-    explicit PinholeBase(const Eigen::VectorXd &v) :
-        pose_(Pose3::Expmap(v))
+    explicit PinholeBase(const minivector &v) :
+        Pose3(Pose3::Expmap(v))
     {
     }
 
@@ -113,24 +54,24 @@ public:
     /// return pose, constant version
     const Pose3& pose() const
     {
-        return pose_;
+        return *this;
     }
 
     /// get rotation
-    const Rot3& rotation() const
+     Rot3 rotation() const
     {
-        return pose_.rotation();
+        return this->rotation();
     }
 
     /// get translation
-    const Eigen::Vector3d& translation() const
+     minivector translation() const
     {
-        return pose_.translation();
+        return this->translation();
     }
 
     /// return pose, with derivative
-    const Pose3& getPose() const;
-    const Pose3& getPose(Eigen::MatrixXd* H) const;
+     Pose3 getPose() const;
+     Pose3 getPose(minimatrix* H) const;
     /// @}
     /// @name Transformations and measurement functions
     /// @{
@@ -140,42 +81,42 @@ public:
      * Does *not* throw a CheiralityException, even if pc behind image plane
      * @param pc point in camera coordinates
      */
-    static Eigen::Vector2d ProjectPoint(const Eigen::Vector3d& pc);
-    static Eigen::Vector2d ProjectPoint(const Eigen::Vector3d& pc, //
-                                        Eigen::MatrixXd* Dpoint);
+    static minivector ProjectPoint(const minivector& pc);
+    static minivector ProjectPoint(const minivector& pc, //
+                                   minimatrix* Dpoint);
     /**
      * Project from 3D point at infinity in camera coordinates into image
      * Does *not* throw a CheiralityException, even if pc behind image plane
      * @param pc point in camera coordinates
      */
-    static Eigen::Vector2d ProjectUnit(const Unit3& pc);
-    static Eigen::Vector2d ProjectUnit(const Unit3& pc, //
-                                       Eigen::Matrix2d* Dpoint);
+    static minivector ProjectUnit(const Unit3& pc);
+    static minivector ProjectUnit(Unit3& pc, //
+                                  minimatrix* Dpoint);
 
     /// Project a point into the image and check depth
-    std::pair<Eigen::Vector2d, bool> projectSafe(const Eigen::Vector3d& pw) const;
+    std::pair<minivector, bool> projectSafe(const minivector& pw) const;
 
     /** Project point into the image
      * Throws a CheiralityException if point behind image plane iff THROW_CHEIRALITY_EXCEPTION
      * @param point 3D point in world coordinates
      * @return the intrinsic coordinates of the projected point
      */
-    Eigen::Vector2d project2Point(const Eigen::Vector3d& point) const;
-    Eigen::Vector2d project2Point(const Eigen::Vector3d& point, Eigen::MatrixXd* Dpose,
-                                  Eigen::MatrixXd* Dpoint) const;
+    minivector project2Point(const minivector& point) const;
+    minivector project2Point(const minivector& point, minimatrix* Dpose,
+                             minimatrix* Dpoint) const;
 
     /** Project point at infinity into the image
      * Throws a CheiralityException if point behind image plane iff THROW_CHEIRALITY_EXCEPTION
      * @param point 3D point in world coordinates
      * @return the intrinsic coordinates of the projected point
      */
-    Eigen::Vector2d  project2Unit(const Unit3& point) const;
-    Eigen::Vector2d  project2Unit(const Unit3& point,
-                                  Eigen::MatrixXd* Dpose,
-                                  Eigen::MatrixXd* Dpoint) const;
+    minivector  project2Unit( Unit3& point) const;
+    minivector  project2Unit( Unit3& point,
+                              minimatrix* Dpose,
+                              minimatrix* Dpoint) const;
 
     /// backproject a 2-dimensional point to a 3-dimensional point at given depth
-    static Eigen::Vector3d backproject_from_camera(const Eigen::Vector2d& p, const double depth);
+    static minivector backproject_from_camera(const minivector& p, const double depth);
 
     /// @}
     /// @name Advanced interface
@@ -194,8 +135,45 @@ public:
     /// @}
 
 };
-// end of class PinholeBase
 
+ /**
+     * Create a level pose at the given 2D pose and height
+     * @param K the calibration
+     * @param pose2 specifies the location and viewing direction
+     * (theta 0 = looking in direction of positive X axis)
+     * @param height camera height
+     */
+   Pose3 PinholeBaseLevelPose(const Pose2& pose2, double height);
+
+    /**
+     * Create a camera pose at the given eye position looking at a target point in the scene
+     * with the specified up direction vector.
+     * @param eye specifies the camera position
+     * @param target the point to look at
+     * @param upVector specifies the camera up direction vector,
+     *        doesn't need to be on the image plane nor orthogonal to the viewing axis
+     */
+     Pose3 PinholeBaseLookatPose(const minivector& eye, const minivector& target,
+                            const minivector& upVector);
+    /// @name Derivatives
+    /// @{
+
+    /**
+     * Calculate Jacobian with respect to pose
+     * @param pn projection in normalized coordinates
+     * @param d disparity (inverse depth)
+     */
+     minimatrix PinholeBaseDpose(const minivector& pn, double d);
+
+    /**
+     * Calculate Jacobian with respect to point
+     * @param pn projection in normalized coordinates
+     * @param d disparity (inverse depth)
+     * @param Rt transposed rotation matrix
+     */
+     minimatrix PinholeBaseDpoint(const minivector& pn, double d, const minimatrix& Rt);
+
+    /// @}
 /**
  * A Calibrated camera class [R|-R't], calibration K=I.
  * If calibration is known, it is more computationally efficient
@@ -208,17 +186,23 @@ class  CalibratedCamera: public PinholeBase
 
 public:
 
-    enum
-    {
-        dimension = 6
-    };
-
     /// @name Standard Constructors
     /// @{
 
     /// default constructor
     CalibratedCamera()
     {
+    }
+
+    CalibratedCamera(const minimatrix* m_memory)
+    {
+    size1=m_memory->size1;
+    size2=m_memory->size2;
+    prd=m_memory->prd;
+    data=m_memory->data;
+    owner=0;
+    dimension=m_memory->dimension;
+
     }
 
     /// construct with pose
@@ -230,17 +214,15 @@ public:
     /// @}
     /// @name Named Constructors
     /// @{
-
-    // Create CalibratedCamera, with derivatives
     static CalibratedCamera Create(const Pose3& pose)
     {
         return CalibratedCamera(pose);
     }
 
     static CalibratedCamera Create(const Pose3& pose,
-                                   Eigen::MatrixXd* H1)
+                                   minimatrix* H1)
     {
-        *H1 << Eigen::MatrixXd::Identity(6,6);
+        minimatrix_set_identity(H1);
         return CalibratedCamera(pose);
     }
     /**
@@ -259,15 +241,15 @@ public:
      * @param upVector specifies the camera up direction vector,
      *        doesn't need to be on the image plane nor orthogonal to the viewing axis
      */
-    static CalibratedCamera Lookat(const Eigen::Vector3d& eye, const Eigen::Vector3d& target,
-                                   const Eigen::Vector3d& upVector);
+    static CalibratedCamera Lookat(const minivector& eye, const minivector& target,
+                                   const minivector& upVector);
 
     /// @}
     /// @name Advanced Constructors
     /// @{
 
     /// construct from vector
-    explicit CalibratedCamera(const Eigen::VectorXd &v) :
+    explicit CalibratedCamera(const minivector &v) :
         PinholeBase(v)
     {
     }
@@ -286,24 +268,16 @@ public:
     /// @{
 
     /// move a cameras pose according to d
-    CalibratedCamera retract(const Eigen::VectorXd& d) const;
+    virtual minimatrix* Retract(const minimatrix* d) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* T2) const;
 
-    /// Return canonical coordinate
-    Eigen::VectorXd localCoordinates(const CalibratedCamera& T2) const;
 
-    /// @deprecated
+
     inline int dim() const
     {
         return 6;
     }
 
-    /// @deprecated
-    inline static int Dim()
-    {
-        return 6;
-    }
-
-    /// @}
     /// @name Transformations and measurement functions
     /// @{
 
@@ -311,23 +285,23 @@ public:
      * @deprecated
      * Use project2, which is more consistently named across Pinhole cameras
      */
-    Eigen::Vector2d project(const Eigen::Vector3d& point) const;
+    minivector project(const minivector& point) const;
 
-    Eigen::Vector2d project(const Eigen::Vector3d& point, Eigen::MatrixXd* Dcamera,
-                            Eigen::MatrixXd* Dpoint) const;
+    minivector project(const minivector& point, minimatrix* Dcamera,
+                       minimatrix* Dpoint) const;
 
     /// backproject a 2-dimensional point to a 3-dimensional point at given depth
-    Eigen::Vector3d backproject(const Eigen::Vector2d& pn, double depth) const;
+    minivector backproject(const minivector& pn, double depth) const;
     /**
      * Calculate range to a landmark
      * @param point 3D location of landmark
      * @return range (double)
      */
-    double range(const Eigen::Vector3d& point) const;
+    double range(const minivector& point) const;
 
-    double range(const Eigen::Vector3d& point,
-                 Eigen::MatrixXd* Dcamera,
-                 Eigen::MatrixXd* Dpoint) const;
+    double range(const minivector& point,
+                 minimatrix* Dcamera,
+                 minimatrix* Dpoint) const;
 
     /**
      * Calculate range to another pose
@@ -335,8 +309,8 @@ public:
      * @return range (double)
      */
     double range(const Pose3& pose) const;
-    double range(const Pose3& pose, Eigen::MatrixXd* Dcamera,
-                 Eigen::MatrixXd*Dpose) const;
+    double range(const Pose3& pose, minimatrix* Dcamera,
+                 minimatrix*Dpose) const;
 
     /**
      * Calculate range to another camera
@@ -345,8 +319,8 @@ public:
      */
     double range(const CalibratedCamera& camera) const;
     double range(const CalibratedCamera& camera, //
-                 Eigen::MatrixXd* H1, //
-                 Eigen::MatrixXd* H2) const;
+                 minimatrix* H1, //
+                 minimatrix* H2) const;
 };
 
 };

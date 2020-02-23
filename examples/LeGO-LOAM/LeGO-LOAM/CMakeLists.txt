@@ -51,7 +51,7 @@ add_dependencies(featureAssociation ${catkin_EXPORTED_TARGETS} cloud_msgs_gencpp
 target_link_libraries(featureAssociation ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES})
 
 
-include_directories(/usr/local/include/eigen3/)
+#include_directories(/usr/local/include/eigen3/)
 include_directories(/usr/include/minisam/)
 #add_subdirectory(src/3rdparty)
 #add_subdirectory(src/navigation)

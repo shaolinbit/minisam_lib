@@ -42,137 +42,144 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      /// @ingroup math
+/** @addtogroup GPSsolutions */
+/// @ingroup math
 
-      //@{
-
-
-      /** This class implements a Finite Impulsive Response (FIR)
-       *  Differentiator filter of 5th order designed according to central
-       *  difference approximation.
-       *
-       * Further information about this filter and its use in GNSS may be found
-       * at:
-       *
-       *    Kennedy, S. L. (2002) Acceleration Estimation from GPS Carrier
-       *    Phases for Airborne Gravimetry. Master’s thesis, University of
-       *    Calgary. URL http://www.geomatics.ucalgary.ca/
-       *
-       * This filter shows constant, linear phase response over the passband.
-       * It is very important to note that the CURRENT derivative corresponds
-       * to FIVE EPOCHS BEFORE.
-       *
-       * A typical way to use this class follows:
-       *
-       * @code
-       *      // Set up function parameters
-       *   const double Tf(15.0);         // Function period
-       *   const double omega( TWO_PI/Tf );
-       *
-       *      // Set filter parameters
-       *   const double Ts(0.1);          // Sampling period
-       *
-       *      // Declare and configure an FIRDifferentiator5thOrder object
-       *   FIRDifferentiator5thOrder firDiff( Ts );
-       *
-       *      // Let's iterate and print function values and derivatives
-       *   for(int i = 0; i < 200; ++i)
-       *   {
-       *      double t( static_cast<double>(i*Ts) );
-       *
-       *      double y( sin(omega*t) );            // Function is sine
-       *      double dy( omega*cos(omega*t) );     // Sine derivative
-       *
-       *      double dy2( firDiff.Compute(y) );
-       *
-       *         // Print results
-       *      cout << t    << "  "
-       *           << y    << "  "
-       *           << dy   << "  "
-       *           << dy2  << endl;
-       *   }
-       *
-       * @endcode
-       *
-       */
-   class FIRDifferentiator5thOrder : public FilterBase
-   {
-   public:
+//@{
 
 
-         /// Default constructor.
-      FIRDifferentiator5thOrder()
-         : T(1.0)
-      { Init(); };
+/** This class implements a Finite Impulsive Response (FIR)
+ *  Differentiator filter of 5th order designed according to central
+ *  difference approximation.
+ *
+ * Further information about this filter and its use in GNSS may be found
+ * at:
+ *
+ *    Kennedy, S. L. (2002) Acceleration Estimation from GPS Carrier
+ *    Phases for Airborne Gravimetry. Master’s thesis, University of
+ *    Calgary. URL http://www.geomatics.ucalgary.ca/
+ *
+ * This filter shows constant, linear phase response over the passband.
+ * It is very important to note that the CURRENT derivative corresponds
+ * to FIVE EPOCHS BEFORE.
+ *
+ * A typical way to use this class follows:
+ *
+ * @code
+ *      // Set up function parameters
+ *   const double Tf(15.0);         // Function period
+ *   const double omega( TWO_PI/Tf );
+ *
+ *      // Set filter parameters
+ *   const double Ts(0.1);          // Sampling period
+ *
+ *      // Declare and configure an FIRDifferentiator5thOrder object
+ *   FIRDifferentiator5thOrder firDiff( Ts );
+ *
+ *      // Let's iterate and print function values and derivatives
+ *   for(int i = 0; i < 200; ++i)
+ *   {
+ *      double t( static_cast<double>(i*Ts) );
+ *
+ *      double y( sin(omega*t) );            // Function is sine
+ *      double dy( omega*cos(omega*t) );     // Sine derivative
+ *
+ *      double dy2( firDiff.Compute(y) );
+ *
+ *         // Print results
+ *      cout << t    << "  "
+ *           << y    << "  "
+ *           << dy   << "  "
+ *           << dy2  << endl;
+ *   }
+ *
+ * @endcode
+ *
+ */
+class FIRDifferentiator5thOrder : public FilterBase
+{
+public:
 
 
-         /** Common constructor.
-          *
-          * @param[in] period      Sampling period, in seconds.
-          */
-      FIRDifferentiator5thOrder( double period )
-      { setT(period); Init(); };
+    /// Default constructor.
+    FIRDifferentiator5thOrder()
+        : T(1.0)
+    {
+        Init();
+    };
 
 
-         /** Return result.
-          *
-          * @param input      Input data.
-          */
-      virtual double Compute( double input );
+    /** Common constructor.
+     *
+     * @param[in] period      Sampling period, in seconds.
+     */
+    FIRDifferentiator5thOrder( double period )
+    {
+        setT(period);
+        Init();
+    };
 
 
-         /// Resets filter, cleaning its internal state.
-      virtual void Reset(void);
+    /** Return result.
+     *
+     * @param input      Input data.
+     */
+    virtual double Compute( double input );
 
 
-         /// Get the sampling period, in seconds.
-      virtual double getT( void ) const
-      { return T; };
+    /// Resets filter, cleaning its internal state.
+    virtual void Reset(void);
 
 
-         /** Set the sampling period, in seconds.
-          *
-          * @param[in] period      Sampling period, in seconds.
-          *
-          * @warning Only values higher that zero are allowed. Other values will
-          * be ignored.
-          *
-          * @warning This operation resets the filter.
-          */
-      virtual FIRDifferentiator5thOrder& setT( double period );
+    /// Get the sampling period, in seconds.
+    virtual double getT( void ) const
+    {
+        return T;
+    };
 
 
-         /// Destructor
-      virtual ~FIRDifferentiator5thOrder() {};
+    /** Set the sampling period, in seconds.
+     *
+     * @param[in] period      Sampling period, in seconds.
+     *
+     * @warning Only values higher that zero are allowed. Other values will
+     * be ignored.
+     *
+     * @warning This operation resets the filter.
+     */
+    virtual FIRDifferentiator5thOrder& setT( double period );
 
 
-   private:
+    /// Destructor
+    virtual ~FIRDifferentiator5thOrder() {};
 
 
-         /// Sampling period, in seconds.
-      double T;
+private:
 
 
-         /// Vector storing input
-      std::deque<double> X;
+    /// Sampling period, in seconds.
+    double T;
 
 
-         /// General filter parameters.
-      double k1;
-      double k2;
-      double k3;
-      double k4;
-      double k5;
-
-         /// Initialization method
-      void Init( void );
+    /// Vector storing input
+    std::deque<double> X;
 
 
-   }; // End of class 'FIRDifferentiator5thOrder'
+    /// General filter parameters.
+    double k1;
+    double k2;
+    double k3;
+    double k4;
+    double k5;
+
+    /// Initialization method
+    void Init( void );
 
 
-      //@}
+}; // End of class 'FIRDifferentiator5thOrder'
+
+
+//@}
 
 }  // End of namespace gpstk
 

@@ -1,94 +1,187 @@
 #ifndef NAVSTATE_H
 #define NAVSTATE_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    NavState.h
  * @brief   Navigation state composing of attitude, position, and velocity
- * @author  Frank Dellaert
- * @date    July 2015
  **/
 
 #pragma once
 
 #include "../geometry/Pose3.h"
-/// Velocity is currently typedef'd to Vector3
 namespace minisam
 {
 
 /**
  * Navigation state: Pose (rotation, translation) + velocity
  */
-class NavState
+class NavState:public minimatrix
 {
-private:
-
-    Rot3 R_; ///< Rotation nRb, rotates points/velocities in body to points/velocities in nav
-    Eigen::Vector3d t_; ///< position n_t, in nav frame
-    Eigen::Vector3d v_; ///< velocity n_v in nav frame
-
 public:
 
-    enum
-    {
-        dimension = 9
-    };
 
-    typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> PositionAndVelocity;
+    typedef std::pair<minivector, minivector> PositionAndVelocity;
 
     /// @name Constructors
     /// @{
 
     /// Default constructor
     NavState() :
-        t_(0, 0, 0), v_(Eigen::Vector3d::Zero())
+#ifdef USE_QUATERNIONS
+        minimatrix(6,3)
+#else
+        minimatrix(5,3)
+#endif
+    {
+        dimension=9;
+        minimatrix_set_zero(this);
+        data[0]=1.0;
+#ifdef USE_QUATERNIONS
+
+#else
+        data[4]=1.0;
+        data[8]=1.0;
+#endif
+
+    }
+    ~NavState()
     {
     }
+
     /// Construct from attitude, position, velocity
-    NavState(const Rot3& R, const Eigen::Vector3d & t, const Eigen::Vector3d & v) :
-        R_(R), t_(t), v_(v)
+    NavState(const Rot3& R, const minivector & t, const minivector & v) :
+#ifdef USE_QUATERNIONS
+        minimatrix(6,3)
+#else
+        minimatrix(5,3)
+#endif
     {
+        dimension=9;
+#ifdef USE_QUATERNIONS
+        minivector Rv=minivector_subcolumn(this,0,0,4);
+        minivector_memcpy(&Rv,R);
+        minivector t_=minimatrix_row(this,4);
+        minivector_memcpy(&T_,t);
+        minivector v_=minimatrix_row(this,5);
+        minivector_memcpy(&v_,v);
+#else
+        minimatrix Rv=minimatrix_blockmatrix_var(this,0,0,3,3);
+        minimatrix_memcpy(&Rv,R);
+        minivector t_=minimatrix_row(this,3);
+        minivector_memcpy(&t_,t);
+        minivector v_=minimatrix_row(this,4);
+        minivector_memcpy(&v_,v);
+#endif
     }
     /// Construct from pose and velocity
-    NavState(const Pose3& pose, const Eigen::Vector3d & v) :
-        R_(pose.rotation()), t_(pose.translation()), v_(v)
+    NavState(const Pose3& pose, const minivector & v):
+#ifdef USE_QUATERNIONS
+        minimatrix(6,3)
+#else
+        minimatrix(5,3)
+#endif
     {
+        dimension=9;
+#ifdef USE_QUATERNIONS
+        minivector Rv=minivector_subcolumn(this,0,0,4);
+        minivector_memcpy(&pose_,pose.rotation());
+        minivector t_=minimatrix_row(this,4);
+        minivector_memcpy(&t_,pose.translation());
+        minivector v_=minimatrix_row(this,5);
+        minivector_memcpy(&v_,v);
+#else
+        minimatrix pose_=minimatrix_blockmatrix_var(this,0,0,4,3);
+        minimatrix_memcpy(&pose_,pose);
+        minivector v_=minimatrix_row(this,4);
+        minivector_memcpy(&v_,v);
+#endif
     }
+    NavState(const minimatrix* pose, const minimatrix* v):
+#ifdef USE_QUATERNIONS
+        minimatrix(6,3)
+#else
+        minimatrix(5,3)
+#endif
+    {
+        dimension=9;
+#ifdef USE_QUATERNIONS
+        minivector Rv=minivector_subcolumn(this,0,0,4);
+        minivector subpose=minimatrix_subcolumn(pose,0,0,4);
+        minivector_memcpy(&pose_,subpose);
+        minivector t_=minimatrix_row(this,4);
+        minivector t=minimatrix_subcolumn(pose,0,4,3);
+        minivector_memcpy(&t_,t);
+        minivector v_=minimatrix_row(this,5);
+        minivector_memcpy(&v_,v);
+#else
+        minimatrix pose_=minimatrix_blockmatrix_var(this,0,0,4,3);
+        minimatrix_memcpy(&pose_,pose);
+        minivector v_=minimatrix_row(this,4);
+        minimatrix_memcpy(&v_,v);
+#endif
+    }
+
     /// Construct from SO(3) and R^6
-    NavState(const Eigen::Matrix3d& R, const Eigen::VectorXd tv) :
-        R_(R), t_(tv.head<3>()), v_(tv.tail<3>())
+    NavState(const minimatrix& R, const minivector& tv) :
+#ifdef USE_QUATERNIONS
+        minimatrix(6,3)
+#else
+        minimatrix(5,3)
+#endif
     {
+        dimension=9;
+#ifdef USE_QUATERNIONS
+        minivector Rv=minivector_subcolumn(this,0,0,4);
+        minivector_memcpy(&Rv,R);
+        data[12]=minivector_get(&tv,0);
+        data[13]=minivector_get(&tv,1);
+        data[14]=minivector_get(&tv,2);
+        data[15]=minivector_get(&tv,3);
+        data[16]=minivector_get(&tv,4);
+        data[17]=minivector_get(&tv,5);
+#else
+        minimatrix Rv=minimatrix_blockmatrix_var(this,0,0,3,3);
+        minimatrix_memcpy(&Rv,R);
+        data[9]=minivector_get(&tv,0);
+        data[10]=minivector_get(&tv,1);
+        data[11]=minivector_get(&tv,2);
+        data[12]=minivector_get(&tv,3);
+        data[13]=minivector_get(&tv,4);
+        data[14]=minivector_get(&tv,5);
+#endif
     }
+    NavState(const minimatrix& state):
+#ifdef USE_QUATERNIONS
+        minimatrix(6,3)
+#else
+        minimatrix(5,3)
+#endif
+    {
+        minimatrix_memcpy(this,state);
+    }
+
     /// Named constructor with derivatives
-    static NavState Create(const Rot3& R, const Eigen::Vector3d& t, const Eigen::Vector3d & v,
-                           Eigen::MatrixXd* H1, Eigen::MatrixXd* H2,
-                           Eigen::MatrixXd* H3);
+    static NavState Create(const Rot3& R, const minivector& t, const minivector & v,
+                           minimatrix* H1, minimatrix* H2,
+                           minimatrix* H3);
     /// Named constructor with derivatives
-    static NavState FromPoseVelocity(const Pose3& pose, const Eigen::Vector3d & vel,
-                                     Eigen::MatrixXd* H1, Eigen::MatrixXd* H2);
+    NavState FromPoseVelocity(const Pose3& pose, const minivector & vel,
+                              minimatrix* H1, minimatrix* H2);
 
     /// @}
     /// @name Component Access
     /// @{
 
 
-    const Rot3& attitude(Eigen::MatrixXd*  H = NULL) const;
-    const Eigen::Vector3d & position(Eigen::MatrixXd* H = NULL) const;
-    const Eigen::Vector3d & velocity(Eigen::MatrixXd* H = NULL) const;
+    Rot3 attitude(minimatrix*  H = NULL) const;
+    //Rot3& attitude_();
+    minivector  position(minimatrix* H = NULL) const;
+    minivector  velocity(minimatrix* H = NULL) const;
 
-    const Pose3 pose() const
+    Pose3 pose() const
     {
-        return Pose3(attitude(), position());
+        minimatrix pose_=minimatrix_blockmatrix(*this,0,0,4,3);
+        return Pose3(&pose_);
     }
 
     /// @}
@@ -96,68 +189,79 @@ public:
     /// @{
 
     /// Return rotation matrix. Induces computation in quaternion mode
-    Eigen::Matrix3d R() const
+    minimatrix R() const
     {
-        return R_.matrix();
+        return attitude().matrix();
     }
     /// Return quaternion. Induces computation in matrix mode
-    QQuaternion quaternion() const
+    Quaternion4 quaternion() const
     {
-        return R_.toQuaternion();
+        return attitude().toQuaternion();
     }
     /// Return position as Vector3
-    Eigen::Vector3d  t() const
+    minivector  t() const
     {
+#ifdef USE_QUATERNIONS
+        minivector t_=minimatrix_row(*this,4);
+#else
+        minivector t_=minimatrix_row(*this,3);
+#endif
         return t_;
     }
     /// Return velocity as Vector3. Computation-free.
-    const Eigen::Vector3d & v() const
+    minivector v() const
     {
+#ifdef USE_QUATERNIONS
+        minivector v_=minimatrix_row(*this,5);
+#else
+        minivector v_=minimatrix_row(*this,4);
+#endif
         return v_;
     }
     // Return velocity in body frame
-    Eigen::Vector3d  bodyVelocity(Eigen::MatrixXd* H = NULL) const;
+    minivector  bodyVelocity(minimatrix* H = NULL) const;
 
     /// Return matrix group representation, in MATLAB notation:
     /// nTb = [nRb 0 n_t; 0 nRb n_v; 0 0 1]
     /// With this embedding in GL(3), matrix product agrees with compose
-    Eigen::MatrixXd matrix() const;
+    minimatrix matrix() const;
 
 
     // Tangent space sugar.
-    static Eigen::Block<Eigen::VectorXd, 3, 1> dR(Eigen::VectorXd& v)
+    static  minivector dR(minivector& v)
     {
-        return v.segment<3>(0);
+        return   minivector_subvector(v,0,3);
     }
-    static Eigen::Block<Eigen::VectorXd, 3, 1> dP(Eigen::VectorXd& v)
+    static  minivector dP(minivector& v)
     {
-        return v.segment<3>(3);
+        return   minivector_subvector(v,3,3);
     }
-    static Eigen::Block<Eigen::VectorXd, 3, 1> dV(Eigen::VectorXd& v)
+    static  minivector dV(minivector& v)
     {
-        return v.segment<3>(6);
+        return   minivector_subvector(v,6,3);
     }
-    static Eigen::Block<const Eigen::VectorXd, 3, 1> dR(const Eigen::VectorXd& v)
+    static  minivector dR(const minivector& v)
     {
-        return v.segment<3>(0);
+        return   minivector_subvector(v,0,3);
     }
-    static Eigen::Block<const Eigen::VectorXd, 3, 1> dP(const Eigen::VectorXd& v)
+    static const minivector dP(const minivector& v)
     {
-        return v.segment<3>(3);
+        return   minivector_subvector(v,3,3);
     }
-    static Eigen::Block<const Eigen::VectorXd, 3, 1> dV(const Eigen::VectorXd& v)
+    static  minivector dV(const minivector& v)
     {
-        return v.segment<3>(6);
+        return   minivector_subvector(v,6,3);
     }
 
     /// retract with optional derivatives
-    NavState retract(const Eigen::VectorXd& v, //
-                     Eigen::MatrixXd* H1 = NULL,Eigen::MatrixXd* H2 =
-                         NULL) const;
-
+    NavState retract(const minivector& v, //
+                     minimatrix* H1 = NULL,minimatrix* H2 =
+                         NULL)const ;
+    virtual minimatrix* Retract(const minimatrix* mpose);
     /// localCoordinates with optional derivatives
-    Eigen::VectorXd localCoordinates(const NavState& g, //
-                                     Eigen::MatrixXd* H1 = NULL, Eigen::MatrixXd* H2 =NULL) const;
+    minivector LocalCoordinates(const NavState& g, //
+                                minimatrix* H1 = NULL, minimatrix* H2 =NULL) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const;
 
     /// @}
     /// @name Dynamics
@@ -165,21 +269,23 @@ public:
 
     /// Integrate forward in time given angular velocity and acceleration in body frame
     /// Uses second order integration for position, returns derivatives except dt.
-    NavState update(const Eigen::Vector3d& b_acceleration, const Eigen::Vector3d& b_omega,
-                    const double dt, Eigen::MatrixXd* F, Eigen::MatrixXd* G1,
-                    Eigen::MatrixXd* G2) const;
+    NavState update(const minivector& b_acceleration, const minivector& b_omega,
+                    const double dt, minimatrix* F, minimatrix* G1,
+                    minimatrix* G2);
 
     /// Compute tangent space contribution due to Coriolis forces
-    Eigen::VectorXd coriolis(double dt, const Eigen::Vector3d& omega, bool secondOrder = false,
-                             Eigen::MatrixXd* H = NULL) const;
+    minivector coriolis(double dt, const minivector& omega, bool secondOrder = false,
+                        minimatrix* H = NULL) const;
 
     /// Correct preintegrated tangent vector with our velocity and rotated gravity,
     /// taking into account Coriolis forces if omegaCoriolis is given.
-    Eigen::VectorXd correctPIM(const  Eigen::VectorXd& pim, double dt, const Eigen::Vector3d& n_gravity,
-                               Eigen::Vector3d omegaCoriolis, bool use2ndOrderCoriolis =
-                                   false, Eigen::MatrixXd* H1 = NULL,
-                               Eigen::MatrixXd* H2 =NULL) const;
+    minivector correctPIM(const  minivector& pim, double dt, const minivector& n_gravity,
+                          const minivector& omegaCoriolis, bool use2ndOrderCoriolisf =
+                              false, minimatrix* H1 = NULL,
+                          minimatrix* H2 =NULL) const;
     NavState& operator=(const NavState &rObj);
+
+    void print() const;
 };
 };
 

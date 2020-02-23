@@ -10,29 +10,30 @@
 #include "../gnssNavigation/nonBiasStates.h"
 #include "minisam/nonlinear/NonlinearFactor.h"
 
-namespace minisam {
+namespace minisam
+{
 
 class  GnssBetweenFactor: public NoiseModelFactor2
- {
+{
 
 public:
 
 
-  GnssBetweenFactor(int state1, int state2, GaussianNoiseModel* model):
-    NoiseModelFactor2(model, state1, state2) { }
+    GnssBetweenFactor(int state1, int state2, GaussianNoiseModel* model):
+        NoiseModelFactor2(model, state1, state2) { }
 
- virtual NonlinearFactor* clone() const
+    virtual NoiseModelFactor* clone() const
     {
         GnssBetweenFactor *newfactor = new GnssBetweenFactor(key1(),key2(),noiseModel());
         return newfactor;
     }
 
 
-    virtual Eigen::VectorXd
-    evaluateError(const Eigen::VectorXd& X1, const Eigen::VectorXd& X2) const;
+    virtual minivector
+    evaluateError(const minimatrix* X1, const minimatrix* X2) const;
 
-    virtual Eigen::VectorXd
-    evaluateError(const Eigen::VectorXd& X1, const Eigen::VectorXd& X2, Eigen::MatrixXd &H1, Eigen::MatrixXd &H2) const;
+    virtual minivector
+    evaluateError(const minimatrix* X1, const minimatrix* X2, minimatrix &H1, minimatrix &H2) const;
 
 
 }; // PseudorangeFactor Factor

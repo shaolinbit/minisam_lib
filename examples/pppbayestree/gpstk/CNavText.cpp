@@ -48,108 +48,110 @@
 
 namespace gpstk
 {
-   using namespace std;
+using namespace std;
 
-   CNavText::CNavText()
-      :CNavDataElement(),
-       textPage(0)
-   {
-      ctEpoch = CommonTime::BEGINNING_OF_TIME;
-      ctEpoch.setTimeSystem(TimeSystem::GPS);
-      ctXmit = CommonTime::BEGINNING_OF_TIME;
-      ctXmit.setTimeSystem(TimeSystem::GPS);
-      textMessage = "";
-   }
+CNavText::CNavText()
+    :CNavDataElement(),
+     textPage(0)
+{
+    ctEpoch = CommonTime::BEGINNING_OF_TIME;
+    ctEpoch.setTimeSystem(TimeSystem::GPS);
+    ctXmit = CommonTime::BEGINNING_OF_TIME;
+    ctXmit.setTimeSystem(TimeSystem::GPS);
+    textMessage = "";
+}
 
-   CNavText::CNavText(const PackedNavBits& pnb)
-      throw( InvalidParameter)
-   {
-      loadData(pnb);
-   }
+CNavText::CNavText(const PackedNavBits& pnb)
+throw( InvalidParameter)
+{
+    loadData(pnb);
+}
 
-   CNavText* CNavText::clone() const
-   {
-      return new CNavText (*this); 
-   }
+CNavText* CNavText::clone() const
+{
+    return new CNavText (*this);
+}
 
-     // In this case, since epoch time is arbitrarily set to Xmit, 
-     // the epoch time is NOT a distinguishing factor.  (This is
-     // worth noting because epoch time frequently is THE 
-     // distinguishing factor.) 
-   bool CNavText::isSameData(const CNavDataElement* right) const      
-   {
-      if (const CNavText* rp = dynamic_cast<const CNavText*>(right))
-      {
-         if (textMessage.compare(rp->textMessage)!=0)  return false;
-         if (textPage!=rp->textPage)     return false;
-         return true;      
-      }
-      return false;
-   }
-   
-   void CNavText::loadData(const PackedNavBits& pnb)
-      throw(InvalidParameter)
-   {
-         // First, verify the correct message type is being passed in. 
-      long msgType = pnb.asUnsignedLong(14,6,1);
-      if(msgType!=15 && msgType!=36)
-      {
-         char temp[80];
-         sprintf(temp,"Expected CNAV MsgType 15 or 36.  Found MsgType %ld",msgType);
-         std::string tstr(temp);
-         InvalidParameter exc(tstr);
-         GPSTK_THROW(exc);    
-      } 
-      
-      obsID     = pnb.getobsID();
-      satID     = pnb.getsatSys();
-      ctXmit    = pnb.getTransmitTime();
-      ctEpoch   = ctXmit;
+// In this case, since epoch time is arbitrarily set to Xmit,
+// the epoch time is NOT a distinguishing factor.  (This is
+// worth noting because epoch time frequently is THE
+// distinguishing factor.)
+bool CNavText::isSameData(const CNavDataElement* right) const
+{
+    if (const CNavText* rp = dynamic_cast<const CNavText*>(right))
+    {
+        if (textMessage.compare(rp->textMessage)!=0)
+            return false;
+        if (textPage!=rp->textPage)
+            return false;
+        return true;
+    }
+    return false;
+}
 
-      if (msgType==15)
-      {
-         textMessage  = pnb.asString(38,29);
-         textPage     = pnb.asUnsignedLong(270, 4, 1);
-      }
-      else // Must be msgType 36
-      {
-         textMessage  = pnb.asString(127,18);
-         textPage     = pnb.asUnsignedLong(271, 4, 1);
-      }   
-      
-      dataLoadedFlag = true;   
-   } // end of loadData()
+void CNavText::loadData(const PackedNavBits& pnb)
+throw(InvalidParameter)
+{
+    // First, verify the correct message type is being passed in.
+    long msgType = pnb.asUnsignedLong(14,6,1);
+    if(msgType!=15 && msgType!=36)
+    {
+        char temp[80];
+        sprintf(temp,"Expected CNAV MsgType 15 or 36.  Found MsgType %ld",msgType);
+        std::string tstr(temp);
+        InvalidParameter exc(tstr);
+        GPSTK_THROW(exc);
+    }
 
-   void CNavText::dumpBody(ostream& s) const
-      throw( InvalidRequest )
-   {
-      if (!dataLoaded())
-      {
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      }
-    
-      s << endl
-        << "           TEXT MESSAGE PARAMETERS"
-        << endl
-        << endl;
-      s << "Text Page: " << textPage << endl;
-      s << "Message  : '" << textMessage << "'" << endl;
-      
-   } // end of dumpBody()   
+    obsID     = pnb.getobsID();
+    satID     = pnb.getsatSys();
+    ctXmit    = pnb.getTransmitTime();
+    ctEpoch   = ctXmit;
 
-   ostream& operator<<(ostream& s, const CNavText& eph)
-   {
-      try
-      {
-         eph.dump(s);
-      }
-      catch(gpstk::Exception& ex)
-      {
-         GPSTK_RETHROW(ex);
-      }
-      return s;
+    if (msgType==15)
+    {
+        textMessage  = pnb.asString(38,29);
+        textPage     = pnb.asUnsignedLong(270, 4, 1);
+    }
+    else // Must be msgType 36
+    {
+        textMessage  = pnb.asString(127,18);
+        textPage     = pnb.asUnsignedLong(271, 4, 1);
+    }
 
-   } // end of operator<<
+    dataLoadedFlag = true;
+} // end of loadData()
+
+void CNavText::dumpBody(ostream& s) const
+throw( InvalidRequest )
+{
+    if (!dataLoaded())
+    {
+        InvalidRequest exc("Required data not stored.");
+        GPSTK_THROW(exc);
+    }
+
+    s << endl
+      << "           TEXT MESSAGE PARAMETERS"
+      << endl
+      << endl;
+    s << "Text Page: " << textPage << endl;
+    s << "Message  : '" << textMessage << "'" << endl;
+
+} // end of dumpBody()
+
+ostream& operator<<(ostream& s, const CNavText& eph)
+{
+    try
+    {
+        eph.dump(s);
+    }
+    catch(gpstk::Exception& ex)
+    {
+        GPSTK_RETHROW(ex);
+    }
+    return s;
+
+} // end of operator<<
 
 } // end namespace

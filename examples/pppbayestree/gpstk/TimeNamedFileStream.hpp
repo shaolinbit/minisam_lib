@@ -2,7 +2,7 @@
 
 /**
  * @file TimeNamedFileStream.hpp
- * Writes data to a file whose name is derived from a pattern and a nominal epoch. 
+ * Writes data to a file whose name is derived from a pattern and a nominal epoch.
  */
 
 #ifndef GPSTK_TIME_NAMED_FILE_STREAM_HPP
@@ -54,107 +54,116 @@
 
 namespace gpstk
 {
-   /** @addtogroup FFStream */
-   //@{
+/** @addtogroup FFStream */
+//@{
 
-   template <class BaseStream>
-   class TimeNamedFileStream : public BaseStream
-   {
-   public:
+template <class BaseStream>
+class TimeNamedFileStream : public BaseStream
+{
+public:
 
-      TimeNamedFileStream() 
-         : omode(std::ios::in), debugLevel(0)
-      {};
+    TimeNamedFileStream()
+        : omode(std::ios::in), debugLevel(0)
+    {};
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreorder"
-      TimeNamedFileStream(
-         const std::string fs,
-         std::ios::openmode mode = std::ios::in)
-         : filespec(fs), omode(mode), debugLevel(0)
-      {};
+    TimeNamedFileStream(
+        const std::string fs,
+        std::ios::openmode mode = std::ios::in)
+        : filespec(fs), omode(mode), debugLevel(0)
+    {};
 #pragma clang diagnostic pop
-      virtual ~TimeNamedFileStream(void) {};
+    virtual ~TimeNamedFileStream(void) {};
 
 
-      /// overrides open to just set the filespec, Note that this does
-      /// not actually open a file
-      virtual void open(const char* fs, std::ios::openmode mode = std::ios::in)
-      {
-         setFilespec(fs);
-         omode = mode;
-      };
+    /// overrides open to just set the filespec, Note that this does
+    /// not actually open a file
+    virtual void open(const char* fs, std::ios::openmode mode = std::ios::in)
+    {
+        setFilespec(fs);
+        omode = mode;
+    };
 
 
-      void setFilespec(const std::string fs)
-      { filespec=fs; currentFilename=""; }
+    void setFilespec(const std::string fs)
+    {
+        filespec=fs;
+        currentFilename="";
+    }
 
 
-      std::string getFilespec(void) const
-      { return filespec;}
+    std::string getFilespec(void) const
+    {
+        return filespec;
+    }
 
 
-      // Get the filename of the current file
-      std::string getCurrentFilename(void) const 
-      { return currentFilename; };
+    // Get the filename of the current file
+    std::string getCurrentFilename(void) const
+    {
+        return currentFilename;
+    };
 
 
-      // Return the time used to generate the current file name
-      CommonTime getCurrentTime(void) const
-      { return currentTime; };
+    // Return the time used to generate the current file name
+    CommonTime getCurrentTime(void) const
+    {
+        return currentTime;
+    };
 
 
-      // Update the file name, returns true if the file name changed
-      bool updateFileName(const CommonTime& t=SystemTime())
-      {
-         bool openedNewFile = false;
-         const std::string newFilename=printTime(t,filespec);
-         if (currentFilename.size() == 0 && newFilename.size() > 0)
-         {
+    // Update the file name, returns true if the file name changed
+    bool updateFileName(const CommonTime& t=SystemTime())
+    {
+        bool openedNewFile = false;
+        const std::string newFilename=printTime(t,filespec);
+        if (currentFilename.size() == 0 && newFilename.size() > 0)
+        {
             currentFilename = newFilename;
             currentTime = t;
             BaseStream::open(currentFilename.c_str(), omode);
             if (debugLevel)
-               std::cout << "Opened " << currentFilename << std::endl;
+                std::cout << "Opened " << currentFilename << std::endl;
             openedNewFile=true;
-         }
-         else if (newFilename == currentFilename)
-         {
+        }
+        else if (newFilename == currentFilename)
+        {
             currentTime = t;
             openedNewFile=false;
-         }
-         else
-         {
+        }
+        else
+        {
             if (debugLevel)
-               std::cout << "Closing " << currentFilename << std::endl;
+                std::cout << "Closing " << currentFilename << std::endl;
             BaseStream::close();
             currentFilename = newFilename;
             currentTime = t;
             BaseStream::open(currentFilename.c_str(), omode);
             if (debugLevel)
-               std::cout << "Opened " << currentFilename << std::endl;
+                std::cout << "Opened " << currentFilename << std::endl;
             openedNewFile=true;
-         }
+        }
 
-         return openedNewFile;
-      };
+        return openedNewFile;
+    };
 
-      int debugLevel;
+    int debugLevel;
 
-   private:
-      /// Pattern on which to create new files
-      std::string filespec;
-      
-      /// Name of the current output file.
-      std::string currentFilename;
+private:
+    /// Pattern on which to create new files
+    std::string filespec;
 
-      /// The time used to generate currentFilename
-      CommonTime currentTime;
+    /// Name of the current output file.
+    std::string currentFilename;
 
-      // The flags to use when opening the files
-      std::ios::openmode omode;
-   }; // end class TimeNamedFileStream
+    /// The time used to generate currentFilename
+    CommonTime currentTime;
 
-   //@}
+    // The flags to use when opening the files
+    std::ios::openmode omode;
+}; // end class TimeNamedFileStream
+
+//@}
 }  // end namespace gpstk
 
 #endif // GPSTK_TIME_NAMED_FILE_STREAM_HPP

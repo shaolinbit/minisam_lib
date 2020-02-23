@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -49,33 +49,33 @@
 
 namespace gpstk
 {
-      /** @addtogroup MSC */
-      //@{
+/** @addtogroup MSC */
+//@{
 
-      /// Stream used to obtain data from a Monitor Station Coordinates File
-   class MSCStream : public gpstk::FFTextStream
-   {
-   public:
-         /// Default constructor
-      MSCStream() {}
+/// Stream used to obtain data from a Monitor Station Coordinates File
+class MSCStream : public gpstk::FFTextStream
+{
+public:
+    /// Default constructor
+    MSCStream() {}
 
-         /**
-          * Constructor.
-          * @param fn the file to open
-          * @param mode the ios::openmode to use in opening \a fn
-          */
-      MSCStream(const char* fn, std::ios::openmode mode=std::ios::in)
-         throw()
-            : gpstk::FFTextStream(fn, mode)
-      {}
-      
-         /// Destructor
-      virtual ~MSCStream() {}
+    /**
+     * Constructor.
+     * @param fn the file to open
+     * @param mode the ios::openmode to use in opening \a fn
+     */
+    MSCStream(const char* fn, std::ios::openmode mode=std::ios::in)
+    throw()
+        : gpstk::FFTextStream(fn, mode)
+    {}
 
-   }; // class MSCStream
+    /// Destructor
+    virtual ~MSCStream() {}
 
-      //@}
+}; // class MSCStream
+
+//@}
 
 } // namespace gpstk
 
-#endif   
+#endif

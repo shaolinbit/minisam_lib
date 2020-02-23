@@ -1,25 +1,8 @@
 #ifndef IMUFACTOR_H
 #define IMUFACTOR_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  *  @file  ImuFactor.h
- *  @author Luca Carlone
- *  @author Stephen Williams
- *  @author Richard Roberts
- *  @author Vadim Indelman
- *  @author David Jensen
- *  @author Frank Dellaert
  **/
 
 #pragma once
@@ -71,40 +54,33 @@ typedef ManifoldPreintegration PreintegrationType;
  *
  * @addtogroup SLAM
  */
-class PreintegratedImuMeasurements: public PreintegrationType
+class PreintegratedImuMeasurements:public minimatrix// public PreintegrationType
 {
 
     friend class ImuFactor;
     friend class ImuFactor2;
-
-protected:
-
-    Eigen::MatrixXd preintMeasCov_; ///< COVARIANCE OF: [PreintPOSITION PreintVELOCITY PreintROTATION]
-    ///< (first-order propagation from *measurementCovariance*).
-    PreintegrationParams* pp_;
-    ConstantBias ConstantBias_;
 public:
 
     /// Default constructor for serialization and Cython wrapper
     PreintegratedImuMeasurements();
+    ~PreintegratedImuMeasurements() {}
 
     /**
       *  Constructor, initializes the class with no measurements
       *  @param bias Current estimate of acceleration and rotation rate biases
       *  @param p    Parameters, typically fixed in a single application
       */
-    PreintegratedImuMeasurements(PreintegrationParams* p,
+    PreintegratedImuMeasurements(const PreintegrationParams& p,
                                  const ConstantBias& biasHat = ConstantBias());
 
+    PreintegratedImuMeasurements(const PreintegratedImuMeasurements& other);
     /**
       *  Construct preintegrated directly from members: base class and preintMeasCov
       *  @param base               PreintegrationType instance
       *  @param preintMeasCov      Covariance matrix used in noise model.
       */
-    PreintegratedImuMeasurements(const PreintegrationType& base, const Eigen::MatrixXd& preintMeasCov);
+    PreintegratedImuMeasurements(const PreintegrationType& base, const minimatrix& preintMeasCov);
 
-    /// Re-initialize PreintegratedIMUMeasurements
-    void resetIntegration() override;
 
     /**
      * Add a single IMU measurement to the preintegration.
@@ -112,19 +88,27 @@ public:
      * @param measuredOmega Measured angular velocity (as given by the sensor)
      * @param dt Time interval between this and the last IMU measurement
      */
-    void integrateMeasurement(const Eigen::Vector3d& measuredAcc,
-                              const Eigen::Vector3d& measuredOmega, const double dt) override;
+    void integrateMeasurement(const minivector& measuredAcc,
+                              const minivector& measuredOmega, const double dt);
 
     /// Add multiple measurements, in matrix columns
-    void integrateMeasurements(const Eigen::MatrixXd& measuredAccs, const Eigen::MatrixXd& measuredOmegas,
-                               const Eigen::MatrixXd& dts);
+    void integrateMeasurements(const minimatrix& measuredAccs, const minimatrix& measuredOmegas,
+                               const minimatrix& dts);
 
     /// Return pre-integrated measurement covariance
-    Eigen::MatrixXd preintMeasCov() const;
+     minimatrix preintMeasCov() const;
+
+     minimatrix gyroscopeCovariance() const;
+     minimatrix  accelerometerCovariance() const;
+     minimatrix integrationCovariance() const;
+
+
+
+    void print() const;
 
 #ifdef TANGENT_PREINTEGRATION
     /// Merge in a different set of measurements and update bias derivatives accordingly
-    void mergeWith(const PreintegratedImuMeasurements& pim, Eigen::MatrixXd* H1, Eigen::MatrixXd* H2);
+    void mergeWith(const PreintegratedImuMeasurements& pim, minimatrix* H1, minimatrix* H2);
 #endif
 };
 
@@ -142,8 +126,8 @@ public:
  */
 class ImuFactor: public NoiseModelFactor
 {
-private:
-    PreintegratedImuMeasurements _PIM_;
+public:
+    minimatrix* _PIM_;
 public:
 
     /** Default constructor - only use for serialization */
@@ -161,6 +145,8 @@ public:
 
     virtual ~ImuFactor()
     {
+        delete noiseModel_;
+        delete _PIM_;
     }
 
     inline int key1() const
@@ -185,28 +171,28 @@ public:
     }
 
     /// @return a deep copy of this factor
-    virtual NonlinearFactor* clone() const;
+    virtual NoiseModelFactor* clone() const;
 
     /** Access the preintegrated measurements. */
 
     const PreintegratedImuMeasurements& preintegratedMeasurements() const
     {
-        return _PIM_;
+        return PreintegratedImuMeasurements(*_PIM_);
     }
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x1,const std::map<int, Eigen::VectorXd>& x2, std::vector<Eigen::MatrixXd> &H) const;
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x, std::vector<minimatrix> &H) const;
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int, Pose3>& x1,const std::map<int, Eigen::VectorXd>& x2) const;
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const;
     /** implement functions needed to derive from Factor */
 
     /// vector of errors
-    Eigen::VectorXd evaluateError(const Pose3& pose_i, const Eigen::VectorXd& vel_i,
-                                  const Pose3& pose_j, const Eigen::VectorXd& vel_j,
-                                  const Eigen::VectorXd& bias_i, Eigen::MatrixXd& H1, Eigen::MatrixXd& H2,
-                                  Eigen::MatrixXd& H3, Eigen::MatrixXd& H4, Eigen::MatrixXd& H5) const;
-    Eigen::VectorXd evaluateError(const Pose3& pose_i, const Eigen::VectorXd& vel_i,
-                                  const Pose3& pose_j, const Eigen::VectorXd& vel_j,
-                                  const Eigen::VectorXd& bias_i) const;
+    minivector evaluateError(const minimatrix* pose_i, const minimatrix* vel_i,
+                             const minimatrix* pose_j, const minimatrix* vel_j,
+                             const minimatrix* bias_i, minimatrix& H1, minimatrix& H2,
+                             minimatrix& H3, minimatrix& H4, minimatrix& H5) const;
+    minivector evaluateError(const minimatrix* pose_i, const minimatrix* vel_i,
+                             const minimatrix* pose_j, const minimatrix* vel_j,
+                             const minimatrix* bias_i) const;
 
 #ifdef TANGENT_PREINTEGRATION
     /// Merge two pre-integrated measurement classes
@@ -227,8 +213,8 @@ public:
  */
 class ImuFactor2 : public NoiseModelFactor
 {
-private:
-    PreintegratedImuMeasurements _PIM_;
+public:
+    minimatrix* _PIM_;//PreintegratedImuMeasurements _PIM_;
 
 public:
 
@@ -262,24 +248,28 @@ public:
     }
 
     /// @return a deep copy of this factor
-    virtual NonlinearFactor* clone() const;
+    virtual NoiseModelFactor* clone() const;
 
     /** Access the preintegrated measurements. */
 
     const PreintegratedImuMeasurements& preintegratedMeasurements() const
     {
-        return _PIM_;
+        return PreintegratedImuMeasurements(*_PIM_);
     }
 
     /** implement functions needed to derive from Factor */
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x, std::vector<minimatrix> &H) const;
 
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const;
 
     /// vector of errors
-    Eigen::VectorXd evaluateError(const NavState& state_i, const NavState& state_j,
-                                  const Eigen::VectorXd& bias_i,  //
-                                  Eigen::MatrixXd& H1,
-                                  Eigen::MatrixXd& H2,
-                                  Eigen::MatrixXd& H3) const;
+    minivector evaluateError(const minimatrix* state_i, const minimatrix* state_j,
+                             const minimatrix* bias_i) const;
+    minivector evaluateError(const minimatrix* state_i, const minimatrix* state_j,
+                             const minimatrix* bias_i,  //
+                             minimatrix& H1,
+                             minimatrix& H2,
+                             minimatrix& H3) const;
 
 };
 // class ImuFactor2

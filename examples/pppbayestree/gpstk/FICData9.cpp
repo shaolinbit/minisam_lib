@@ -57,78 +57,80 @@
 
 namespace gpstk
 {
-   using namespace std;
-   using namespace gpstk;
+using namespace std;
+using namespace gpstk;
 
-   const double FICData9::UNUSED = 0.0;
+const double FICData9::UNUSED = 0.0;
 
-   FICData9::FICData9( const gpstk::FICData109 rawsf, const gpstk::EngEphemeris ee )
-   {
-      int i;
-      blockNum = 9;
+FICData9::FICData9( const gpstk::FICData109 rawsf, const gpstk::EngEphemeris ee )
+{
+    int i;
+    blockNum = 9;
 
-      firstFiveItems( 1, rawsf, ee );
-      GPSWeekSecond gpstime(ee.getTransmitTime());
-      f.push_back( (double) gpstime.week );
-      f.push_back( (double) ee.getCodeFlags() );
-      f.push_back( (double) ee.getAccFlag() );
-      f.push_back( (double) ee.getHealth() );
-      f.push_back( (double) (ee.getIODC() * 2048) );
-      f.push_back( (double) ee.getL2Pdata() );
-      f.push_back( ee.getTgd() );
-      f.push_back( ee.getToc() );
-      f.push_back( ee.getAf2() );
-      f.push_back( ee.getAf1() );
-      f.push_back( ee.getAf0() );
+    firstFiveItems( 1, rawsf, ee );
+    GPSWeekSecond gpstime(ee.getTransmitTime());
+    f.push_back( (double) gpstime.week );
+    f.push_back( (double) ee.getCodeFlags() );
+    f.push_back( (double) ee.getAccFlag() );
+    f.push_back( (double) ee.getHealth() );
+    f.push_back( (double) (ee.getIODC() * 2048) );
+    f.push_back( (double) ee.getL2Pdata() );
+    f.push_back( ee.getTgd() );
+    f.push_back( ee.getToc() );
+    f.push_back( ee.getAf2() );
+    f.push_back( ee.getAf1() );
+    f.push_back( ee.getAf0() );
 
-         // Two unused
-      f.push_back( UNUSED );
-      f.push_back( UNUSED );
-      f.push_back( (double) ee.getTracker() );
-      f.push_back( (double) ee.getPRNID() );
+    // Two unused
+    f.push_back( UNUSED );
+    f.push_back( UNUSED );
+    f.push_back( (double) ee.getTracker() );
+    f.push_back( (double) ee.getPRNID() );
 
-      firstFiveItems( 2, rawsf, ee );
-      f.push_back( (double) (ee.getIODE() * 2048) );
-      f.push_back( ee.getCrs() );
-      f.push_back( ee.getDn() );
-      f.push_back( ee.getM0() );
-      f.push_back( ee.getCuc() );
-      f.push_back( ee.getEcc() );
-      f.push_back( ee.getCus() );
-      f.push_back( ee.getAhalf() );
-      f.push_back( ee.getToe() );
-      f.push_back( (double) ee.getFitInt() );
+    firstFiveItems( 2, rawsf, ee );
+    f.push_back( (double) (ee.getIODE() * 2048) );
+    f.push_back( ee.getCrs() );
+    f.push_back( ee.getDn() );
+    f.push_back( ee.getM0() );
+    f.push_back( ee.getCuc() );
+    f.push_back( ee.getEcc() );
+    f.push_back( ee.getCus() );
+    f.push_back( ee.getAhalf() );
+    f.push_back( ee.getToe() );
+    f.push_back( (double) ee.getFitInt() );
 
-         // Five unused
-      for (i=0;i<5;++i) f.push_back( UNUSED );
+    // Five unused
+    for (i=0; i<5; ++i)
+        f.push_back( UNUSED );
 
-      firstFiveItems( 3, rawsf, ee );
-      f.push_back( ee.getCic() );
-      f.push_back( ee.getOmega0() );
-      f.push_back( ee.getCis() );
-      f.push_back( ee.getI0() );
-      f.push_back( ee.getCrc() );
-      f.push_back( ee.getW() );
-      f.push_back( ee.getOmegaDot() );
-      f.push_back( (double) (ee.getIODE() * 2048) );
-      f.push_back( ee.getIDot() );
+    firstFiveItems( 3, rawsf, ee );
+    f.push_back( ee.getCic() );
+    f.push_back( ee.getOmega0() );
+    f.push_back( ee.getCis() );
+    f.push_back( ee.getI0() );
+    f.push_back( ee.getCrc() );
+    f.push_back( ee.getW() );
+    f.push_back( ee.getOmegaDot() );
+    f.push_back( (double) (ee.getIODE() * 2048) );
+    f.push_back( ee.getIDot() );
 
-         // Six unused
-      for (i=0;i<6;++i) f.push_back( UNUSED );
-   }
+    // Six unused
+    for (i=0; i<6; ++i)
+        f.push_back( UNUSED );
+}
 
-   void FICData9::firstFiveItems( const short sfNum,
-                                  const gpstk::FICData109 rawsf,
-                                  const gpstk::EngEphemeris ee )
-   {
-      int ndx = 2 + ((sfNum-1) * 10);
-      long word01 = rawsf.i[ ndx ];
-      long preamble = word01 >> 22;
-      f.push_back( (double) preamble );
-      f.push_back( (double) ee.getTLMMessage(sfNum) );
-      f.push_back( ee.getHOWTime(sfNum) );
-      f.push_back( (double) ee.getASAlert(sfNum) );
-      f.push_back( (double) sfNum );
-   }
+void FICData9::firstFiveItems( const short sfNum,
+                               const gpstk::FICData109 rawsf,
+                               const gpstk::EngEphemeris ee )
+{
+    int ndx = 2 + ((sfNum-1) * 10);
+    long word01 = rawsf.i[ ndx ];
+    long preamble = word01 >> 22;
+    f.push_back( (double) preamble );
+    f.push_back( (double) ee.getTLMMessage(sfNum) );
+    f.push_back( ee.getHOWTime(sfNum) );
+    f.push_back( (double) ee.getASAlert(sfNum) );
+    f.push_back( (double) sfNum );
+}
 
 }   // namespace

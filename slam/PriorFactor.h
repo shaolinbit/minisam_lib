@@ -1,20 +1,8 @@
 #ifndef PRIORFACTOR_H
 #define PRIORFACTOR_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  *  @file  PriorFactor.h
- *  @author Frank Dellaert
  **/
 #pragma once
 
@@ -24,7 +12,7 @@ namespace minisam
 {
 
 /**
- * A class for a soft prior on Vector Value type
+ * A class for a soft prior
  * @addtogroup SLAM
  */
 
@@ -32,101 +20,86 @@ class PriorFactor: public NoiseModelFactor1
 {
 
 private:
-    Eigen::VectorXd prior_; /** The measurement */
+    minimatrix* prior_; /** The measurement */
 public:
     /** default constructor - only use for serialization */
-     PriorFactor() {}
+    PriorFactor() {}
 
-    virtual ~PriorFactor() {}
+    virtual ~PriorFactor()
+    {
+       if(prior_!=NULL)
+        {
+        delete prior_;
+        prior_=NULL;
+        }
+    }
 
     /** Constructor */
-     PriorFactor(int key, const Eigen::VectorXd& prior, GaussianNoiseModel* model) :
+    PriorFactor(int key, minimatrix* prior, GaussianNoiseModel* model) :
         NoiseModelFactor1(model, key), prior_(prior)
     {
     }
 
     /** Convenience constructor that takes a full covariance argument */
-     PriorFactor(int key, const Eigen::VectorXd& prior, const Eigen::MatrixXd& covariance) :
+    PriorFactor(int key, minimatrix* prior, const minimatrix& covariance) :
         NoiseModelFactor1(GaussianNoiseModel_Covariance(covariance), key), prior_(prior)
     {}
 
 
     /** implement functions needed for Testable */
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Eigen::VectorXd>& x)const
+    virtual minivector unwhitenedError(const std::map<int,minimatrix*>& x)const
     {
-        std::map<int,Eigen::VectorXd>::const_iterator itb=x.find(key());
-        return -(prior_-itb->second);//evaluateError(x);(prior_-x);
+        std::map<int,minimatrix*>::const_iterator itb=x.find(key());
+        return evaluateError(itb->second);
     }
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Eigen::VectorXd>& x,std::vector<Eigen::MatrixXd>& H) const
+    virtual minivector unwhitenedError(const std::map<int,minimatrix*>& x,std::vector<minimatrix>& H) const
     {
-        std::map<int,Eigen::VectorXd>::const_iterator itb=x.find(key());
+        std::map<int,minimatrix*>::const_iterator itb=x.find(key());
         return evaluateError(itb->second,*(H.begin()));
     }
 
-    Eigen::VectorXd evaluateError(const Eigen::VectorXd& x) const
+    virtual minivector evaluateError(const minimatrix* x) const
     {
-        return -(prior_-x);
+        minimatrix v=x->LocalCoordinates(prior_);
+        minimatrix_scale(&v,-1.0);
+        minivector result(v);
+        return result;
     }
-    Eigen::VectorXd evaluateError(const Eigen::VectorXd& x, Eigen::MatrixXd& H) const
+    virtual minivector evaluateError(const minimatrix* x, minimatrix& H) const
     {
-        H=Eigen::MatrixXd::Identity(x.rows(),x.rows());
-        Eigen::VectorXd h(x.rows());
-        h=prior_-x;
-        return -h;
+        minimatrix_resize(&H,x->dimension,x->dimension);
+        minimatrix_set_identity(&H);
+
+        minimatrix v=x->LocalCoordinates(prior_);
+        minimatrix_scale(&v,-1.0);
+        minivector result(v);
+
+        if(DEBUGSTATE)
+        {
+        cout<<"key()"<<endl;
+        cout<<key()<<endl;
+        cout<<"x"<<endl;
+        minimatrix_print(x);
+        cout<<"prior_"<<endl;
+        minimatrix_print(prior_);
+        }
+
+        return result;
     }
 
 
 
 
-    const Eigen::VectorXd prior() const
+    const minimatrix* prior() const
     {
         return prior_;
     }
 
 
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Pose3>& x1,
-                                            const std::map<int,Eigen::VectorXd>& x2,
-                                            std::vector<Eigen::MatrixXd>& H) const
+    virtual NoiseModelFactor* clone()const
     {
-        Eigen::VectorXd uw(6);
-        uw.setZero();
-        return uw;
-    }
-
-#ifdef GMF_Using_Pose3
-    //nonsense for virtual;
-    virtual Eigen::VectorXd evaluateError(const Pose3 x) const
-    {
-        Eigen::VectorXd pp(6);
-        pp.setZero();
-        return pp;
-    }
-    //nonsense for virtual;
-    virtual Eigen::VectorXd evaluateError(const Pose3 x, Eigen::MatrixXd& H) const
-    {
-        Eigen::VectorXd pp(6);
-        pp.setZero();
-        return pp;
-
-    }
-#else
-    virtual Eigen::VectorXd evaluateError(const Pose2& x) const
-    {
-        Eigen::VectorXd xb;
-        return xb;
-    }
-    virtual Eigen::VectorXd evaluateError(const Pose2& x, Eigen::MatrixXd& H) const
-    {
-
-        Eigen::VectorXd xb;
-        return xb;
-
-    }
-#endif // GMF_Using_Pose3
-    virtual NonlinearFactor* clone()const
-    {
-        PriorFactor* newfactor=new PriorFactor(key(),prior(),noiseModel_);
+        PriorFactor* newfactor=new PriorFactor(key(),prior_,noiseModel_);
         return newfactor;
     }
 };

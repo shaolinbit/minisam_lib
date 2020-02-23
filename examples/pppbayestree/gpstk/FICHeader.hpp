@@ -24,7 +24,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -32,13 +32,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -56,58 +56,61 @@
 
 namespace gpstk
 {
-      /**
-       * This is the Header for the FIC File Model.
-       * There is one 40 character header at the start of each FIC file,
-       * ASCII or binary.
-       * 
-       * \sa fic_test.cpp, fic_read_write.cpp, and fica_test.cpp for examples.
-       *
-       * \sa FICStream, FICAStream, and FICData.
-       */
-   class FICHeader : public FICBase
-   {
-   public:
-         /// Default constructor
-      FICHeader() {}
+/**
+ * This is the Header for the FIC File Model.
+ * There is one 40 character header at the start of each FIC file,
+ * ASCII or binary.
+ *
+ * \sa fic_test.cpp, fic_read_write.cpp, and fica_test.cpp for examples.
+ *
+ * \sa FICStream, FICAStream, and FICData.
+ */
+class FICHeader : public FICBase
+{
+public:
+    /// Default constructor
+    FICHeader() {}
 
-         /// Destructor
-      virtual ~FICHeader() {}
+    /// Destructor
+    virtual ~FICHeader() {}
 
-         /// FICHeader is a header, so this function always returns true.
-      virtual bool isHeader() const {return true;}
-     
-         /**
-          * This function does \b nothing.
-          */
-      virtual void dump(std::ostream& s) const;
+    /// FICHeader is a header, so this function always returns true.
+    virtual bool isHeader() const
+    {
+        return true;
+    }
 
-         /// The header string.
-      std::string header;
+    /**
+     * This function does \b nothing.
+     */
+    virtual void dump(std::ostream& s) const;
 
-         /// constant for the header size.
-      static const int headerSize;
+    /// The header string.
+    std::string header;
 
-   protected:
-         /// Writes the header string to the FFStream \a s.
-      virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError);
+    /// constant for the header size.
+    static const int headerSize;
 
-         /**
-          * Retrieve the header string from the FFStream \a s.
-          * If the read fails for some reason, the stream will
-          * be reset to its original position, and its fail-bit
-          * will be set.
-          * @throws FFStreamError when exceptions(failbit) is set and
-          *  a read or formatting error occurs.  This also resets the
-          *  stream to its pre-read position.
-          */
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError);
+protected:
+    /// Writes the header string to the FFStream \a s.
+    virtual void reallyPutRecord(FFStream& s) const
+    throw(std::exception, gpstk::StringUtils::StringException,
+          gpstk::FFStreamError);
 
-   }; // class FICHeader
+    /**
+     * Retrieve the header string from the FFStream \a s.
+     * If the read fails for some reason, the stream will
+     * be reset to its original position, and its fail-bit
+     * will be set.
+     * @throws FFStreamError when exceptions(failbit) is set and
+     *  a read or formatting error occurs.  This also resets the
+     *  stream to its pre-read position.
+     */
+    virtual void reallyGetRecord(FFStream& s)
+    throw(std::exception, gpstk::StringUtils::StringException,
+          gpstk::FFStreamError);
+
+}; // class FICHeader
 } // namespace gpstk
 
 #endif

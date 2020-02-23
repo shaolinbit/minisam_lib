@@ -5,11 +5,6 @@
 /**
  * @file   NonlinearOptimizerParams.h
  * @brief  Parameters for nonlinear optimization
- * @author Yong-Dian Jian
- * @author Richard Roberts
- * @author Frank Dellaert
- * @author Andrew Melim
- * @date   Apr 1, 2012
  */
 
 
@@ -35,7 +30,7 @@ public:
     double absoluteErrorTol; ///< The maximum absolute error decrease to stop iterating (default 1e-5)
     double errorTol; ///< The maximum total error to stop iterating (default 0.0)
     Verbosity verbosity; ///< The printing verbosity during optimization (default SILENT)
-    Ordering_OrderingType orderingType;//Ordering::OrderingType orderingType; ///< The method of ordering use during variable elimination (default COLAMD)
+    Ordering_OrderingType orderingType;///< The method of ordering use during variable elimination (default COLAMD)
 
     NonlinearOptimizerParams();
     virtual ~NonlinearOptimizerParams();
@@ -56,7 +51,6 @@ public:
     static Verbosity verbosityTranslator(const std::string &s) ;
     static std::string verbosityTranslator(Verbosity value) ;
 
-    // Successive Linearization Parameters
 
 public:
 
@@ -68,7 +62,6 @@ public:
         MULTIFRONTAL_QR,
         SEQUENTIAL_CHOLESKY,
         SEQUENTIAL_QR,
-        // Iterative, /* Experimental Flag */
         CHOLMOD, /* Experimental Flag */
     };
 

@@ -42,15 +42,8 @@ public:
      * @param initialValues The initial variable assignments
      * @param params The optimization parameters
      */
-
-#ifdef GMF_Using_Pose3
-    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                                const std::map<int,Pose3>& initialPoses,const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
-#else
-    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                                const std::map<int,Pose2>& initialPoses, const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
-#endif // GMF_Using_Pose3
-
+    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,minimatrix*>& initialValues,
+                                const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
 
     /** Standard constructor, requires a nonlinear factor graph, initial
      * variable assignments, and optimization parameters.  For convenience this
@@ -59,17 +52,9 @@ public:
      * @param graph The nonlinear factor graph to optimize
      * @param initialValues The initial variable assignments
      */
-#ifdef GMF_Using_Pose3
-    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                                const std::map<int,Pose3>& initialPoses,
+    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,minimatrix*>& initialValues,
                                 const std::vector<int>& ordering,
                                 const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
-#else
-    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& initialValues,
-                                const std::map<int,Pose2>& initialPoses,
-                                const std::vector<int>& ordering,
-                                const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
-#endif // GMF_Using_Pose3
     /** Virtual destructor */
     virtual ~LevenbergMarquardtOptimizer()
     {
@@ -108,10 +93,10 @@ public:
 
     /** Build a damped system for a specific lambda -- for testing only */
     GaussianFactorGraph buildDampedSystem(const GaussianFactorGraph& linear,
-                                          const std::map<int,Eigen::VectorXd>& sqrtHessianDiagonal) const;
+                                          const std::map<int,minivector>& sqrtHessianDiagonal) const;
 
     /** Inner loop, changes state, returns true if successful or giving up */
-    bool tryLambda(const GaussianFactorGraph& linear, const std::map<int,Eigen::VectorXd>& sqrtHessianDiagonal);
+    bool tryLambda(const GaussianFactorGraph& linear, const std::map<int,minivector>& sqrtHessianDiagonal);
 
     /// @}
 

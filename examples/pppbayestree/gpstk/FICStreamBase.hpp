@@ -24,7 +24,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -32,13 +32,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -58,30 +58,33 @@
 
 namespace gpstk
 {
-      /** 
-       * Encapsulates FIC stream data for FIC and FICA files.
-       */
-   class FICStreamBase
-   {
-   public:
-         /// Default constructor
-      FICStreamBase()
-            : headerRead(false)
-         {}
+/**
+ * Encapsulates FIC stream data for FIC and FICA files.
+ */
+class FICStreamBase
+{
+public:
+    /// Default constructor
+    FICStreamBase()
+        : headerRead(false)
+    {}
 
-         /// destructor per the coding standards
-      virtual ~FICStreamBase() {}
-      
-         /// resets the header info for derived classes
-      void open()
-         { headerRead = false;  header = FICHeader(); }
+    /// destructor per the coding standards
+    virtual ~FICStreamBase() {}
 
-         /// Whether or not the header's been read for this file.
-      bool headerRead;  
-         /// The FICHeader object for this file.
-      FICHeader header; 
+    /// resets the header info for derived classes
+    void open()
+    {
+        headerRead = false;
+        header = FICHeader();
+    }
 
-   };
+    /// Whether or not the header's been read for this file.
+    bool headerRead;
+    /// The FICHeader object for this file.
+    FICHeader header;
+
+};
 }
 
 #endif

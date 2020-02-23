@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -49,64 +49,69 @@
 
 namespace gpstk
 {
-      /** @addtogroup commandoptiongroup */
-      //@{
+/** @addtogroup commandoptiongroup */
+//@{
 
-      /** @ingroup timegroup
-       * @brief Command-line option class for processing time strings.
-       * This class is allows the programmer to add command-line
-       * options to an application that can parse strings containing
-       * representations of time. The programmer must specify the
-       * format to be accepted.  Refer to each TimeTag class' getDefaultFormat() for
-       * details on the formatting specifications. */
-   class CommandOptionWithCommonTimeArg : public gpstk::CommandOptionWithAnyArg
-   {
-   public:
-         /** Constructor
-          * @param shOpt The one character command line option.  Set to 0
-          *    if unused.
-          * @param loOpt The long command option.  Set to std::string() 
-          *    if unused.
-          * @param timeFormat format for scanning argument into a CommonTime
-          *    (\see scanTime() in TimeString.hpp and TimeString.cpp for details).
-          * @param desc A string describing what this option does.
-          * @param required Set to true if this is a required option.
-          */
-      CommandOptionWithCommonTimeArg(const char shOpt,
-                                     const std::string& loOpt,
-                                     const std::string& timeFormat,
-                                     const std::string& desc,
-                                     const bool required = false)
-            : gpstk::CommandOptionWithAnyArg(shOpt, loOpt, desc, required),
-              timeSpec(timeFormat)
-      {}
+/** @ingroup timegroup
+ * @brief Command-line option class for processing time strings.
+ * This class is allows the programmer to add command-line
+ * options to an application that can parse strings containing
+ * representations of time. The programmer must specify the
+ * format to be accepted.  Refer to each TimeTag class' getDefaultFormat() for
+ * details on the formatting specifications. */
+class CommandOptionWithCommonTimeArg : public gpstk::CommandOptionWithAnyArg
+{
+public:
+    /** Constructor
+     * @param shOpt The one character command line option.  Set to 0
+     *    if unused.
+     * @param loOpt The long command option.  Set to std::string()
+     *    if unused.
+     * @param timeFormat format for scanning argument into a CommonTime
+     *    (\see scanTime() in TimeString.hpp and TimeString.cpp for details).
+     * @param desc A string describing what this option does.
+     * @param required Set to true if this is a required option.
+     */
+    CommandOptionWithCommonTimeArg(const char shOpt,
+                                   const std::string& loOpt,
+                                   const std::string& timeFormat,
+                                   const std::string& desc,
+                                   const bool required = false)
+        : gpstk::CommandOptionWithAnyArg(shOpt, loOpt, desc, required),
+          timeSpec(timeFormat)
+    {}
 
-         /// Destructor
-      virtual ~CommandOptionWithCommonTimeArg() {}
-      
-         /** Returns a string with the argument format (just "TIME",
-          * not scanning format). */
-      virtual std::string getArgString() const
-      { return "TIME"; }
+    /// Destructor
+    virtual ~CommandOptionWithCommonTimeArg() {}
 
-         /// Validate arguments passed using this option (and store them).
-      virtual std::string checkArguments();
+    /** Returns a string with the argument format (just "TIME",
+     * not scanning format). */
+    virtual std::string getArgString() const
+    {
+        return "TIME";
+    }
 
-         /// Return the times scanned in from the command line.
-      std::vector<CommonTime> getTime() const { return times; }
-      
-   protected:
-         /// Collection of times scanned in from the command line.
-      std::vector<CommonTime> times;
-         /// Format used to scan times in.
-      std::string timeSpec;
-      
-         /// Default Constructor
-      CommandOptionWithCommonTimeArg() {}
+    /// Validate arguments passed using this option (and store them).
+    virtual std::string checkArguments();
 
-   }; // class CommandOptionWithCommonTimeArg
+    /// Return the times scanned in from the command line.
+    std::vector<CommonTime> getTime() const
+    {
+        return times;
+    }
 
-      //@}
+protected:
+    /// Collection of times scanned in from the command line.
+    std::vector<CommonTime> times;
+    /// Format used to scan times in.
+    std::string timeSpec;
+
+    /// Default Constructor
+    CommandOptionWithCommonTimeArg() {}
+
+}; // class CommandOptionWithCommonTimeArg
+
+//@}
 
 } // namespace gpstk
 

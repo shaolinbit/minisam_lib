@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -43,7 +43,7 @@
 
 
 
-/** 
+/**
  * @file CommandOptionWithPositionArg.cpp
  * Command line options with position (class Position) arguments
  */
@@ -55,37 +55,37 @@ using namespace std;
 
 namespace gpstk
 {
-   string CommandOptionWithPositionArg :: checkArguments()
-   {
-      string errstr = CommandOptionWithAnyArg::checkArguments();
-      
-      if( errstr != string() )
-         return errstr;
+string CommandOptionWithPositionArg :: checkArguments()
+{
+    string errstr = CommandOptionWithAnyArg::checkArguments();
 
-      vector<string>::size_type vecIndex;
-      for( vecIndex = 0; vecIndex < value.size(); vecIndex++ )
-      {
-         string thisPosSpec = getPositionSpec( vecIndex );
-         if( thisPosSpec != string() )
-         {
+    if( errstr != string() )
+        return errstr;
+
+    vector<string>::size_type vecIndex;
+    for( vecIndex = 0; vecIndex < value.size(); vecIndex++ )
+    {
+        string thisPosSpec = getPositionSpec( vecIndex );
+        if( thisPosSpec != string() )
+        {
             try
             {
-               Position pos;
-               pos.setToString( value[vecIndex], thisPosSpec );
-               positions.push_back( pos );
+                Position pos;
+                pos.setToString( value[vecIndex], thisPosSpec );
+                positions.push_back( pos );
             }
             catch (...)
             {
-               errstr += "\"" + value[vecIndex] + "\" is not a valid position.";
+                errstr += "\"" + value[vecIndex] + "\" is not a valid position.";
             }
-         }
-         else
-         {
+        }
+        else
+        {
             errstr += "\"" + value[vecIndex] + "\" is not a valid position.";
-         }
-      }
-      
-      return errstr;
-   } // end of checkArguments()
+        }
+    }
+
+    return errstr;
+} // end of checkArguments()
 
 }

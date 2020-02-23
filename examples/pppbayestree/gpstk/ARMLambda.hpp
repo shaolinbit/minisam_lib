@@ -2,7 +2,7 @@
 
 /**
  * @file ARMLambda.hpp
- * 
+ *
  */
 
 #ifndef GPSTK_ARMLAMBDA_HPP
@@ -34,37 +34,37 @@
 
 namespace gpstk
 {
-      /** This class resolve integer ambiguity by the Modified LAMBDA method.
-       *
-       * The algorithm was described by:
-       *
-       *   X.-W.Chang, X.Yang, T.Zhou, MLAMBDA: A modified LAMBDA method for
-       *   integer least-squares estimation, J.Geodesy, Vol.79, 552-565, 2005
-       *
-       */
-   class ARMLambda : public ARLambda  
-   {
-   public:
-      
-         /// Default constructor
-      ARMLambda(){}      
-      
+/** This class resolve integer ambiguity by the Modified LAMBDA method.
+ *
+ * The algorithm was described by:
+ *
+ *   X.-W.Chang, X.Yang, T.Zhou, MLAMBDA: A modified LAMBDA method for
+ *   integer least-squares estimation, J.Geodesy, Vol.79, 552-565, 2005
+ *
+ */
+class ARMLambda : public ARLambda
+{
+public:
 
-         /// Destractor
-      virtual ~ARMLambda(){}
-      
-   protected:
+    /// Default constructor
+    ARMLambda() {}
 
-         /// modified lambda (mlambda) search
-      virtual int search( const Matrix<double>& L, 
-                          const Vector<double>& D, 
-                          const Vector<double>& zs, 
-                          Matrix<double>& zn, 
-                          Vector<double>& s, 
-                          const int& m = 2 );
-         
-   };   // End of class 'ARMLambda'
-   
+
+    /// Destractor
+    virtual ~ARMLambda() {}
+
+protected:
+
+    /// modified lambda (mlambda) search
+    virtual int search( const Matrix<double>& L,
+                        const Vector<double>& D,
+                        const Vector<double>& zs,
+                        Matrix<double>& zn,
+                        Vector<double>& s,
+                        const int& m = 2 );
+
+};   // End of class 'ARMLambda'
+
 
 }   // End of namespace gpstk
 

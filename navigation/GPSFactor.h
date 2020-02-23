@@ -1,8 +1,8 @@
+#ifndef GPSFACTOR_H
+#define GPSFACTOR_H
 /**
  *  @file   GPSFactor.h
- *  @author
  *  @brief  Header file for GPS factor
- *  @date
  **/
 #pragma once
 
@@ -27,15 +27,23 @@ class  GPSFactor: public NoiseModelFactor1
 private:
 
 
-    Eigen::Vector3d nT_; ///< Position measurement in cartesian coordinates
+    minimatrix* nT_; ///< Position measurement in cartesian coordinates
 
 public:
 
 
     /** default constructor - only use for serialization */
-    GPSFactor(): nT_(0, 0, 0) {}
+    GPSFactor()
+    {
+        nT_=new minivector(3);
+        minimatrix_set_zero(nT_);
+    }
 
-    virtual ~GPSFactor() {}
+    virtual ~GPSFactor()
+    {
+        if(nT_!=NULL)
+            delete nT_;
+    }
 
     /**
      * @brief Constructor from a measurement in a Cartesian frame.
@@ -44,41 +52,27 @@ public:
      * @param gpsIn measurement already in correct coordinates
      * @param model Gaussian noise model
      */
-    GPSFactor(int key, const Eigen::Vector3d& gpsIn,  GaussianNoiseModel* model) :
-        NoiseModelFactor1(model, key,1), nT_(gpsIn)
+    GPSFactor(int key, const minimatrix& gpsIn,  GaussianNoiseModel* model) :
+        NoiseModelFactor1(model, key,1)
     {
+        nT_=new minivector(3);
+        minimatrix_memcpy(nT_,gpsIn);
     }
 
     /// @return a deep copy of this factor
-    virtual NonlinearFactor* clone()
+    virtual NoiseModelFactor* clone()
     {
-        GPSFactor* ngs=new GPSFactor(this->keys()[0],this->nT_,this->noiseModel_);
+        GPSFactor* ngs=new GPSFactor(this->keys()[0],*(this->nT_),this->noiseModel_);
         return ngs;
     }
 
     /// vector of errors
-    virtual Eigen::VectorXd evaluateError(const Pose3& p) const;
+    virtual minivector evaluateError(const minimatrix* x) const;
+    virtual minivector evaluateError(const minimatrix* x, minimatrix &H) const;
 
-    virtual Eigen::VectorXd evaluateError(const Pose3& p,
-                                          Eigen::MatrixXd& H) const;
-
-    inline const Eigen::Vector3d & measurementIn() const
+    inline const minivector & measurementIn() const
     {
-        return nT_;
-    }
-
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Pose3>& x,std::vector<Eigen::MatrixXd>& H) const
-    {
-        std::map<int,Pose3>::const_iterator itb=x.find(key());
-        return evaluateError(itb->second,*(H.begin()));
-    }
-
-    //nonsense for virtual;
-    virtual Eigen::VectorXd unwhitenedError(const std::map<int,Eigen::VectorXd>& x)const
-    {
-        Eigen::VectorXd uw(6);
-        uw.setZero();
-        return uw;
+        return minivector(*nT_);
     }
 
 
@@ -87,8 +81,8 @@ public:
      *  readings (in local NED Cartesian frame) bracketing t
      *  Assumes roll is zero, calculates yaw and pitch from NED1->NED2 vector.
      */
-    static std::pair<Pose3, Eigen::Vector3d> EstimateState(double t1, const Eigen::Vector3d& NED1,
-            double t2, const Eigen::Vector3d& NED2, double timestamp);
+    static std::pair<Pose3, minivector> EstimateState(double t1, const minivector& NED1,
+            double t2, const minivector& NED2, double timestamp);
 };
 
 /**
@@ -99,35 +93,46 @@ class  GPSFactor2: public NoiseModelFactor1
 {
 
 private:
-    Eigen::Vector3d nT_; ///< Position measurement in cartesian coordinates
+    minimatrix* nT_; ///< Position measurement in cartesian coordinates
 public:
 
     /// default constructor - only use for serialization
-    GPSFactor2():nT_(Eigen::Vector3d::Zero()) {}
+    GPSFactor2()
+    {
+        nT_=new minivector(3);
+        minimatrix_set_zero(nT_);
+    }
 
-    virtual ~GPSFactor2() {}
+    virtual ~GPSFactor2()
+    {
+
+    }
 
     /// Constructor from a measurement in a Cartesian frame.
-    GPSFactor2(int key, const Eigen::Vector3d& gpsIn, GaussianNoiseModel*  model) :
-        NoiseModelFactor1(model, key), nT_(gpsIn)
+    GPSFactor2(int key, const minimatrix& gpsIn, GaussianNoiseModel*  model) :
+        NoiseModelFactor1(model, key)//, nT_(gpsIn)
     {
+        nT_=new minivector(3);
+        minimatrix_memcpy(nT_,gpsIn);
     }
 
     /// @return a deep copy of this factor
-    virtual NonlinearFactor* clone()
+    virtual NoiseModelFactor* clone()
     {
-        GPSFactor2* ngs=new GPSFactor2(this->keys()[0],this->nT_,this->noiseModel_);
+        GPSFactor2* ngs=new GPSFactor2(this->keys()[0],*(this->nT_),this->noiseModel_);
         return ngs;
     }
 
 
-    Eigen::VectorXd evaluateError(const NavState& p,
-                                  Eigen::MatrixXd* H) const;
+    virtual minivector evaluateError(const minimatrix* x) const;
 
-    inline const Eigen::Vector3d & measurementIn() const
+    virtual minivector evaluateError(const minimatrix* x, minimatrix &H) const;
+
+    inline const minivector & measurementIn() const
     {
-        return nT_;
+        return minivector(*nT_);
     }
 };
 
 } /// namespace minisam
+#endif

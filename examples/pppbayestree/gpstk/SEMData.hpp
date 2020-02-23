@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -42,93 +42,96 @@
 
 namespace gpstk
 {
-   /** @addtogroup SEM */
-   //@{
+/** @addtogroup SEM */
+//@{
 
-      /** 
-       * This class stores, reads, and writes SEM records. 
-       * @warning The SEM header information and data information don't
-       * correctly talk to each other at the time of completion of this file.
-       * The current fix is in SEMAlamanacStore.hpp.
-       *
-       * @sa tests/SEM for examples
-       * @sa SEMStream.
-       * @sa SEMHeader for information on writing SEM files.
-       */
-   class SEMData : public SEMBase
-   {
-   public:
-   
-         /// Constructor.
-      SEMData() {}
+/**
+ * This class stores, reads, and writes SEM records.
+ * @warning The SEM header information and data information don't
+ * correctly talk to each other at the time of completion of this file.
+ * The current fix is in SEMAlamanacStore.hpp.
+ *
+ * @sa tests/SEM for examples
+ * @sa SEMStream.
+ * @sa SEMHeader for information on writing SEM files.
+ */
+class SEMData : public SEMBase
+{
+public:
 
-         /// Destructor
-      virtual ~SEMData() {}
-      
-         
-      short PRN;
-      short SVNnum;
-      short URAnum;
-      double ecc;
-      double i_offset;
-      double OMEGAdot;
-      double Ahalf;
-      double OMEGA0;
-      double w;
-      double M0;
-      double AF0;
-      double AF1;
-      short SV_health;
-      short satConfig;
-      
-      long xmit_time;
-      
-      long Toa;
-      short week;
-      
-         /**
-          * Debug output function. 
-          * Dump the contents of each of the SEM class to a
-          * given ostream \c s.
-          */ 
-      virtual void dump(std::ostream& s) const;
-      
-         //! This class is "data" so this function always returns "true". 
-      virtual bool isData() const {return true;}
+    /// Constructor.
+    SEMData() {}
 
-         /**
-          * cast *this into an AlmOrbit
-          * @return the constructed AlmOrbit object
-          */
-      operator AlmOrbit() const;
-      
-      
-   protected:      
-	 
-	 /**
-          * Writes a correctly formatted record from this data to stream \a s.
-          */
-      virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);  
-  
-         /**
-          * This functions obtains a SEM almanac record from the given 
-          * FFStream.
-          * If there is an error in reading from the stream, it is reset
-          * to its original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
-          *  a read or formatting error occurs.  This also resets the
-          *  stream to its pre-read position.
-          */
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);  
-      
-   }; // class SEMData
+    /// Destructor
+    virtual ~SEMData() {}
 
-   //@}
+
+    short PRN;
+    short SVNnum;
+    short URAnum;
+    double ecc;
+    double i_offset;
+    double OMEGAdot;
+    double Ahalf;
+    double OMEGA0;
+    double w;
+    double M0;
+    double AF0;
+    double AF1;
+    short SV_health;
+    short satConfig;
+
+    long xmit_time;
+
+    long Toa;
+    short week;
+
+    /**
+     * Debug output function.
+     * Dump the contents of each of the SEM class to a
+     * given ostream \c s.
+     */
+    virtual void dump(std::ostream& s) const;
+
+    //! This class is "data" so this function always returns "true".
+    virtual bool isData() const
+    {
+        return true;
+    }
+
+    /**
+     * cast *this into an AlmOrbit
+     * @return the constructed AlmOrbit object
+     */
+    operator AlmOrbit() const;
+
+
+protected:
+
+    /**
+         * Writes a correctly formatted record from this data to stream \a s.
+         */
+    virtual void reallyPutRecord(FFStream& s) const
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException);
+
+    /**
+     * This functions obtains a SEM almanac record from the given
+     * FFStream.
+     * If there is an error in reading from the stream, it is reset
+     * to its original position and its fail-bit is set.
+     * @throws StringException when a StringUtils function fails
+     * @throws FFStreamError when exceptions(failbit) is set and
+     *  a read or formatting error occurs.  This also resets the
+     *  stream to its pre-read position.
+     */
+    virtual void reallyGetRecord(FFStream& s)
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException);
+
+}; // class SEMData
+
+//@}
 
 } // namespace
 

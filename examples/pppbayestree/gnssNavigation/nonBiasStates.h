@@ -4,42 +4,53 @@
  * @author Ryan Watson
  */
 
-// \callgraph
 
 #pragma once
-#include <Eigen/Core>
+#include "minisam/miniblas/minimatrix_double.h"
+#include "minisam/miniblas/minivector_double.h"
 
 /**
  * A vector of size 5 with multiple methods needed for GTSAM
  * @addtogroup geometry
  * \nosubgrouping
  */
-class  nonBiasStates : public Eigen::VectorXd
+class  nonBiasStates:public minivector
 {
 
-private:
-double x_, y_, z_, cb_, tz_;
 
 public:
 
-enum { dimension = 5 };
 
 /// @name Standard Constructors
 /// @{
 
-nonBiasStates() :
-        x_(0), y_(0), z_(0), cb_(0), tz_(0) {
-}
+    nonBiasStates() :minivector(5,0.0)
+    {
+       
+    }
 
-/** constructor */
-nonBiasStates(double x, double y, double z, double cb, double tz) :
-        x_(x), y_(y), z_(z), cb_(cb), tz_(tz) {
-}
+    /** constructor */
+    nonBiasStates(double x, double y, double z, double cb, double tz) :minivector(5)
+    {
+       
+        data[0]=x;
+        data[1]=y;
+        data[2]=z;
+        data[3]=cb;
+        data[4]=tz;
+
+    }
 
 // construct from 5D vector
-explicit nonBiasStates(const Eigen::VectorXd& v) :
-        x_(v(0)), y_(v(1)), z_(v(2)), cb_(v(3)), tz_(v(4)) {
-}
+    explicit nonBiasStates(const minivector& v) :minivector(v)
+    {
+
+    }
+
+    ~nonBiasStates()
+    {
+       
+    }
 
 // @}
 
@@ -47,67 +58,70 @@ explicit nonBiasStates(const Eigen::VectorXd& v) :
 /// @{
 
 /// identity for group operation
-inline static nonBiasStates identity() {
+    inline static nonBiasStates identity()
+    {
         return nonBiasStates(0.0, 0.0, 0.0, 0.0, 0.0);
-}
+    }
 
 /// @}
 /// @name Vector Space
 /// @{
 
-/** distance between two points
-double distance(const nonBiasStates& p2, OptionalJacobian<1, 5> H1 = boost::none,
-                OptionalJacobian<1, 5> H2 = boost::none) const;*/
+    double distance(const nonBiasStates& p2, minimatrix* H1 = NULL,
+                    minimatrix* H2 =NULL) const;
 
-double distance(const nonBiasStates& p2, Eigen::MatrixXd* H1 = NULL,
-                Eigen::MatrixXd* H2 =NULL) const;
+    /** Distance of the point from the origin, with Jacobian */
 
-/** Distance of the point from the origin, with Jacobian */
-
-double norm(Eigen::MatrixXd* H = NULL) const;
+    double norm(minimatrix* H = NULL) const;
 
 
-/** dot product @return this * q*/
-double dot(const nonBiasStates &q, Eigen::MatrixXd* H_p = NULL,     //
-           Eigen::MatrixXd* H_q = NULL) const;
+    /** dot product @return this * q*/
+    double dot(const nonBiasStates &q, minimatrix* H_p = NULL,     //
+               minimatrix* H_q = NULL) const;
 /// @}
 /// @name Standard Interface
 /// @{
 
 /// return as Vector5
-const Eigen::VectorXd& vector() const {
+    minivector vector() const
+    {
         return *this;
-}
+    }
 
 /// get x
-inline double x() const {
-        return (*this)[0];
-}
+    inline double x() const
+    {
+        return minivector_get(this,0);
+    }
 
 /// get y
-inline double y() const {
-        return (*this)[1];
-}
+    inline double y() const
+    {
+        return minivector_get(this,1);
+    }
 
 /// get z
-inline double z() const {
-        return (*this)[2];
-}
+    inline double z() const
+    {
+        return minivector_get(this,2);
+    }
 
 /// get cb
-inline double cb() const {
-        return (*this)[3];
-}
+    inline double cb() const
+    {
+        return minivector_get(this,3);
+    }
 /// @}
 
 // get tz
-inline double tz() const {
-        return (*this)[4];
-}
+    inline double tz() const
+    {
+        return minivector_get(this,4);
+    }
 /// @}
 
 /// Output stream operator
- friend std::ostream &operator<<(std::ostream &os, const nonBiasStates& p);
+    friend std::ostream &operator<<(std::ostream &os, const nonBiasStates& p);
 
 };
 
@@ -117,27 +131,29 @@ std::ostream &operator<<(std::ostream &os, const nonBiasPair &p);
 
 /// distance between two points
 double GNSS_distance5(const nonBiasStates& p1, const nonBiasStates& q,
-                 Eigen::MatrixXd* H1 = NULL,     //
-           Eigen::MatrixXd* H2 = NULL);
+                      minimatrix* H1 = NULL,     //
+                      minimatrix* H2 = NULL);
 
 
 /// Distance of the point from the origin, with Jacobian
-double GNSS_norm5(const nonBiasStates& p, Eigen::MatrixXd* H = NULL);
+double GNSS_norm5(const nonBiasStates& p, minimatrix* H = NULL);
 
 /// dot product
 double GNSS_dot(const nonBiasStates& p, const nonBiasStates& q,
-           Eigen::MatrixXd* H_p = NULL,     //
-           Eigen::MatrixXd* H_q = NULL);
+                minimatrix* H_p = NULL,     //
+                minimatrix* H_q = NULL);
 
 template <typename A1, typename A2>
 struct Range;
 
 template <>
-struct Range<nonBiasStates, nonBiasStates> {
-        typedef double result_type;
-        double operator()(const nonBiasStates& p, const nonBiasStates& q,
-                           Eigen::MatrixXd* H1 = NULL,     //
-           Eigen::MatrixXd* H2 = NULL) {
-                return GNSS_distance5(p, q, H1, H2);
-        }
+struct Range<nonBiasStates, nonBiasStates>
+{
+    typedef double result_type;
+    double operator()(const nonBiasStates& p, const nonBiasStates& q,
+                      minimatrix* H1 = NULL,     //
+                      minimatrix* H2 = NULL)
+    {
+        return GNSS_distance5(p, q, H1, H2);
+    }
 };

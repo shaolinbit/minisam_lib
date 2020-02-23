@@ -42,83 +42,85 @@
 namespace gpstk
 {
 
-      /** @addtogroup Rinex3Clock */
-      //@{
+/** @addtogroup Rinex3Clock */
+//@{
 
-      /** This class reads RINEX3 clock data files.
-       *
-       * @sa gpstk::Rinex3ClockData and gpstk::Rinex3ClockHeader.
-       * @sa rinex_clk_test.cpp and rinex_clk_read_write.cpp for examples.
-       */
-   class Rinex3ClockStream : public FFTextStream
-   {
-   public:
-
-
-         /// Default constructor
-      Rinex3ClockStream()
-         : headerRead(false) {};
+/** This class reads RINEX3 clock data files.
+ *
+ * @sa gpstk::Rinex3ClockData and gpstk::Rinex3ClockHeader.
+ * @sa rinex_clk_test.cpp and rinex_clk_read_write.cpp for examples.
+ */
+class Rinex3ClockStream : public FFTextStream
+{
+public:
 
 
-         /** Common constructor.
-          *
-          * @param fn      the RINEX3 clock data file to open
-          * @param mode    how to open \a fn.
-          */
-      Rinex3ClockStream( const char* fn,
-                         std::ios::openmode mode=std::ios::in )
-         : FFTextStream(fn, mode), headerRead(false) {};
+    /// Default constructor
+    Rinex3ClockStream()
+        : headerRead(false) {};
 
 
-         /** Common constructor.
-          *
-          * @param fn      the RINEX3 clock data file to open
-          * @param mode    how to open \a fn.
-          */
-      Rinex3ClockStream( const std::string fn,
-                         std::ios::openmode mode=std::ios::in )
-         : FFTextStream(fn.c_str(), mode), headerRead(false) {};
+    /** Common constructor.
+     *
+     * @param fn      the RINEX3 clock data file to open
+     * @param mode    how to open \a fn.
+     */
+    Rinex3ClockStream( const char* fn,
+                       std::ios::openmode mode=std::ios::in )
+        : FFTextStream(fn, mode), headerRead(false) {};
 
 
-         /// Destructor
-      virtual ~Rinex3ClockStream() {};
+    /** Common constructor.
+     *
+     * @param fn      the RINEX3 clock data file to open
+     * @param mode    how to open \a fn.
+     */
+    Rinex3ClockStream( const std::string fn,
+                       std::ios::openmode mode=std::ios::in )
+        : FFTextStream(fn.c_str(), mode), headerRead(false) {};
 
 
-         /** Overrides open to reset the header
-          *
-          * @param fn      the RINEX3 clock data file to open
-          * @param mode    how to open \a fn.
-          */
-      virtual void open( const char* fn,
-                         std::ios::openmode mode )
-      {
-         FFTextStream::open(fn, mode);
-         headerRead = false;
-         header = Rinex3ClockHeader();
-      };
+    /// Destructor
+    virtual ~Rinex3ClockStream() {};
 
 
-         /** Overrides open to reset the header
-          *
-          * @param fn      the RINEX3 clock data file to open
-          * @param mode    how to open \a fn.
-          */
-      virtual void open( const std::string& fn,
-                         std::ios::openmode mode )
-      { open(fn.c_str(), mode); };
+    /** Overrides open to reset the header
+     *
+     * @param fn      the RINEX3 clock data file to open
+     * @param mode    how to open \a fn.
+     */
+    virtual void open( const char* fn,
+                       std::ios::openmode mode )
+    {
+        FFTextStream::open(fn, mode);
+        headerRead = false;
+        header = Rinex3ClockHeader();
+    };
 
 
-         /// Whether or not the Rinex3ClockHeader has been read
-      bool headerRead;
+    /** Overrides open to reset the header
+     *
+     * @param fn      the RINEX3 clock data file to open
+     * @param mode    how to open \a fn.
+     */
+    virtual void open( const std::string& fn,
+                       std::ios::openmode mode )
+    {
+        open(fn.c_str(), mode);
+    };
 
 
-         /// The header for this file.
-      Rinex3ClockHeader header;
+    /// Whether or not the Rinex3ClockHeader has been read
+    bool headerRead;
 
 
-   }; // End of class 'Rinex3ClockStream'
+    /// The header for this file.
+    Rinex3ClockHeader header;
 
-      //@}
+
+}; // End of class 'Rinex3ClockStream'
+
+//@}
 
 }  // End of namespace gpstk
 

@@ -33,15 +33,15 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
+/** @addtogroup ephemcalc */
+//@{
 
-      /// The maximum number of active satellites in the Compass
-      /// constellation. 
-   const long MAX_PRN_COM     = 30;
+/// The maximum number of active satellites in the Compass
+/// constellation.
+const long MAX_PRN_COM     = 30;
 
-   //@}
+//@}
 
-} // namespace 
+} // namespace
 
 #endif

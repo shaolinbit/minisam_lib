@@ -7,7 +7,7 @@
 
 #include "../inference/ClusterTree.h"
 #include "../inference/EliminationTree.h"
-#include "../symbolic/SymbolicConditional.h"
+#include "../inference/SymbolicConditional.h"
 
 namespace minisam
 {

@@ -5,8 +5,6 @@
 /**
  * @file Marginals.h
  * @brief A class for computing marginals in a NonlinearFactorGraph
- * @author Richard Roberts
- * @date May 14, 2012
  */
 
 
@@ -36,12 +34,7 @@ public:
 protected:
 
     GaussianFactorGraph graph_;
-    std::map<int,Eigen::VectorXd> values_;
-#ifdef GMF_Using_Pose3
-    std::map<int,Pose3> poses_;
-#else
-    std::map<int,Pose2> poses_;
-#endif // GMF_Using_Pose3
+    std::map<int,minimatrix*> values_;
     Factorization factorization_;
 public:
     BayesTree* bayesTree_;
@@ -62,30 +55,22 @@ public:
      * @param factorization The linear decomposition mode - either Marginals::CHOLESKY (faster and suitable for most problems) or Marginals::QR (slower but more numerically stable for poorly-conditioned problems).
      * @param ordering An optional variable ordering for elimination.
      */
-#ifdef GMF_Using_Pose3
-    Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose3>& sposes_,const std::vector<int>& ordering,const Factorization& factorization= CHOLESKY);
-    Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose3>& sposes_,const Factorization& factorization= CHOLESKY);
-#else
-    Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose2>& sposes_,const std::vector<int>& ordering,const Factorization& factorization= CHOLESKY);
-    Marginals(const NonlinearFactorGraph& graph, const std::map<int,Eigen::VectorXd>& solution,
-              const std::map<int,Pose2>& sposes_,const Factorization& factorization= CHOLESKY);
-#endif // GMF_Using_Pose3
-
+    Marginals(const NonlinearFactorGraph& graph, const std::map<int,minimatrix*>& solution,
+              const std::vector<int>& ordering,const Factorization& factorization= CHOLESKY);
+    Marginals(const NonlinearFactorGraph& graph, const std::map<int,minimatrix*>& solution,
+              const Factorization& factorization= CHOLESKY);
     /** Compute the marginal factor of a single variable */
     std::pair<RealGaussianFactor*,GaussianBayesNet*>  marginalFactor(int variable);
 
     /** Compute the marginal information matrix of a single variable.
       * Use LLt(const Matrix&) or RtR(const Matrix&) to obtain the square-root information matrix. */
-    Eigen::MatrixXd marginalInformation(int variable);
+    minimatrix marginalInformation(int variable);
 
     /** Compute the marginal covariance of a single variable */
-    Eigen::MatrixXd marginalCovariance(int variable);
+    minimatrix marginalCovariance(int variable);
 
     /** Optimize the bayes tree */
-    std::map<int,Eigen::VectorXd> optimize() const;
+    std::map<int,minivector> optimize() const;
 };
 
 };

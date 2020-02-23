@@ -1,23 +1,8 @@
 #ifndef JUNCTIONTREE_H_INCLUDED
 #define JUNCTIONTREE_H_INCLUDED
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file JunctionTree.h
- * @date Feb 4, 2010
- * @author Kai Ni
- * @author Frank Dellaert
- * @author Richard Roberts
  * @brief The junction tree
  */
 
@@ -25,7 +10,7 @@
 
 #include "../inference/ClusterTree.h"
 #include "../inference/EliminationTree.h"
-#include "../symbolic/SymbolicConditional.h"
+#include "../inference/SymbolicConditional.h"
 namespace minisam
 {
 

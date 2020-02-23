@@ -36,106 +36,107 @@ namespace gpstk
 {
 
 
-      /* Return result.
-       *
-       * @param input      Input data.
-       */
-   double FIRDifferentiator5thOrder::Compute( double input )
-   {
+/* Return result.
+ *
+ * @param input      Input data.
+ */
+double FIRDifferentiator5thOrder::Compute( double input )
+{
 
-         // Be default, the filter is invalid
-      valid = false;
+    // Be default, the filter is invalid
+    valid = false;
 
-         // Default result
-      double result( 0.0 );
-
-
-         // Check if there are enough stored data values
-      if( X.size() == 10 )
-      {
-
-            // Compute the result. This implements the equation:
-            // y[k] = k1*x[k+5] - k2*x[k+4] + k3*x[k+3] - k4*x[k+2] + k5*x[k+1]
-            //      - k5*x[k-1] + k4*x[k-2] - k3*x[k-3] + k2*x[k-4] - k1*x[k-5]
-
-         result = k1*(input - X[9]) + k2*(X[8] - X[0]) + k3*(X[1] - X[7])
-                                    + k4*(X[6] - X[2]) + k5*(X[3] - X[5]);
-
-            // Filter result is valid
-         valid = true;
-      }
-
-         // Update filter state
-
-         // Insert input in input vector
-      X.push_front( input );
-
-         // Delete old inputs
-      if(X.size() > 10) X.pop_back();
-
-         // Return result
-      return result;
-
-   }  // End of constructor 'FIRDifferentiator5thOrder::Compute()'
+    // Default result
+    double result( 0.0 );
 
 
+    // Check if there are enough stored data values
+    if( X.size() == 10 )
+    {
 
-      // Resets filter, cleaning its internal state.
-   void FIRDifferentiator5thOrder::Reset(void)
-   {
-         // Clear stored input values
-      X.clear();
+        // Compute the result. This implements the equation:
+        // y[k] = k1*x[k+5] - k2*x[k+4] + k3*x[k+3] - k4*x[k+2] + k5*x[k+1]
+        //      - k5*x[k-1] + k4*x[k-2] - k3*x[k-3] + k2*x[k-4] - k1*x[k-5]
 
-         // Filter state is invalid
-      valid = false;
+        result = k1*(input - X[9]) + k2*(X[8] - X[0]) + k3*(X[1] - X[7])
+                 + k4*(X[6] - X[2]) + k5*(X[3] - X[5]);
 
-         // Return
-      return;
+        // Filter result is valid
+        valid = true;
+    }
 
-   }  // End of constructor 'FIRDifferentiator5thOrder::Reset()'
+    // Update filter state
+
+    // Insert input in input vector
+    X.push_front( input );
+
+    // Delete old inputs
+    if(X.size() > 10)
+        X.pop_back();
+
+    // Return result
+    return result;
+
+}  // End of constructor 'FIRDifferentiator5thOrder::Compute()'
 
 
 
-      /* Set the sampling period, in seconds.
-       *
-       * @param[in] period      Sampling period, in seconds.
-       *
-       * @warning Only values higher that zero are allowed. Other values will
-       * be ignored.
-       *
-       * @warning This operation resets the filter.
-       */
-   FIRDifferentiator5thOrder& FIRDifferentiator5thOrder::setT( double period )
-   {
-         // Check period
-      if( period > 0.0 )
-      {
-         T = period;
-         Init();
-         Reset();
-      }
+// Resets filter, cleaning its internal state.
+void FIRDifferentiator5thOrder::Reset(void)
+{
+    // Clear stored input values
+    X.clear();
 
-      return (*this);
+    // Filter state is invalid
+    valid = false;
 
-   }  // End of method 'FIRDifferentiator5thOrder::setT()'
+    // Return
+    return;
+
+}  // End of constructor 'FIRDifferentiator5thOrder::Reset()'
 
 
 
-      // Initialization method
-   void FIRDifferentiator5thOrder::Init( void )
-   {
+/* Set the sampling period, in seconds.
+ *
+ * @param[in] period      Sampling period, in seconds.
+ *
+ * @warning Only values higher that zero are allowed. Other values will
+ * be ignored.
+ *
+ * @warning This operation resets the filter.
+ */
+FIRDifferentiator5thOrder& FIRDifferentiator5thOrder::setT( double period )
+{
+    // Check period
+    if( period > 0.0 )
+    {
+        T = period;
+        Init();
+        Reset();
+    }
 
-         // Generate filter parameters
-      k1 = 1.0/(1260.0*T);
-      k2 = k1*(12.5);
-      k3 = k1*(75.0);
-      k4 = k1*(300.0);
-      k5 = k1*(1050.0);
+    return (*this);
 
-         // Filter parameters are set. Let's return
-      return;
+}  // End of method 'FIRDifferentiator5thOrder::setT()'
 
-   }  // End of method 'FIRDifferentiator5thOrder::Init()'
+
+
+// Initialization method
+void FIRDifferentiator5thOrder::Init( void )
+{
+
+    // Generate filter parameters
+    k1 = 1.0/(1260.0*T);
+    k2 = k1*(12.5);
+    k3 = k1*(75.0);
+    k4 = k1*(300.0);
+    k5 = k1*(1050.0);
+
+    // Filter parameters are set. Let's return
+    return;
+
+}  // End of method 'FIRDifferentiator5thOrder::Init()'
 
 
 }  // End of namespace gpstk

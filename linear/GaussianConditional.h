@@ -1,19 +1,6 @@
-
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    GaussianConditional.h
  * @brief   Conditional Gaussian Base class
- * @author  Christian Potthast
  */
 
 #ifndef GAUSSIANCONDITIONAL_H
@@ -22,7 +9,7 @@
 
 #include "../linear/JacobianFactor.h"
 #include "../linear/NoiseModel.h"
-#include "../base/SVBlockMatrix.h"
+#include "../mat/GaussianBlockMatrix.h"
 
 namespace minisam
 {
@@ -47,28 +34,28 @@ public:
     *   @tparam TERMS A container whose value type is std::pair<Key, Matrix>, specifying the
     *           collection of keys and matrices making up the conditional.
     GaussianConditional(const std::pair<int, Eigen::MatrixXd> &terms,
-                        const JacobianFactor &nrFrontals, const JacobianFactor &nrParents, const Eigen::VectorXd &d,
+                        const JacobianFactor &nrFrontals, const JacobianFactor &nrParents, const minivector &d,
                         DiagonalNoiseModel *sigmas =NULL);
                         //DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
-   */
+    */
     /** Constructor with arbitrary number keys, and where the augmented matrix is given all together
      *  instead of in block terms.  Note that only the active view of the provided augmented matrix
      *  is used, and that the matrix data is copied into a newly-allocated matrix in the constructed
      *  factor. */
     GaussianConditional(
-        const std::vector<int> &keys, int nrFrontalssize,const SVBlockMatrix& augmentedMatrix,
-        DiagonalNoiseModel *sigmas =NULL);
+        const std::vector<int> &keys, int nrFrontalssize,const GaussianBlockMatrix& augmentedMatrix,
+        GaussianNoiseModel *sigmas =NULL);
 
     /** Return a view of the upper-triangular R block of the conditional */
-    Eigen::Block<const Eigen::MatrixXd> get_R() const;
+     minimatrix get_R() const;
 
     /** Get a view of the parent blocks. */
-    Eigen::Block<const Eigen::MatrixXd> get_S() const;
+     minimatrix get_S() const;
 
     /** Get a view of the S matrix for the variable pointed to by the given key iterator */
-    Eigen::Block<const Eigen::MatrixXd> get_S(std::vector<int>::const_iterator variable) const;
+     minimatrix get_S(std::vector<int>::const_iterator variable) const;
     /** Get a view of the r.h.s. vector d */
-    const Eigen::VectorXd get_d() const;
+     minivector get_d() const;
 
     /**
     * Solves a conditional Gaussian and writes the solution into the entries of
@@ -83,7 +70,7 @@ public:
     *
     * @param parents VectorValues containing solved parents \f$ x_s \f$.
     */
-    std::map<int, Eigen::VectorXd> solve(const std::map<int, Eigen::VectorXd> &parents) const;
+    std::map<int, minivector> solve(const std::map<int, minivector> &parents) const;
 
 
     // operators
@@ -104,8 +91,6 @@ public:
     /// @}
 
 }; // GaussianConditional
-
-// operators inline
 
 inline GaussianConditional &GaussianConditional::operator=(const GaussianConditional &rObj)
 {

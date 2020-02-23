@@ -53,32 +53,35 @@
 
 namespace gpstk
 {
-  /** @addtogroup RinexMet */
-  //@{
+/** @addtogroup RinexMet */
+//@{
 
-  /**
-   * This class stores, reads, and writes RINEX 2 & 3 Met records.
-   * @warning When writing a RinexMetData, the RinexMetStream::headerData
-   * must have the correct observation types set or else no data will
-   * be written.
-   *
-   * @sa rinex_met_read_write.cpp for an example.
-   * @sa rinex_met_test.cpp for an example.
-   * @sa RinexMetStream.
-   * @sa RinexMetHeader for information on writing RINEX 2 & 3 Met files.
-   */
+/**
+ * This class stores, reads, and writes RINEX 2 & 3 Met records.
+ * @warning When writing a RinexMetData, the RinexMetStream::headerData
+ * must have the correct observation types set or else no data will
+ * be written.
+ *
+ * @sa rinex_met_read_write.cpp for an example.
+ * @sa rinex_met_test.cpp for an example.
+ * @sa RinexMetStream.
+ * @sa RinexMetHeader for information on writing RINEX 2 & 3 Met files.
+ */
 
-  class RinexMetData : public RinexMetBase
-  {
+class RinexMetData : public RinexMetBase
+{
 
-  public:
+public:
 
     RinexMetData()
-      : time(gpstk::CommonTime::BEGINNING_OF_TIME)
+        : time(gpstk::CommonTime::BEGINNING_OF_TIME)
     {}
 
     /// RinexMetData is "data" so this function always returns true.
-    virtual bool isData(void) const { return true; }
+    virtual bool isData(void) const
+    {
+        return true;
+    }
 
     /**
      * A debug output function.
@@ -87,7 +90,9 @@ namespace gpstk
 
     /// less-than operator, for use with STL sort()
     bool operator<(const RinexMetData& right) const
-    { return (time < right.time); }
+    {
+        return (time < right.time);
+    }
 
     /// A map for storing one line of observations,
     /// mapping the observation type to its value.
@@ -106,12 +111,12 @@ namespace gpstk
     /// a new line.
     static const int maxObsPerContinuationLine;
 
-  protected:
+protected:
 
     /// Writes the met data to the file stream formatted correctly.
     void reallyPutRecord(FFStream& s) const
-      throw(std::exception, FFStreamError,
-            gpstk::StringUtils::StringException);
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException);
 
     /**
      * This function retrieves a RINEX 2 or 3 Met record from the given FFStream.
@@ -123,28 +128,28 @@ namespace gpstk
      *         stream to its pre-read position.
      */
     virtual void reallyGetRecord(FFStream& s)
-      throw(std::exception, FFStreamError,
-            gpstk::StringUtils::StringException);
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException);
 
-  private:
+private:
 
     /// Parses string \a line to get time and met data
     void processFirstLine(const std::string& line,
                           const RinexMetHeader& hdr)
-      throw(FFStreamError);
+    throw(FFStreamError);
 
     /// Parses string \a line to get data on continuation lines.
     void processContinuationLine(const std::string& line,
                                  const RinexMetHeader& hdr)
-      throw(FFStreamError);
+    throw(FFStreamError);
 
     /// Parses the time portion of a line into a CommonTime object.
     CommonTime parseTime(const std::string& line) const
-      throw(FFStreamError);
+    throw(FFStreamError);
 
-  };  // class RinexMetData
+};  // class RinexMetData
 
-  //@}
+//@}
 
 } // namespace
 

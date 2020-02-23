@@ -1,30 +1,13 @@
 #ifndef FACTORPOINTERGRAPH_H
 #define FACTORPOINTERGRAPH_H
 
-
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    FactorGraph.h
  * @brief   Factor Graph Base Class
- * @author  Carlos Nieto
- * @author  Christian Potthast
- * @author  Michael Kaess
- * @author  Richard Roberts
  */
 
 #include "../inference/Factor.h"
 #include <set>
-#include <map>
 #include <iostream>
 #include <string>
 

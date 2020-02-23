@@ -42,186 +42,186 @@
 
 namespace gpstk
 {
-   MJD& MJD::operator=( const MJD& right )
-   {
-      mjd = right.mjd;
-      timeSystem = right.timeSystem;
-      return *this;
-   }
+MJD& MJD::operator=( const MJD& right )
+{
+    mjd = right.mjd;
+    timeSystem = right.timeSystem;
+    return *this;
+}
 
-   CommonTime MJD::convertToCommonTime() const
-   {
-      try
-      {
-            // convert to Julian Day
-         long double tmp( mjd + MJD_JDAY );
-            // get the whole number of days
-         long jday( static_cast<long>( tmp ) );
-            // tmp now holds the partial days
-         tmp -= static_cast<long>( tmp );
-            // convert tmp to seconds of day
-         tmp *= SEC_PER_DAY;
-            // Lose excess precision in 'tmp' because it may cause rounding
-            // problems in the conversion to CommonTime.
-         double dTmp( static_cast<double>( tmp ) );
+CommonTime MJD::convertToCommonTime() const
+{
+    try
+    {
+        // convert to Julian Day
+        long double tmp( mjd + MJD_JDAY );
+        // get the whole number of days
+        long jday( static_cast<long>( tmp ) );
+        // tmp now holds the partial days
+        tmp -= static_cast<long>( tmp );
+        // convert tmp to seconds of day
+        tmp *= SEC_PER_DAY;
+        // Lose excess precision in 'tmp' because it may cause rounding
+        // problems in the conversion to CommonTime.
+        double dTmp( static_cast<double>( tmp ) );
 
-         CommonTime ct;
-         return ct.set( jday,
-                        static_cast<long>( dTmp ),
-                        dTmp - static_cast<long>( dTmp ),
-                        timeSystem );
-      }
-      catch (InvalidParameter& ip)
-      {
-         InvalidRequest ir(ip);
-         GPSTK_THROW(ip);
-      }
+        CommonTime ct;
+        return ct.set( jday,
+                       static_cast<long>( dTmp ),
+                       dTmp - static_cast<long>( dTmp ),
+                       timeSystem );
+    }
+    catch (InvalidParameter& ip)
+    {
+        InvalidRequest ir(ip);
+        GPSTK_THROW(ip);
+    }
 
-   }
+}
 
-   void MJD::convertFromCommonTime( const CommonTime& ct )
-   {
-      long jday, sod;
-      double fsod;
-      ct.get( jday, sod, fsod, timeSystem );
+void MJD::convertFromCommonTime( const CommonTime& ct )
+{
+    long jday, sod;
+    double fsod;
+    ct.get( jday, sod, fsod, timeSystem );
 
-      mjd =  static_cast<long double>( jday - MJD_JDAY ) +
+    mjd =  static_cast<long double>( jday - MJD_JDAY ) +
            (  static_cast<long double>( sod )
-            + static_cast<long double>( fsod ) ) * DAY_PER_SEC;
-   }
+              + static_cast<long double>( fsod ) ) * DAY_PER_SEC;
+}
 
-   std::string MJD::printf( const std::string& fmt ) const
-   {
-      try
-      {
-         using gpstk::StringUtils::formattedPrint;
-         std::string rv( fmt );
+std::string MJD::printf( const std::string& fmt ) const
+{
+    try
+    {
+        using gpstk::StringUtils::formattedPrint;
+        std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
-                              "QLf", mjd );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Ps", timeSystem.asString().c_str() );
-         return rv;
-      }
-      catch( gpstk::StringUtils::StringException& se )
-      {
-         GPSTK_RETHROW( se );
-      }
-   }
+        rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
+                             "QLf", mjd );
+        rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                             "Ps", timeSystem.asString().c_str() );
+        return rv;
+    }
+    catch( gpstk::StringUtils::StringException& se )
+    {
+        GPSTK_RETHROW( se );
+    }
+}
 
-   std::string MJD::printError( const std::string& fmt ) const
-   {
-      try
-      {
-         using gpstk::StringUtils::formattedPrint;
-         std::string rv( fmt );
+std::string MJD::printError( const std::string& fmt ) const
+{
+    try
+    {
+        using gpstk::StringUtils::formattedPrint;
+        std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
-                              "Qs", getError().c_str() );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Ps", getError().c_str() );
-         return rv;
-      }
-      catch( gpstk::StringUtils::StringException& se )
-      {
-         GPSTK_RETHROW( se );
-      }
-   }
+        rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
+                             "Qs", getError().c_str() );
+        rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                             "Ps", getError().c_str() );
+        return rv;
+    }
+    catch( gpstk::StringUtils::StringException& se )
+    {
+        GPSTK_RETHROW( se );
+    }
+}
 
-   bool MJD::setFromInfo( const IdToValue& info )
-   {
-      using namespace gpstk::StringUtils;
+bool MJD::setFromInfo( const IdToValue& info )
+{
+    using namespace gpstk::StringUtils;
 
-      for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
-      {
-         switch( i->first )
-         {
-            case 'Q':
-               mjd = asLongDouble( i->second );
-               break;
+    for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
+    {
+        switch( i->first )
+        {
+        case 'Q':
+            mjd = asLongDouble( i->second );
+            break;
 
-            case 'P':
-	            timeSystem.fromString(i->second);
-               break;
+        case 'P':
+            timeSystem.fromString(i->second);
+            break;
 
-            default:
-                  // do nothing
-               break;
-         };
-      }
+        default:
+            // do nothing
+            break;
+        };
+    }
 
-      return true;
-   }
+    return true;
+}
 
-   bool MJD::isValid() const
-   {
-      MJD temp;
-      temp.convertFromCommonTime( convertToCommonTime() );
-      if( *this == temp )
-      {
-         return true;
-      }
-      return false;
-   }
+bool MJD::isValid() const
+{
+    MJD temp;
+    temp.convertFromCommonTime( convertToCommonTime() );
+    if( *this == temp )
+    {
+        return true;
+    }
+    return false;
+}
 
-   void MJD::reset()
-   {
-      mjd = 0.0;
-      timeSystem = TimeSystem::Unknown;
-   }
+void MJD::reset()
+{
+    mjd = 0.0;
+    timeSystem = TimeSystem::Unknown;
+}
 
-   bool MJD::operator==( const MJD& right ) const
-   {
-     /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != TimeSystem::Any &&
-           right.timeSystem != TimeSystem::Any) &&
-          timeSystem != right.timeSystem)
-         return false;
+bool MJD::operator==( const MJD& right ) const
+{
+    /// Any (wildcard) type exception allowed, otherwise must be same time systems
+    if ((timeSystem != TimeSystem::Any &&
+            right.timeSystem != TimeSystem::Any) &&
+            timeSystem != right.timeSystem)
+        return false;
 
-      if( fabs(mjd - right.mjd) < CommonTime::eps )
-      {
-         return true;
-      }
-      return false;
-   }
+    if( fabs(mjd - right.mjd) < CommonTime::eps )
+    {
+        return true;
+    }
+    return false;
+}
 
-   bool MJD::operator!=( const MJD& right ) const
-   {
-      return ( !operator==( right ) );
-   }
+bool MJD::operator!=( const MJD& right ) const
+{
+    return ( !operator==( right ) );
+}
 
-   bool MJD::operator<( const MJD& right ) const
-   {
-     /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != TimeSystem::Any &&
-           right.timeSystem != TimeSystem::Any) &&
-          timeSystem != right.timeSystem)
-      {
-         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
-         GPSTK_THROW(ir);
-      }
+bool MJD::operator<( const MJD& right ) const
+{
+    /// Any (wildcard) type exception allowed, otherwise must be same time systems
+    if ((timeSystem != TimeSystem::Any &&
+            right.timeSystem != TimeSystem::Any) &&
+            timeSystem != right.timeSystem)
+    {
+        gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+        GPSTK_THROW(ir);
+    }
 
-      if( mjd < right.mjd )
-      {
-         return true;
-      }
-      return false;
-   }
+    if( mjd < right.mjd )
+    {
+        return true;
+    }
+    return false;
+}
 
-   bool MJD::operator>( const MJD& right ) const
-   {
-      return ( !operator<=( right ) );
-   }
+bool MJD::operator>( const MJD& right ) const
+{
+    return ( !operator<=( right ) );
+}
 
-   bool MJD::operator<=( const MJD& right ) const
-   {
-      return ( operator<(  right ) ||
-               operator==( right )   );
-   }
+bool MJD::operator<=( const MJD& right ) const
+{
+    return ( operator<(  right ) ||
+             operator==( right )   );
+}
 
-   bool MJD::operator>=( const MJD& right ) const
-   {
-      return ( !operator<( right ) );
-   }
+bool MJD::operator>=( const MJD& right ) const
+{
+    return ( !operator<( right ) );
+}
 
 } // namespace

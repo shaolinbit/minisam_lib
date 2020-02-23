@@ -46,271 +46,273 @@
 namespace gpstk
 {
 
-      // Returns a string identifying this object.
-   std::string PhaseCodeAlignment::getClassName() const
-   { return "PhaseCodeAlignment"; }
+// Returns a string identifying this object.
+std::string PhaseCodeAlignment::getClassName() const
+{
+    return "PhaseCodeAlignment";
+}
 
 
-      /* Common constructor
-       *
-       * @param phase            Phase TypeID.
-       * @param code             Code TypeID.
-       * @param wavelength       Phase wavelength, in meters.
-       * @param useArc           Whether satellite arcs will be used or not.
-       */
-   PhaseCodeAlignment::PhaseCodeAlignment( const TypeID& phase,
-                                           const TypeID& code,
-                                           const double wavelength,
-                                           bool useArc )
-      : phaseType(phase), codeType(code), useSatArcs(useArc),
-        watchCSFlag(TypeID::CSL1)
-   {
+/* Common constructor
+ *
+ * @param phase            Phase TypeID.
+ * @param code             Code TypeID.
+ * @param wavelength       Phase wavelength, in meters.
+ * @param useArc           Whether satellite arcs will be used or not.
+ */
+PhaseCodeAlignment::PhaseCodeAlignment( const TypeID& phase,
+                                        const TypeID& code,
+                                        const double wavelength,
+                                        bool useArc )
+    : phaseType(phase), codeType(code), useSatArcs(useArc),
+      watchCSFlag(TypeID::CSL1)
+{
 
-         // Set the wavelength
-      setPhaseWavelength(wavelength);
+    // Set the wavelength
+    setPhaseWavelength(wavelength);
 
-   }  // End of 'PhaseCodeAlignment::PhaseCodeAlignment()'
-
-
-
-      /* Method to set the phase wavelength to be used.
-       *
-       * @param wavelength       Phase wavelength, in meters.
-       */
-   PhaseCodeAlignment& PhaseCodeAlignment::setPhaseWavelength(double wavelength)
-   {
-
-         // Check that wavelength is bigger than zero
-      if (wavelength > 0.0)
-      {
-         phaseWavelength = wavelength;
-      }
-      else
-      {
-         phaseWavelength = 0.1069533781421467;   // Be default, LC wavelength
-      }
-
-      return (*this);
-
-   }  // End of 'PhaseCodeAlignment::setPhaseWavelength()'
+}  // End of 'PhaseCodeAlignment::PhaseCodeAlignment()'
 
 
 
-      /* Returns a satTypeValueMap object, adding the new data generated
-       *  when calling this object.
-       *
-       * @param epoch     Time of observations.
-       * @param gData     Data object holding the data.
-       */
-   satTypeValueMap& PhaseCodeAlignment::Process( const CommonTime& epoch,
-                                           satTypeValueMap& gData )
-      throw(ProcessingException)
-   {
+/* Method to set the phase wavelength to be used.
+ *
+ * @param wavelength       Phase wavelength, in meters.
+ */
+PhaseCodeAlignment& PhaseCodeAlignment::setPhaseWavelength(double wavelength)
+{
 
-      try
-      {
+    // Check that wavelength is bigger than zero
+    if (wavelength > 0.0)
+    {
+        phaseWavelength = wavelength;
+    }
+    else
+    {
+        phaseWavelength = 0.1069533781421467;   // Be default, LC wavelength
+    }
 
-         SatIDSet satRejectedSet;
+    return (*this);
 
-            // Loop through all the satellites
-         for( satTypeValueMap::iterator it = gData.begin();
-              it != gData.end();
-              ++it )
-         {
+}  // End of 'PhaseCodeAlignment::setPhaseWavelength()'
 
-               // Check if satellite currently has entries
+
+
+/* Returns a satTypeValueMap object, adding the new data generated
+ *  when calling this object.
+ *
+ * @param epoch     Time of observations.
+ * @param gData     Data object holding the data.
+ */
+satTypeValueMap& PhaseCodeAlignment::Process( const CommonTime& epoch,
+        satTypeValueMap& gData )
+throw(ProcessingException)
+{
+
+    try
+    {
+
+        SatIDSet satRejectedSet;
+
+        // Loop through all the satellites
+        for( satTypeValueMap::iterator it = gData.begin();
+                it != gData.end();
+                ++it )
+        {
+
+            // Check if satellite currently has entries
             std::map<SatID, alignData>::const_iterator itDat(
-                                                svData.find( (*it).first ) );
+                svData.find( (*it).first ) );
             if( itDat == svData.end() )
             {
 
-                  // If it doesn't have an entry, insert one
-               alignData aData;
+                // If it doesn't have an entry, insert one
+                alignData aData;
 
-               svData[ (*it).first ] = aData;
+                svData[ (*it).first ] = aData;
 
             }
 
 
-               // Place to store if there was a cycle slip. False by default
+            // Place to store if there was a cycle slip. False by default
             bool csflag(false);
 
 
-               // Check if we want to use satellite arcs of cycle slip flags
+            // Check if we want to use satellite arcs of cycle slip flags
             if(useSatArcs)
             {
 
-               double arcN(0.0);
+                double arcN(0.0);
 
-               try
-               {
+                try
+                {
 
-                     // Try to extract the satellite arc value
-                  arcN = (*it).second(TypeID::satArc);
+                    // Try to extract the satellite arc value
+                    arcN = (*it).second(TypeID::satArc);
 
-               }
-               catch(...)
-               {
+                }
+                catch(...)
+                {
 
-                     // If satellite arc is missing, then schedule this
-                     // satellite for removal
-                  satRejectedSet.insert( (*it).first );
+                    // If satellite arc is missing, then schedule this
+                    // satellite for removal
+                    satRejectedSet.insert( (*it).first );
 
-                  continue;
+                    continue;
 
-               }
+                }
 
 
-                  // Check if satellite arc has changed
-               if( svData[(*it).first].arcNumber != arcN )
-               {
+                // Check if satellite arc has changed
+                if( svData[(*it).first].arcNumber != arcN )
+                {
 
-                     // Set flag
-                  csflag = true;
+                    // Set flag
+                    csflag = true;
 
-                     // Update satellite arc information
-                  svData[(*it).first].arcNumber = arcN;
-               }
+                    // Update satellite arc information
+                    svData[(*it).first].arcNumber = arcN;
+                }
 
             }  // End of first part of 'if(useSatArcs)'
             else
             {
 
-               double flag(0.0);
+                double flag(0.0);
 
-               try
-               {
+                try
+                {
 
-                     // Try to extract the CS flag value
-                  flag = (*it).second(watchCSFlag);
+                    // Try to extract the CS flag value
+                    flag = (*it).second(watchCSFlag);
 
-               }
-               catch(...)
-               {
+                }
+                catch(...)
+                {
 
-                     // If flag is missing, then schedule this satellite
-                     // for removal
-                  satRejectedSet.insert( (*it).first );
+                    // If flag is missing, then schedule this satellite
+                    // for removal
+                    satRejectedSet.insert( (*it).first );
 
-                  continue;
+                    continue;
 
-               }
+                }
 
-                  // Check if there was a cycle slip
-               if( flag > 0.0)
-               {
-                     // Set flag
-                  csflag = true;
-               }
+                // Check if there was a cycle slip
+                if( flag > 0.0)
+                {
+                    // Set flag
+                    csflag = true;
+                }
 
             }  // End of second part of 'if(useSatArcs)...'
 
 
-               // If there was an arc change or cycle slip, let's
-               // compute the new offset
+            // If there was an arc change or cycle slip, let's
+            // compute the new offset
             if(csflag)
             {
 
-                  // Compute difference between code and phase measurements
-               double diff( (*it).second(codeType) - (*it).second(phaseType) );
+                // Compute difference between code and phase measurements
+                double diff( (*it).second(codeType) - (*it).second(phaseType) );
 
-                  // Convert 'diff' to cycles
-               diff = diff/phaseWavelength;
+                // Convert 'diff' to cycles
+                diff = diff/phaseWavelength;
 
-                  // Convert 'diff' to an INTEGER number of cycles
-               diff = std::floor(diff);
+                // Convert 'diff' to an INTEGER number of cycles
+                diff = std::floor(diff);
 
-                  // The new offset is the INTEGER number of cycles, in meters
-               svData[(*it).first].offset = diff * phaseWavelength;
+                // The new offset is the INTEGER number of cycles, in meters
+                svData[(*it).first].offset = diff * phaseWavelength;
 
             }
 
-               // Let's align the phase measurement using the
-               // corresponding offset
+            // Let's align the phase measurement using the
+            // corresponding offset
             (*it).second[phaseType] = (*it).second[phaseType]
                                       + svData[(*it).first].offset;
 
-         }
+        }
 
-            // Remove satellites with missing data
-         gData.removeSatID(satRejectedSet);
+        // Remove satellites with missing data
+        gData.removeSatID(satRejectedSet);
 
-         return gData;
+        return gData;
 
-      }
-      catch(Exception& u)
-      {
-            // Throw an exception if something unexpected happens
-         ProcessingException e( getClassName() + ":"
-                                + u.what() );
+    }
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
 
-         GPSTK_THROW(e);
+        GPSTK_THROW(e);
 
-      }
+    }
 
-   }  // End of 'PhaseCodeAlignment::Process()'
-
-
-
-      /* Returns a gnnsSatTypeValue object, adding the new data generated
-       *  when calling this object.
-       *
-       * @param gData    Data object holding the data.
-       */
-   gnssSatTypeValue& PhaseCodeAlignment::Process(gnssSatTypeValue& gData)
-      throw(ProcessingException)
-   {
-
-      try
-      {
-
-         Process(gData.header.epoch, gData.body);
-
-         return gData;
-
-      }
-      catch(Exception& u)
-      {
-            // Throw an exception if something unexpected happens
-         ProcessingException e( getClassName() + ":"
-                                + u.what() );
-
-         GPSTK_THROW(e);
-
-      }
-
-   }  // End of 'PhaseCodeAlignment::Process()'
+}  // End of 'PhaseCodeAlignment::Process()'
 
 
 
-      /* Returns a gnnsRinex object, adding the new data generated when
-       *  calling this object.
-       *
-       * @param gData    Data object holding the data.
-       */
-   gnssRinex& PhaseCodeAlignment::Process(gnssRinex& gData)
-      throw(ProcessingException)
-   {
+/* Returns a gnnsSatTypeValue object, adding the new data generated
+ *  when calling this object.
+ *
+ * @param gData    Data object holding the data.
+ */
+gnssSatTypeValue& PhaseCodeAlignment::Process(gnssSatTypeValue& gData)
+throw(ProcessingException)
+{
 
-      try
-      {
+    try
+    {
 
-         Process(gData.header.epoch, gData.body);
+        Process(gData.header.epoch, gData.body);
 
-         return gData;
+        return gData;
 
-      }
-      catch(Exception& u)
-      {
-            // Throw an exception if something unexpected happens
-         ProcessingException e( getClassName() + ":"
-                                + u.what() );
+    }
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
 
-         GPSTK_THROW(e);
+        GPSTK_THROW(e);
 
-      }
+    }
 
-   }  // End of 'PhaseCodeAlignment::Process()'
+}  // End of 'PhaseCodeAlignment::Process()'
+
+
+
+/* Returns a gnnsRinex object, adding the new data generated when
+ *  calling this object.
+ *
+ * @param gData    Data object holding the data.
+ */
+gnssRinex& PhaseCodeAlignment::Process(gnssRinex& gData)
+throw(ProcessingException)
+{
+
+    try
+    {
+
+        Process(gData.header.epoch, gData.body);
+
+        return gData;
+
+    }
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
+
+        GPSTK_THROW(e);
+
+    }
+
+}  // End of 'PhaseCodeAlignment::Process()'
 
 
 } // End of namespace gpstk

@@ -10,64 +10,70 @@
 #include "minisam/nonlinear/NonlinearFactor.h"
 #include "../gnssNavigation/nonBiasStates.h"
 
-namespace minisam {
+namespace minisam
+{
 
 class  PhaseFactor : public NoiseModelFactor2
 {
 private:
-typedef NoiseModelFactor2 Base;
-Eigen::Vector3d satXYZ_;
-Eigen::Vector3d nomXYZ_;
-double measured_;
-nonBiasStates h_;
+    typedef NoiseModelFactor2 Base;
+    minivector* satXYZ_;
+    minivector* nomXYZ_;
+    double measured_;
+    //nonBiasStates h_;
+    minivector* h_;
 
 public:
 
-typedef PhaseFactor This;
+    typedef PhaseFactor This;
 
-PhaseFactor() : measured_(0) {
+    PhaseFactor() : measured_(0),satXYZ_(new minivector(3)),
+    nomXYZ_(new minivector(3)),h_(new nonBiasStates(1,1,1,1,1))
+    {
+       
+    }
 
-        Eigen::VectorXd bh(5) ;
-        bh<<1,1,1,1,1;
+    virtual ~PhaseFactor()
+    {
+        delete satXYZ_;
+        delete nomXYZ_;
+        delete h_;
+        delete noiseModel_;
+    }
 
-        h_=nonBiasStates(bh);
-}
+    minivector* satXYZ()
+    {
+        return satXYZ_;
+    }
 
-virtual ~PhaseFactor() {
-}
+    minivector* nomXYZ()
+    {
+        return nomXYZ_;
+    }
+    double measured()
+    {
+        return measured_;
+    }
 
-Eigen::Vector3d satXYZ()
-{
-  return satXYZ_;
-}
-
-Eigen::Vector3d nomXYZ()
-{
-  return nomXYZ_;
-}
-double measured()
-{
-  return measured_;
-}
-
-PhaseFactor(int deltaStates, int bias, const double measurement,
-            const Eigen::Vector3d& satXYZ, const Eigen::Vector3d& nomXYZ,GaussianNoiseModel* model) :
-        Base(model, deltaStates, bias), measured_(measurement)
-{
-        satXYZ_=satXYZ;
-        nomXYZ_=nomXYZ;
-}
+    PhaseFactor(int deltaStates, int bias, const double measurement,
+                minivector* satXYZ, minivector* nomXYZ,GaussianNoiseModel* model) :
+        Base(model, deltaStates, bias), measured_(measurement),satXYZ_(satXYZ),nomXYZ_(nomXYZ),
+        h_(new nonBiasStates(1,1,1,1,1))
+    {
+       
+    }
 
 
-virtual NonlinearFactor* clone() const{
-       PhaseFactor* npf=new PhaseFactor(key1(),key2(),measured_,satXYZ_,nomXYZ_,noiseModel());
-       return npf;
-}
+    virtual NoiseModelFactor* clone() const
+    {
+        PhaseFactor* npf=new PhaseFactor(key1(),key2(),measured_,satXYZ_,nomXYZ_,noiseModel());
+        return npf;
+    }
 
-Eigen::VectorXd evaluateError(const Eigen::VectorXd& q, const Eigen::VectorXd& g) const;
+    virtual minivector evaluateError(const minimatrix* q, const minimatrix* g) const;
 
-Eigen::VectorXd evaluateError(const Eigen::VectorXd& q, const Eigen::VectorXd& g,
-                              Eigen::MatrixXd& H1,Eigen::MatrixXd& H2) const;
+    virtual minivector evaluateError(const minimatrix* q, const minimatrix* g,
+                             minimatrix& H1,minimatrix& H2) const;
 
 
 }; // PhaseFactor Factor

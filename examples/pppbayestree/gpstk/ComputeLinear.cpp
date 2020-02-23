@@ -46,79 +46,81 @@
 namespace gpstk
 {
 
-      // Returns a string identifying this object.
-   std::string ComputeLinear::getClassName() const
-   { return "ComputeLinear"; }
+// Returns a string identifying this object.
+std::string ComputeLinear::getClassName() const
+{
+    return "ComputeLinear";
+}
 
 
 
-      /* Returns a satTypeValueMap object, adding the new data generated when
-       * calling this object.
-       *
-       * @param time      Epoch corresponding to the data.
-       * @param gData     Data object holding the data.
-       */
-   satTypeValueMap& ComputeLinear::Process( const CommonTime& time,
-                                            satTypeValueMap& gData )
-      throw(ProcessingException)
-   {
+/* Returns a satTypeValueMap object, adding the new data generated when
+ * calling this object.
+ *
+ * @param time      Epoch corresponding to the data.
+ * @param gData     Data object holding the data.
+ */
+satTypeValueMap& ComputeLinear::Process( const CommonTime& time,
+        satTypeValueMap& gData )
+throw(ProcessingException)
+{
 
-      try
-      {
+    try
+    {
 
-            // Loop through all the satellites
-         satTypeValueMap::iterator it;
-         for( it = gData.begin(); it != gData.end(); ++it )
-         {
+        // Loop through all the satellites
+        satTypeValueMap::iterator it;
+        for( it = gData.begin(); it != gData.end(); ++it )
+        {
 
-               // Loop through all the defined linear combinations
+            // Loop through all the defined linear combinations
             LinearCombList::const_iterator pos;
             for( pos = linearList.begin(); pos != linearList.end(); ++pos )
             {
 
-               double result(0.0);
+                double result(0.0);
 
-                  // Read the information of each linear combination
-               typeValueMap::const_iterator iter;
-               for(iter = pos->body.begin(); iter != pos->body.end(); ++iter)
-               {
-                  double temp(0.0);
+                // Read the information of each linear combination
+                typeValueMap::const_iterator iter;
+                for(iter = pos->body.begin(); iter != pos->body.end(); ++iter)
+                {
+                    double temp(0.0);
 
-                  TypeID type(iter->first);
+                    TypeID type(iter->first);
 
-                  if( (*it).second.find(type) != (*it).second.end() )
-                  {
-                     temp = (*it).second[type];
-                  }
-                  else
-                  {
-                     temp = 0.0;
-                  }
+                    if( (*it).second.find(type) != (*it).second.end() )
+                    {
+                        temp = (*it).second[type];
+                    }
+                    else
+                    {
+                        temp = 0.0;
+                    }
 
-                  result = result + (*iter).second * temp;
-               }
+                    result = result + (*iter).second * temp;
+                }
 
-                  // Store the result in the proper place
-               (*it).second[pos->header] = result;
+                // Store the result in the proper place
+                (*it).second[pos->header] = result;
 
             }
 
-         }
+        }
 
-         return gData;
+        return gData;
 
-      }
-      catch(Exception& u)
-      {
-            // Throw an exception if something unexpected happens
-         ProcessingException e( getClassName() + ":"
-                                + u.what() );
+    }
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
 
-         GPSTK_THROW(e);
+        GPSTK_THROW(e);
 
-      }
+    }
 
-   }  // End of method 'ComputeLinear::Process()'
+}  // End of method 'ComputeLinear::Process()'
 
 
 } // End of namespace gpstk

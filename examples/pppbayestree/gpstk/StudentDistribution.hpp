@@ -37,137 +37,151 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
-      //@{
+/** @addtogroup math */
+//@{
 
-      /** This class implements the t-Student distribution.
-       *
-       * A typical way to use this class follows:
-       *
-       * @code
-       *
-       *      // Declare a 'StudentDistribution' object with
-       *      // 1 degree of freedom (default)
-       *   StudentDistribution stuObj;
-       *
-       *   double x(5.7);
-       *
-       *   cout << stuObj.pdf(x) << " | "
-       *        << stuObj.cdf(x) << " | "
-       *        << stuObj.Q(x) << endl;
-       *
-       *      // Now, the same but with four degrees of freedom
-       *   cout << stuObj.pdf(x, 4) << " | "
-       *        << stuObj.cdf(x, 4) << " | "
-       *        << stuObj.Q(x, 4) << endl;
-       *
-       * @endcode
-       *
-       * @sa SpecialFunctions.hpp for useful functions, and
-       *     GaussianDistribution.hpp for a normal distribution.
-       *
-       */
-   class StudentDistribution : public BaseDistribution
-   {
-   public:
-
-
-         /// Default constructor. Sets the number of degrees of freedom to 1.
-      StudentDistribution() : ndf(1) {};
+/** This class implements the t-Student distribution.
+ *
+ * A typical way to use this class follows:
+ *
+ * @code
+ *
+ *      // Declare a 'StudentDistribution' object with
+ *      // 1 degree of freedom (default)
+ *   StudentDistribution stuObj;
+ *
+ *   double x(5.7);
+ *
+ *   cout << stuObj.pdf(x) << " | "
+ *        << stuObj.cdf(x) << " | "
+ *        << stuObj.Q(x) << endl;
+ *
+ *      // Now, the same but with four degrees of freedom
+ *   cout << stuObj.pdf(x, 4) << " | "
+ *        << stuObj.cdf(x, 4) << " | "
+ *        << stuObj.Q(x, 4) << endl;
+ *
+ * @endcode
+ *
+ * @sa SpecialFunctions.hpp for useful functions, and
+ *     GaussianDistribution.hpp for a normal distribution.
+ *
+ */
+class StudentDistribution : public BaseDistribution
+{
+public:
 
 
-         /** Explicit constructor.
-          *
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      StudentDistribution( int n )
-      { setNDF(n); };
+    /// Default constructor. Sets the number of degrees of freedom to 1.
+    StudentDistribution() : ndf(1) {};
 
 
-         /** Computes the probability density function
-          *
-          * @param x    Value
-          */
-      virtual double pdf(double x);
+    /** Explicit constructor.
+     *
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    StudentDistribution( int n )
+    {
+        setNDF(n);
+    };
 
 
-         /** Computes the probability density function
-          *
-          * @param x       Value
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual double pdf(double x, int n)
-      { setNDF(n); return pdf(x); };
+    /** Computes the probability density function
+     *
+     * @param x    Value
+     */
+    virtual double pdf(double x);
 
 
-         /** Computes the cumulative distribution function
-          *
-          * @param x       Value
-          */
-      virtual double cdf(double x);
+    /** Computes the probability density function
+     *
+     * @param x       Value
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual double pdf(double x, int n)
+    {
+        setNDF(n);
+        return pdf(x);
+    };
 
 
-         /** Computes the cumulative distribution function
-          *
-          * @param x       Value
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual double cdf(double x, int n)
-      { setNDF(n); return cdf(x); };
+    /** Computes the cumulative distribution function
+     *
+     * @param x       Value
+     */
+    virtual double cdf(double x);
 
 
-         /** Computes the upper tail of the t-student probability
-          *  function Q(x, ndf).
-          *
-          * @param x       Value
-          */
-      virtual double Q(double x)
-      { return ( 1.0 - cdf(x) ); };
+    /** Computes the cumulative distribution function
+     *
+     * @param x       Value
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual double cdf(double x, int n)
+    {
+        setNDF(n);
+        return cdf(x);
+    };
 
 
-         /** Computes the upper tail of the t-student probability
-          *  function Q(x, n).
-          *
-          * @param x       Value
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual double Q(double x, int n)
-      { return ( 1.0 - cdf(x,n) ); };
+    /** Computes the upper tail of the t-student probability
+     *  function Q(x, ndf).
+     *
+     * @param x       Value
+     */
+    virtual double Q(double x)
+    {
+        return ( 1.0 - cdf(x) );
+    };
 
 
-         /// Get number of degrees of freedom
-      virtual double getNDF(void) const
-      { return ndf; };
+    /** Computes the upper tail of the t-student probability
+     *  function Q(x, n).
+     *
+     * @param x       Value
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual double Q(double x, int n)
+    {
+        return ( 1.0 - cdf(x,n) );
+    };
 
 
-         /** Set the number of degrees of freedom.
-          *
-          * @param n       Degrees of freedom
-          *
-          * \warning "n" must be > 0, otherwise n = |n|.
-          */
-      virtual StudentDistribution& setNDF(int n)
-         throw(InvalidParameter);
+    /// Get number of degrees of freedom
+    virtual double getNDF(void) const
+    {
+        return ndf;
+    };
 
 
-   private:
+    /** Set the number of degrees of freedom.
+     *
+     * @param n       Degrees of freedom
+     *
+     * \warning "n" must be > 0, otherwise n = |n|.
+     */
+    virtual StudentDistribution& setNDF(int n)
+    throw(InvalidParameter);
 
 
-         /// Number of degrees of freedom
-      int ndf;
+private:
 
 
-   };  // End of class "StudentDistribution"
+    /// Number of degrees of freedom
+    int ndf;
 
-      //@}
+
+};  // End of class "StudentDistribution"
+
+//@}
 
 }  // End of namespace gpstk
 #endif   // STUDENTDISTRIBUTION_HPP

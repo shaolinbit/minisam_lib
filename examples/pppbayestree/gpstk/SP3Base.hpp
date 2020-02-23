@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,18 +48,18 @@
 
 namespace gpstk
 {
-   /** @defgroup SP3ephem SP3 format file I/O */
-   //@{
+/** @defgroup SP3ephem SP3 format file I/O */
+//@{
 
-   /// This class is here to make readable inheritance diagrams.
-   class SP3Base : public FFData
-   {
-   public:
-         /// Destructor per the coding standards
-      virtual ~SP3Base() {}
-   };
+/// This class is here to make readable inheritance diagrams.
+class SP3Base : public FFData
+{
+public:
+    /// Destructor per the coding standards
+    virtual ~SP3Base() {}
+};
 
-   //@}
+//@}
 
 }  // namespace
 

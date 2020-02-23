@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2013, The University of Texas at Austin
 //
 //============================================================================
@@ -34,13 +34,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -53,58 +53,58 @@
 
 namespace gpstk
 {
-   class CNavUTC : public CNavDataElement
-   {
-   public:
-         /// Default constructor
-      CNavUTC();
-  
-        /// Need description here...
-      CNavUTC(const PackedNavBits& message33)
-         throw( InvalidParameter);
-      
-         /// Destructor
-      virtual ~CNavUTC() {}
+class CNavUTC : public CNavDataElement
+{
+public:
+    /// Default constructor
+    CNavUTC();
 
-         /// Clone method
-      virtual CNavUTC* clone() const;
+    /// Need description here...
+    CNavUTC(const PackedNavBits& message33)
+    throw( InvalidParameter);
 
-      virtual bool isSameData(const CNavDataElement* right) const;
-        
-         /**
-          * Store the contents of message type 33 in this object.
-          * @param message30 - 300 bits of Message Type 33
-          * @throw InvalidParameter if message data is invalid
-          */
-      void loadData(const PackedNavBits& message33)
-         throw(gpstk::InvalidParameter); 
+    /// Destructor
+    virtual ~CNavUTC() {}
 
-      virtual std::string getName() const
-      {
-         return "CNavUTC";
-      }
+    /// Clone method
+    virtual CNavUTC* clone() const;
 
-      virtual std::string getNameLong() const
-      {
-         return "Civilian Navigation (CNAV) UTC Parameters";
-      }
-      
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+    virtual bool isSameData(const CNavDataElement* right) const;
 
-      double A0;
-      double A1;
-      double A2;
-      double deltaTls;
-      long   Tot;         // Note: These are stored for completeness,
-      int    WNot;        // The epoch time variable provides a CommonTime representation,
-      int    WNlsf;
-      int    DN;
-      double deltaTlsf; 
-   }; // end class CNavUTC
+    /**
+     * Store the contents of message type 33 in this object.
+     * @param message30 - 300 bits of Message Type 33
+     * @throw InvalidParameter if message data is invalid
+     */
+    void loadData(const PackedNavBits& message33)
+    throw(gpstk::InvalidParameter);
 
-   std::ostream& operator<<(std::ostream& s, 
-                                    const CNavUTC& eph);
+    virtual std::string getName() const
+    {
+        return "CNavUTC";
+    }
+
+    virtual std::string getNameLong() const
+    {
+        return "Civilian Navigation (CNAV) UTC Parameters";
+    }
+
+    virtual void dumpBody(std::ostream& s = std::cout) const
+    throw( InvalidRequest );
+
+    double A0;
+    double A1;
+    double A2;
+    double deltaTls;
+    long   Tot;         // Note: These are stored for completeness,
+    int    WNot;        // The epoch time variable provides a CommonTime representation,
+    int    WNlsf;
+    int    DN;
+    double deltaTlsf;
+}; // end class CNavUTC
+
+std::ostream& operator<<(std::ostream& s,
+                         const CNavUTC& eph);
 } // end namespace
 
 #endif // GPSTK_CNAVUTC_HPP

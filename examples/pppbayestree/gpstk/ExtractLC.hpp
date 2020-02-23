@@ -39,68 +39,71 @@
 namespace gpstk
 {
 
-      /** @addtogroup RinexObs */
-      //@{
+/** @addtogroup RinexObs */
+//@{
 
 
-      /// This class eases LC combination data extraction from
-      /// a Rinex3ObsData object.
-   class ExtractLC : public ExtractCombinationData
-   {
-   public:
+/// This class eases LC combination data extraction from
+/// a Rinex3ObsData object.
+class ExtractLC : public ExtractCombinationData
+{
+public:
 
-         /// Default constructor
-      ExtractLC()
-         : typeObs1("L1"), typeObs2("L2")
-      { valid = false; checkData = true; };
-
-
-         /** Compute the LC observation from a Rinex3ObsData object.
-          *
-          * @param rinexData  The Rinex data set holding the observations.
-          * @param hdr        RINEX Observation Header for current RINEX file.
-          *
-          * @return
-          *    Number of satellites with LC combination data available.
-          */
-      virtual int getData( const Rinex3ObsData& rinexData,
-                           const Rinex3ObsHeader& hdr )
-         throw(InvalidRequest)
-      {
-
-         return ExtractCombinationData::getData( rinexData,
-                                                 typeObs1,
-                                                 typeObs2,
-                                                 hdr );
-
-      }; // End of method 'ExtractLC::getData()'
+    /// Default constructor
+    ExtractLC()
+        : typeObs1("L1"), typeObs2("L2")
+    {
+        valid = false;
+        checkData = true;
+    };
 
 
-         /// Destructor
-      virtual ~ExtractLC() {};
+    /** Compute the LC observation from a Rinex3ObsData object.
+     *
+     * @param rinexData  The Rinex data set holding the observations.
+     * @param hdr        RINEX Observation Header for current RINEX file.
+     *
+     * @return
+     *    Number of satellites with LC combination data available.
+     */
+    virtual int getData( const Rinex3ObsData& rinexData,
+                         const Rinex3ObsHeader& hdr )
+    throw(InvalidRequest)
+    {
+
+        return ExtractCombinationData::getData( rinexData,
+                                                typeObs1,
+                                                typeObs2,
+                                                hdr );
+
+    }; // End of method 'ExtractLC::getData()'
 
 
-   protected:
+    /// Destructor
+    virtual ~ExtractLC() {};
 
 
-         /// Compute the combination of observables.
-      virtual double getCombination( double obs1, double obs2 )
-         throw(InvalidRequest)
-      {
-         return ( (GAMMA_GPS*obs1*L1_WAVELENGTH - obs2*L2_WAVELENGTH) /
-                  (GAMMA_GPS - 1.0) );
-      };
+protected:
 
 
-   private:
+    /// Compute the combination of observables.
+    virtual double getCombination( double obs1, double obs2 )
+    throw(InvalidRequest)
+    {
+        return ( (GAMMA_GPS*obs1*L1_WAVELENGTH - obs2*L2_WAVELENGTH) /
+                 (GAMMA_GPS - 1.0) );
+    };
 
-      std::string typeObs1;
-      std::string typeObs2;
+
+private:
+
+    std::string typeObs1;
+    std::string typeObs2;
 
 
-   }; // End of class 'ExtractLC'
+}; // End of class 'ExtractLC'
 
-      //@}
+//@}
 
 }  // End of namespace gpstk
 

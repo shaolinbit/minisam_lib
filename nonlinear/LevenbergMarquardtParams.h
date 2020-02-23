@@ -5,10 +5,6 @@
 /**
  * @file    LevenbergMarquardtParams.h
  * @brief   Parameters for Levenberg-Marquardt trust-region scheme
- * @author  Richard Roberts
- * @author  Frank Dellaert
- * @author  Luca Carlone
- * @date    Feb 26, 2012
  */
 
 #include "../nonlinear/NonlinearOptimizerParams.h"
@@ -73,7 +69,6 @@ public:
           minDiagonal(1e-6),
           maxDiagonal(1e32)
     {
-        //SetLegacyDefaults(this);
         this->maxIterations = 100;
         this->relativeErrorTol = 1e-5;
         this->absoluteErrorTol = 1e-5;

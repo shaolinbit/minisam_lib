@@ -2,17 +2,6 @@
 #define CAL3_S2STEREO_H
 
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file   Cal3_S2Stereo.h
  * @brief  The most common 5DOF 3D->2D calibration + Stereo baseline
@@ -29,40 +18,53 @@
 namespace minisam
 {
 
-class Cal3_S2Stereo
+class Cal3_S2Stereo:public minivector
 {
-private:
-
-    Cal3_S2 K_;
-    double b_;
 
 public:
-
-    enum { dimension = 6 };
 
     /// @name Standard Constructors
     /// @{
 
     /// default calibration leaves coordinates unchanged
-    Cal3_S2Stereo() :
-        K_(1, 1, 0, 0, 0), b_(1.0)
+    Cal3_S2Stereo() :minivector(6)
     {
+        data[0]=1.0;
+        data[1]=1.0;
+        data[2]=0.0;
+        data[3]=0.0;
+        data[4]=0.0;
+        data[5]=1.0;
     }
 
     /// constructor from doubles
-    Cal3_S2Stereo(double fx, double fy, double s, double u0, double v0, double b) :
-        K_(fx, fy, s, u0, v0), b_(b)
+    Cal3_S2Stereo(double fx, double fy, double s, double u0, double v0, double b) :minivector(6)
     {
+        data[0]=fx;
+        data[1]=fy;
+        data[2]=s;
+        data[3]=u0;
+        data[4]=v0;
+        data[5]=b;
     }
 
     /// constructor from vector
-    Cal3_S2Stereo(const Eigen::VectorXd &d): K_(d(0), d(1), d(2), d(3), d(4)), b_(d(5)) {}
-
-    /// easy constructor; field-of-view in degrees, assumes zero skew
-    Cal3_S2Stereo(double fov, int w, int h, double b) :
-        K_(fov, w, h), b_(b)
+    Cal3_S2Stereo(const minivector &d):minivector(d)
     {
     }
+
+    /// easy constructor; field-of-view in degrees, assumes zero skew
+    Cal3_S2Stereo(double fov, int w, int h, double b) :minivector(6)
+    {
+        double a = fov * M_PI / 360.0; // fov/2 in radians
+        data[0]=0.5*(double) w /tan(a);//fx_ = (double) w / (2.0 * tan(a)); //
+        data[1]=data[0];// fy_ = fx_;
+        data[2]=0;//s_(0),
+        data[3]=0.5*(double)w;//u0_((double) w / 2.0),
+        data[4]=0.5*(double)h;// v0_((double) h / 2.0)s
+        data[5]=b;
+    }
+
 
     /// @}
 
@@ -73,57 +75,57 @@ public:
     /// return calibration, same for left and right
     const Cal3_S2& calibration() const
     {
-        return K_;
+        minivector result=minivector_subvector(*this,0,5);
+        return static_cast<Cal3_S2>(result);
     }
 
     /// return calibration matrix K, same for left and right
-    Eigen::MatrixXd matrix() const
+    minimatrix matrix() const
     {
-        return K_.matrix();
+        minivector result=minivector_subvector(*this,0,5);
+        return Cal3_S2(&result).matrix();
     }
 
     /// focal length x
     inline double fx() const
     {
-        return K_.fx();
+        return minivector_get(this,0);
     }
 
     /// focal length x
     inline double fy() const
     {
-        return K_.fy();
+        return minivector_get(this,1);
     }
 
     /// skew
     inline double skew() const
     {
-        return K_.skew();
+        return minivector_get(this,2);
     }
 
     /// image center in x
     inline double px() const
     {
-        return K_.px();
+        return minivector_get(this,3);
     }
 
     /// image center in y
     inline double py() const
     {
-        return K_.py();
+        return minivector_get(this,4);
     }
 
     /// return baseline
     inline double baseline() const
     {
-        return b_;
+        return minivector_get(this,5);
     }
 
     /// vectorized form (column-wise)
-    Eigen::VectorXd vector() const
+    minivector vector() const
     {
-        Eigen::VectorXd v(6);
-        v << K_.vector(), b_;
-        return v;
+        return *this;
     }
 
     /// @}
@@ -136,22 +138,25 @@ public:
         return 6;
     }
 
-    /// return DOF, dimensionality of tangent space
-    static int Dim()
-    {
-        return 6;
-    }
 
-    /// Given 6-dim tangent vector, create new calibration
-    inline Cal3_S2Stereo retract(const Eigen::VectorXd& d) const
+    virtual minimatrix* Retract(const minimatrix* mpose) const
     {
-        return Cal3_S2Stereo(K_.fx() + d(0), K_.fy() + d(1), K_.skew() + d(2), K_.px() + d(3), K_.py() + d(4), b_ + d(5));
+        minivector d(mpose);
+        return new Cal3_S2Stereo(fx() + minivector_get(&d,0),
+                                 fy() +  minivector_get(&d,1),
+                                 skew() +  minivector_get(&d,2),
+                                 px() + minivector_get(&d,3),
+                                 py() +  minivector_get(&d,4),
+                                 baseline() +  minivector_get(&d,5));
     }
 
     /// Unretraction for the calibration
-    Eigen::VectorXd localCoordinates(const Cal3_S2Stereo& T2) const
+    virtual minimatrix LocalCoordinates(const minimatrix* T2)
     {
-        return T2.vector() - vector();
+        minivector t2v(T2);
+        minivector result(2);
+        minivector_sub(&result,t2v,vector());
+        return t2v;
     }
     /// @}
 

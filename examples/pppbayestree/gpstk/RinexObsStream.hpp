@@ -57,99 +57,101 @@
 namespace gpstk
 {
 
-      /** @addtogroup RinexObs */
-      //@{
+/** @addtogroup RinexObs */
+//@{
 
-      /**
-       * This class reads RINEX files.
-       *
-       * @sa gpstk::RinexObsData and gpstk::RinexObsHeader.
-       * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
-       */
-   class RinexObsStream : public FFTextStream
-   {
-   public:
-
-
-         /// Default constructor
-      RinexObsStream()
-         : headerRead(false) {};
+/**
+ * This class reads RINEX files.
+ *
+ * @sa gpstk::RinexObsData and gpstk::RinexObsHeader.
+ * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
+ */
+class RinexObsStream : public FFTextStream
+{
+public:
 
 
-         /** Common constructor.
-          *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
-          */
-      RinexObsStream( const char* fn,
-                      std::ios::openmode mode=std::ios::in )
-         : FFTextStream(fn, mode), headerRead(false) {};
+    /// Default constructor
+    RinexObsStream()
+        : headerRead(false) {};
 
 
-         /** Common constructor.
-          *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
-          */
-      RinexObsStream( const std::string fn,
-                      std::ios::openmode mode=std::ios::in )
-         : FFTextStream(fn.c_str(), mode), headerRead(false) {};
+    /** Common constructor.
+     *
+     * @param fn the RINEX file to open
+     * @param mode how to open \a fn.
+     */
+    RinexObsStream( const char* fn,
+                    std::ios::openmode mode=std::ios::in )
+        : FFTextStream(fn, mode), headerRead(false) {};
 
 
-         /// Destructor
-      virtual ~RinexObsStream() {};
+    /** Common constructor.
+     *
+     * @param fn the RINEX file to open
+     * @param mode how to open \a fn.
+     */
+    RinexObsStream( const std::string fn,
+                    std::ios::openmode mode=std::ios::in )
+        : FFTextStream(fn.c_str(), mode), headerRead(false) {};
 
 
-         /** Overrides open to reset the header
-          *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
-          */
-      virtual void open( const char* fn,
-                         std::ios::openmode mode )
-      {
-         FFTextStream::open(fn, mode);
-         headerRead = false;
-         header = RinexObsHeader();
-      };
+    /// Destructor
+    virtual ~RinexObsStream() {};
 
 
-         /** Overrides open to reset the header
-          *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
-          */
-      virtual void open( const std::string& fn,
-                         std::ios::openmode mode )
-      { open(fn.c_str(), mode); };
+    /** Overrides open to reset the header
+     *
+     * @param fn the RINEX file to open
+     * @param mode how to open \a fn.
+     */
+    virtual void open( const char* fn,
+                       std::ios::openmode mode )
+    {
+        FFTextStream::open(fn, mode);
+        headerRead = false;
+        header = RinexObsHeader();
+    };
 
 
-         /// Whether or not the RinexObsHeader has been read
-      bool headerRead;
+    /** Overrides open to reset the header
+     *
+     * @param fn the RINEX file to open
+     * @param mode how to open \a fn.
+     */
+    virtual void open( const std::string& fn,
+                       std::ios::openmode mode )
+    {
+        open(fn.c_str(), mode);
+    };
 
 
-         /// The header for this file.
-      RinexObsHeader header;
+    /// Whether or not the RinexObsHeader has been read
+    bool headerRead;
 
-         /// Check if the input stream is the kind of RinexObsStream
-      static bool IsRinexObsStream(std::istream& i)
-      {
-         try
-         { 
+
+    /// The header for this file.
+    RinexObsHeader header;
+
+    /// Check if the input stream is the kind of RinexObsStream
+    static bool IsRinexObsStream(std::istream& i)
+    {
+        try
+        {
             RinexObsStream& r = dynamic_cast<RinexObsStream&>(i);
 #pragma unused(r)
-         }
-         catch(...)
-         {
+        }
+        catch(...)
+        {
             return false;
-         }
+        }
 
-         return true;
-      }
+        return true;
+    }
 
-   }; // End of class 'RinexObsStream'
+}; // End of class 'RinexObsStream'
 
-      //@}
+//@}
 
 }  // End of namespace gpstk
 #endif   // GPSTK_RINEXOBSSTREAM_HPP

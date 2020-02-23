@@ -129,253 +129,255 @@ class ModelObs : public ModelObsFixedStation
 public:
 
 /// Implicit constructor
-ModelObs() : modelPrepared(false)
-{
-};
+    ModelObs() : modelPrepared(false)
+    {
+    };
 
 
-/** Explicit constructor, taking as input initial receiver
- *  coordinates, default ionospheric and tropospheric models,
- *  ephemeris to be used, default observable and whether TGD will
- *  be computed or not.
- *
- * @param RxCoordinates Initial receiver coordinates.
- * @param dIonoModel    Ionospheric model to be used by default.
- * @param dTropoModel   Tropospheric model to be used by default.
- * @param dEphemeris    XvtStore<SatID> object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObs( const Position& RxCoordinates,
-          IonoModelStore& dIonoModel,
-          TropModel& dTropoModel,
-          XvtStore<SatID>& dEphemeris,
-          const TypeID& dObservable,
-          bool usetgd = true );
+    /** Explicit constructor, taking as input initial receiver
+     *  coordinates, default ionospheric and tropospheric models,
+     *  ephemeris to be used, default observable and whether TGD will
+     *  be computed or not.
+     *
+     * @param RxCoordinates Initial receiver coordinates.
+     * @param dIonoModel    Ionospheric model to be used by default.
+     * @param dTropoModel   Tropospheric model to be used by default.
+     * @param dEphemeris    XvtStore<SatID> object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObs( const Position& RxCoordinates,
+              IonoModelStore& dIonoModel,
+              TropModel& dTropoModel,
+              XvtStore<SatID>& dEphemeris,
+              const TypeID& dObservable,
+              bool usetgd = true );
 
 
-/** Explicit constructor, taking as input initial receiver
- *  coordinates, default ionospheric model, ephemeris to be used,
- *  default observable and whether TGD will be computed or not.
- *
- * The default tropospheric model will be set to NULL.
- *
- * @param RxCoordinates Initial receiver coordinates.
- * @param dIonoModel    Ionospheric model to be used by default.
- * @param dEphemeris    XvtStore<SatID> object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObs( const Position& RxCoordinates,
-          IonoModelStore& dIonoModel,
-          XvtStore<SatID>& dEphemeris,
-          const TypeID& dObservable,
-          bool usetgd = true );
+    /** Explicit constructor, taking as input initial receiver
+     *  coordinates, default ionospheric model, ephemeris to be used,
+     *  default observable and whether TGD will be computed or not.
+     *
+     * The default tropospheric model will be set to NULL.
+     *
+     * @param RxCoordinates Initial receiver coordinates.
+     * @param dIonoModel    Ionospheric model to be used by default.
+     * @param dEphemeris    XvtStore<SatID> object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObs( const Position& RxCoordinates,
+              IonoModelStore& dIonoModel,
+              XvtStore<SatID>& dEphemeris,
+              const TypeID& dObservable,
+              bool usetgd = true );
 
 
-/** Explicit constructor, taking as input initial receiver
- *  coordinates, default tropospheric model, ephemeris to be used,
- *  default observable and whether TGD will be computed or not.
- *
- * The default ionospheric model will be set to NULL.
- *
- * @param RxCoordinates Initial receiver coordinates.
- * @param dTropoModel   Tropospheric model to be used by default.
- * @param dEphemeris    XvtStore<SatID> object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObs( const Position& RxCoordinates,
-          TropModel& dTropoModel,
-          XvtStore<SatID>& dEphemeris,
-          const TypeID& dObservable,
-          bool usetgd = true );
+    /** Explicit constructor, taking as input initial receiver
+     *  coordinates, default tropospheric model, ephemeris to be used,
+     *  default observable and whether TGD will be computed or not.
+     *
+     * The default ionospheric model will be set to NULL.
+     *
+     * @param RxCoordinates Initial receiver coordinates.
+     * @param dTropoModel   Tropospheric model to be used by default.
+     * @param dEphemeris    XvtStore<SatID> object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObs( const Position& RxCoordinates,
+              TropModel& dTropoModel,
+              XvtStore<SatID>& dEphemeris,
+              const TypeID& dObservable,
+              bool usetgd = true );
 
 
-/** Explicit constructor, taking as input initial receiver
- *  coordinates, ephemeris to be used, default observable and
- *  whether TGD will be computed or not.
- *
- * Both the tropospheric and ionospheric models will be set to NULL.
- *
- * @param RxCoordinates Initial receiver coordinates.
- * @param dEphemeris    XvtStore<SatID> object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObs( const Position& RxCoordinates,
-          XvtStore<SatID>& dEphemeris,
-          const TypeID& dObservable,
-          bool usetgd = true );
+    /** Explicit constructor, taking as input initial receiver
+     *  coordinates, ephemeris to be used, default observable and
+     *  whether TGD will be computed or not.
+     *
+     * Both the tropospheric and ionospheric models will be set to NULL.
+     *
+     * @param RxCoordinates Initial receiver coordinates.
+     * @param dEphemeris    XvtStore<SatID> object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObs( const Position& RxCoordinates,
+              XvtStore<SatID>& dEphemeris,
+              const TypeID& dObservable,
+              bool usetgd = true );
 
 
-/** Explicit constructor, taking as input default ionospheric and
- *  tropospheric models, ephemeris to be used, default observable
- *  and whether TGD will be computed or not.
- *
- * @param dIonoModel    Ionospheric model to be used by default.
- * @param dTropoModel   Tropospheric model to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param dEphemeris    XvtStore<SatID> object to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObs( IonoModelStore& dIonoModel,
-          TropModel& dTropoModel,
-          XvtStore<SatID>& dEphemeris,
-          const TypeID& dObservable,
-          bool usetgd = true );
+    /** Explicit constructor, taking as input default ionospheric and
+     *  tropospheric models, ephemeris to be used, default observable
+     *  and whether TGD will be computed or not.
+     *
+     * @param dIonoModel    Ionospheric model to be used by default.
+     * @param dTropoModel   Tropospheric model to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param dEphemeris    XvtStore<SatID> object to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObs( IonoModelStore& dIonoModel,
+              TropModel& dTropoModel,
+              XvtStore<SatID>& dEphemeris,
+              const TypeID& dObservable,
+              bool usetgd = true );
 
 
-/** Explicit constructor, taking as input default ionospheric model,
- *  ephemeris to be used, default observable and whether TGD will be
- *  computed or not.
- *
- * @param dIonoModel    Ionospheric model to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param dEphemeris    XvtStore<SatID> object to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- * @sa DataStructures.hpp.
- */
-ModelObs( IonoModelStore& dIonoModel,
-          XvtStore<SatID>& dEphemeris,
-          const TypeID& dObservable,
-          bool usetgd = true );
+    /** Explicit constructor, taking as input default ionospheric model,
+     *  ephemeris to be used, default observable and whether TGD will be
+     *  computed or not.
+     *
+     * @param dIonoModel    Ionospheric model to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param dEphemeris    XvtStore<SatID> object to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     * @sa DataStructures.hpp.
+     */
+    ModelObs( IonoModelStore& dIonoModel,
+              XvtStore<SatID>& dEphemeris,
+              const TypeID& dObservable,
+              bool usetgd = true );
 
 
-/** Explicit constructor, taking as input default tropospheric model,
- *  ephemeris to be used, default observable and whether TGD will be
- *  computed or not.
- *
- * @param dTropoModel   Tropospheric model to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param dEphemeris    XvtStore<SatID> object to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObs( TropModel& dTropoModel,
-          XvtStore<SatID>& dEphemeris,
-          const TypeID& dObservable,
-          bool usetgd = true );
+    /** Explicit constructor, taking as input default tropospheric model,
+     *  ephemeris to be used, default observable and whether TGD will be
+     *  computed or not.
+     *
+     * @param dTropoModel   Tropospheric model to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param dEphemeris    XvtStore<SatID> object to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObs( TropModel& dTropoModel,
+              XvtStore<SatID>& dEphemeris,
+              const TypeID& dObservable,
+              bool usetgd = true );
 
 
-/** Method to set an a priori position of receiver using
- *  Bancroft's method.
- *
- * @param Tr            Time of observation
- * @param Satellite     std::vector of satellites in view
- * @param Pseudorange   std::vector of pseudoranges measured from
- *                      mobile station to satellites
- * @param Eph           Satellites Ephemeris
- *
- * @return
- *  0 if OK
- *  -1 if problems arose
- */
-virtual int Prepare( const CommonTime& Tr,
-                     std::vector<SatID>& Satellite,
-                     std::vector<double>& Pseudorange,
-                     const XvtStore<SatID>& Eph );
+    /** Method to set an a priori position of receiver using
+     *  Bancroft's method.
+     *
+     * @param Tr            Time of observation
+     * @param Satellite     std::vector of satellites in view
+     * @param Pseudorange   std::vector of pseudoranges measured from
+     *                      mobile station to satellites
+     * @param Eph           Satellites Ephemeris
+     *
+     * @return
+     *  0 if OK
+     *  -1 if problems arose
+     */
+    virtual int Prepare( const CommonTime& Tr,
+                         std::vector<SatID>& Satellite,
+                         std::vector<double>& Pseudorange,
+                         const XvtStore<SatID>& Eph );
 
 
-/** Method to set an a priori position of receiver using
- *  Bancroft's method.
- *
- * @param time      CommonTime object for this epoch
- * @param data      A satTypeValueMap data structure holding the data
- *
- * @return
- *  0 if OK
- *  -1 if problems arose
- */
-virtual int Prepare( const CommonTime& time,
-                     const satTypeValueMap& data );
+    /** Method to set an a priori position of receiver using
+     *  Bancroft's method.
+     *
+     * @param time      CommonTime object for this epoch
+     * @param data      A satTypeValueMap data structure holding the data
+     *
+     * @return
+     *  0 if OK
+     *  -1 if problems arose
+     */
+    virtual int Prepare( const CommonTime& time,
+                         const satTypeValueMap& data );
 
 
-/** Method to set an a priori position of receiver using
- *  Bancroft's method.
- *
- * @param gData         GNSS data structure to be used
- *
- * @return
- *  0 if OK
- *  -1 if problems arose
- */
-virtual int Prepare(const gnssSatTypeValue& gData)
-{
+    /** Method to set an a priori position of receiver using
+     *  Bancroft's method.
+     *
+     * @param gData         GNSS data structure to be used
+     *
+     * @return
+     *  0 if OK
+     *  -1 if problems arose
+     */
+    virtual int Prepare(const gnssSatTypeValue& gData)
+    {
         return (Prepare(gData.header.epoch, gData.body));
-};
+    };
 
 
-/** Method to set the initial (a priori) position of receiver before
- *  Compute() method.
- * @return
- *  0 if OK
- *  -1 if problems arose
- */
-virtual int Prepare( const double& aRx,
-                     const double& bRx,
-                     const double& cRx,
-                     Position::CoordinateSystem s = Position::Cartesian,
-                     EllipsoidModel *ell = NULL,
-                     ReferenceFrame frame = ReferenceFrame::Unknown );
+    /** Method to set the initial (a priori) position of receiver before
+     *  Compute() method.
+     * @return
+     *  0 if OK
+     *  -1 if problems arose
+     */
+    virtual int Prepare( const double& aRx,
+                         const double& bRx,
+                         const double& cRx,
+                         Position::CoordinateSystem s = Position::Cartesian,
+                         EllipsoidModel *ell = NULL,
+                         ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
-/** Method to set the initial (a priori) position of receiver before
- *  Compute() method.
- * @return
- *  0 if OK
- *  -1 if problems arose
- */
-virtual int Prepare(const Position& RxCoordinates);
+    /** Method to set the initial (a priori) position of receiver before
+     *  Compute() method.
+     * @return
+     *  0 if OK
+     *  -1 if problems arose
+     */
+    virtual int Prepare(const Position& RxCoordinates);
 
 
-/** Returns a satTypeValueMap object, adding the new data generated
- *  when calling a modeling object.
- *
- * @param time      Epoch.
- * @param gData     Data object holding the data.
- */
-virtual satTypeValueMap& Process( const CommonTime& time,
-                                  satTypeValueMap& gData )
-throw(ProcessingException);
+    /** Returns a satTypeValueMap object, adding the new data generated
+     *  when calling a modeling object.
+     *
+     * @param time      Epoch.
+     * @param gData     Data object holding the data.
+     */
+    virtual satTypeValueMap& Process( const CommonTime& time,
+                                      satTypeValueMap& gData )
+    throw(ProcessingException);
 
 
 /// Method to get if the model has been prepared.
-inline bool getModelPrepared() const
-{
+    inline bool getModelPrepared() const
+    {
         return modelPrepared;
-};
+    };
 
 
-/** Method to forcefully set whether the model has been prepared.
- *
- * @param prepare       Boolean indicating whether the model has
- *                      been prepared.
- */
-inline ModelObs& setModelPrepared(const bool& prepare)
-{
-        modelPrepared = prepare; return (*this);
-};
+    /** Method to forcefully set whether the model has been prepared.
+     *
+     * @param prepare       Boolean indicating whether the model has
+     *                      been prepared.
+     */
+    inline ModelObs& setModelPrepared(const bool& prepare)
+    {
+        modelPrepared = prepare;
+        return (*this);
+    };
 
 
 /// Returns a string identifying this object.
-virtual std::string getClassName(void) const;
+    virtual std::string getClassName(void) const;
 
 
 /// Destructor.
-virtual ~ModelObs() {
-};
+    virtual ~ModelObs()
+    {
+    };
 
 
 protected:
 
 
-bool modelPrepared;
+    bool modelPrepared;
 
 
 };    // End of class 'ModelObs'

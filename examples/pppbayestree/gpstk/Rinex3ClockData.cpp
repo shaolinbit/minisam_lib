@@ -38,98 +38,98 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-      // Debug output function.
-   void Rinex3ClockData::dump(std::ostream& s) const
-   {
+// Debug output function.
+void Rinex3ClockData::dump(std::ostream& s) const
+{
 
-      cout << "WARNING: There is no implementation for "
-           << "Rinex3ClockData::dump()"
-           << endl;
+    cout << "WARNING: There is no implementation for "
+         << "Rinex3ClockData::dump()"
+         << endl;
 
-      return;
+    return;
 
-   }  // End of method 'Rinex3ClockData::dump(std::ostream& s)'
-
-
-
-   void Rinex3ClockData::reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException)
-   {
-      cout << "WARNING: There is no implementation for "
-           << "Rinex3ClockData::reallyPutRecord()"
-           << endl;
-
-      return;
-
-   }  // End of method 'Rinex3ClockData::reallyPutRecord()'
+}  // End of method 'Rinex3ClockData::dump(std::ostream& s)'
 
 
 
-      // This function parses the entire header from the given stream
-   void Rinex3ClockData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, 
-            StringUtils::StringException)
-   {
-      Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
+void Rinex3ClockData::reallyPutRecord(FFStream& s) const
+throw(std::exception, FFStreamError,
+      StringUtils::StringException)
+{
+    cout << "WARNING: There is no implementation for "
+         << "Rinex3ClockData::reallyPutRecord()"
+         << endl;
 
-      string line;
+    return;
 
-      strm.formattedGetLine(line, true);
-      //cout << line << endl;
-
-      return;
-
-   }  // End of method 'Rinex3ClockData::reallyGetRecord(FFStream& ffs)'
+}  // End of method 'Rinex3ClockData::reallyPutRecord()'
 
 
 
-         /** This function constructs a CommonTime object from the given parameters.
-          * @param line       the encoded time string found in the 
-          *                   RINEX clock data record.
-          */
-   CommonTime Rinex3ClockData::parseTime(const string& line) const
-   {
+// This function parses the entire header from the given stream
+void Rinex3ClockData::reallyGetRecord(FFStream& ffs)
+throw(std::exception, FFStreamError,
+      StringUtils::StringException)
+{
+    Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
 
-      int year, month, day, hour, min;
-      double sec;
+    string line;
 
-      year  = asInt(   line.substr( 0, 4 ));
-      month = asInt(   line.substr( 4, 3 ));
-      day   = asInt(   line.substr( 7, 3 ));
-      hour  = asInt(   line.substr(10, 3 ));
-      min   = asInt(   line.substr(13, 3 ));
-      sec   = asDouble(line.substr(16, 10));
+    strm.formattedGetLine(line, true);
+    //cout << line << endl;
 
-      return CivilTime(year, month, day, hour, min, sec).convertToCommonTime();
+    return;
 
-   }  // End of method 'Rinex3ClockData::parseTime()'
+}  // End of method 'Rinex3ClockData::reallyGetRecord(FFStream& ffs)'
 
 
 
-      /// Converts the CommonTime \a dt into a Rinex3 Clock time
-      /// string for the header
-   string Rinex3ClockData::writeTime(const CommonTime& dt) const
-      throw(gpstk::StringUtils::StringException)
-   {
+/** This function constructs a CommonTime object from the given parameters.
+ * @param line       the encoded time string found in the
+ *                   RINEX clock data record.
+ */
+CommonTime Rinex3ClockData::parseTime(const string& line) const
+{
 
-      if (dt == CommonTime::BEGINNING_OF_TIME)
-      {
-         return string(36, ' ');
-      }
+    int year, month, day, hour, min;
+    double sec;
 
-      string line;
-      CivilTime civTime(dt);
-      line  = rightJustify(asString<short>(civTime.year), 4);
-      line += rightJustify(asString<short>(civTime.month), 3);
-      line += rightJustify(asString<short>(civTime.day), 3);
-      line += rightJustify(asString<short>(civTime.hour), 3);
-      line += rightJustify(asString<short>(civTime.minute), 3);
-      line += rightJustify(asString(civTime.second, 6), 10);
+    year  = asInt(   line.substr( 0, 4 ));
+    month = asInt(   line.substr( 4, 3 ));
+    day   = asInt(   line.substr( 7, 3 ));
+    hour  = asInt(   line.substr(10, 3 ));
+    min   = asInt(   line.substr(13, 3 ));
+    sec   = asDouble(line.substr(16, 10));
 
-      return line;
+    return CivilTime(year, month, day, hour, min, sec).convertToCommonTime();
 
-   }  // End of method 'Rinex3ClockData::writeTime(const CommonTime& dt)'
+}  // End of method 'Rinex3ClockData::parseTime()'
+
+
+
+/// Converts the CommonTime \a dt into a Rinex3 Clock time
+/// string for the header
+string Rinex3ClockData::writeTime(const CommonTime& dt) const
+throw(gpstk::StringUtils::StringException)
+{
+
+    if (dt == CommonTime::BEGINNING_OF_TIME)
+    {
+        return string(36, ' ');
+    }
+
+    string line;
+    CivilTime civTime(dt);
+    line  = rightJustify(asString<short>(civTime.year), 4);
+    line += rightJustify(asString<short>(civTime.month), 3);
+    line += rightJustify(asString<short>(civTime.day), 3);
+    line += rightJustify(asString<short>(civTime.hour), 3);
+    line += rightJustify(asString<short>(civTime.minute), 3);
+    line += rightJustify(asString(civTime.second, 6), 10);
+
+    return line;
+
+}  // End of method 'Rinex3ClockData::writeTime(const CommonTime& dt)'
 
 
 }  // End of namespace gpstk

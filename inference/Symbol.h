@@ -1,23 +1,8 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file Symbol.h
- * @date Jan 12, 2010
- * @author: Frank Dellaert
- * @author: Richard Roberts
  */
 
 

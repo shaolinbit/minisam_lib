@@ -51,7 +51,7 @@ namespace gpstk
 // Returns a string identifying this object.
 std::string ModelObsFixedStation::getClassName() const
 {
-        return "ModelObsFixedStation";
+    return "ModelObsFixedStation";
 }
 
 
@@ -72,21 +72,21 @@ std::string ModelObsFixedStation::getClassName() const
  * @param frame Reference frame associated with this position.
  */
 ModelObsFixedStation::ModelObsFixedStation( const double& aRx,
-                                            const double& bRx,
-                                            const double& cRx,
-                                            Position::CoordinateSystem s,
-                                            EllipsoidModel *ell,
-                                            ReferenceFrame frame )
+        const double& bRx,
+        const double& cRx,
+        Position::CoordinateSystem s,
+        EllipsoidModel *ell,
+        ReferenceFrame frame )
 {
 
-        minElev = 10.0;
-        useTGD = true;
-        pDefaultIonoModel = NULL;
-        pDefaultTropoModel = NULL;
-        defaultObservable = TypeID::C1;
-        pDefaultEphemeris = NULL;
-        InitializeValues();
-        setInitialRxPosition(aRx, bRx, cRx, s, ell, frame);
+    minElev = 10.0;
+    useTGD = true;
+    pDefaultIonoModel = NULL;
+    pDefaultTropoModel = NULL;
+    defaultObservable = TypeID::C1;
+    pDefaultEphemeris = NULL;
+    InitializeValues();
+    setInitialRxPosition(aRx, bRx, cRx, s, ell, frame);
 
 }     // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -97,14 +97,14 @@ ModelObsFixedStation::ModelObsFixedStation( const double& aRx,
 ModelObsFixedStation::ModelObsFixedStation(const Position& RxCoordinates)
 {
 
-        minElev = 10.0;
-        useTGD = true;
-        pDefaultIonoModel = NULL;
-        pDefaultTropoModel = NULL;
-        defaultObservable = TypeID::C1;
-        pDefaultEphemeris = NULL;
-        InitializeValues();
-        setInitialRxPosition(RxCoordinates);
+    minElev = 10.0;
+    useTGD = true;
+    pDefaultIonoModel = NULL;
+    pDefaultTropoModel = NULL;
+    defaultObservable = TypeID::C1;
+    pDefaultEphemeris = NULL;
+    InitializeValues();
+    setInitialRxPosition(RxCoordinates);
 
 }     // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -124,21 +124,21 @@ ModelObsFixedStation::ModelObsFixedStation(const Position& RxCoordinates)
  *
  */
 ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
-                                            IonoModelStore& dIonoModel,
-                                            TropModel& dTropoModel,
-                                            XvtStore<SatID>& dEphemeris,
-                                            const TypeID& dObservable,
-                                            bool usetgd )
+        IonoModelStore& dIonoModel,
+        TropModel& dTropoModel,
+        XvtStore<SatID>& dEphemeris,
+        const TypeID& dObservable,
+        bool usetgd )
 {
 
-        minElev = 10.0;
-        InitializeValues();
-        setInitialRxPosition(RxCoordinates);
-        setDefaultIonoModel(dIonoModel);
-        setDefaultTropoModel(dTropoModel);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    minElev = 10.0;
+    InitializeValues();
+    setInitialRxPosition(RxCoordinates);
+    setDefaultIonoModel(dIonoModel);
+    setDefaultTropoModel(dTropoModel);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -158,20 +158,20 @@ ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
  *
  */
 ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
-                                            IonoModelStore& dIonoModel,
-                                            XvtStore<SatID>& dEphemeris,
-                                            const TypeID& dObservable,
-                                            bool usetgd )
+        IonoModelStore& dIonoModel,
+        XvtStore<SatID>& dEphemeris,
+        const TypeID& dObservable,
+        bool usetgd )
 {
 
-        minElev = 10.0;
-        pDefaultTropoModel = NULL;
-        InitializeValues();
-        setInitialRxPosition(RxCoordinates);
-        setDefaultIonoModel(dIonoModel);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    minElev = 10.0;
+    pDefaultTropoModel = NULL;
+    InitializeValues();
+    setInitialRxPosition(RxCoordinates);
+    setDefaultIonoModel(dIonoModel);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -191,20 +191,20 @@ ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
  *
  */
 ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
-                                            TropModel& dTropoModel,
-                                            XvtStore<SatID>& dEphemeris,
-                                            const TypeID& dObservable,
-                                            bool usetgd )
+        TropModel& dTropoModel,
+        XvtStore<SatID>& dEphemeris,
+        const TypeID& dObservable,
+        bool usetgd )
 {
 
-        minElev = 10.0;
-        pDefaultIonoModel = NULL;
-        InitializeValues();
-        setInitialRxPosition(RxCoordinates);
-        setDefaultTropoModel(dTropoModel);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    minElev = 10.0;
+    pDefaultIonoModel = NULL;
+    InitializeValues();
+    setInitialRxPosition(RxCoordinates);
+    setDefaultTropoModel(dTropoModel);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -223,19 +223,19 @@ ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
  *
  */
 ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
-                                            XvtStore<SatID>& dEphemeris,
-                                            const TypeID& dObservable,
-                                            bool usetgd )
+        XvtStore<SatID>& dEphemeris,
+        const TypeID& dObservable,
+        bool usetgd )
 {
 
-        minElev = 10.0;
-        pDefaultIonoModel = NULL;
-        pDefaultTropoModel = NULL;
-        InitializeValues();
-        setInitialRxPosition(RxCoordinates);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    minElev = 10.0;
+    pDefaultIonoModel = NULL;
+    pDefaultTropoModel = NULL;
+    InitializeValues();
+    setInitialRxPosition(RxCoordinates);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -248,201 +248,201 @@ ModelObsFixedStation::ModelObsFixedStation( const Position& RxCoordinates,
  * @param gData     Data object holding the data.
  */
 satTypeValueMap& ModelObsFixedStation::Process( const CommonTime& time,
-                                                satTypeValueMap& gData )
+        satTypeValueMap& gData )
 throw(ProcessingException)
 {
 
-        try
+    try
+    {
+
+        SatIDSet satRejectedSet;
+
+        // Loop through all the satellites
+        satTypeValueMap::iterator stv;
+        for(stv = gData.begin(); stv != gData.end(); ++stv)
         {
+            // Scalars to hold temporal values
+            double tempPR(0.0);
+            double tempTrop(0.0);
+            double tempIono(0.0);
+            double tempModeledPR(0.0);
+            double tempTGD(0.0);
+            double tempPrefit(0.0);
+            double observable( (*stv).second(defaultObservable) );
 
-                SatIDSet satRejectedSet;
+            // A lot of the work is done by a CorrectedEphemerisRange object
+            CorrectedEphemerisRange cerange;
 
-                // Loop through all the satellites
-                satTypeValueMap::iterator stv;
-                for(stv = gData.begin(); stv != gData.end(); ++stv)
-                {
-                        // Scalars to hold temporal values
-                        double tempPR(0.0);
-                        double tempTrop(0.0);
-                        double tempIono(0.0);
-                        double tempModeledPR(0.0);
-                        double tempTGD(0.0);
-                        double tempPrefit(0.0);
-                        double observable( (*stv).second(defaultObservable) );
+            try
+            {
+                // Compute most of the parameters
+                tempPR = cerange.ComputeAtTransmitTime( time,
+                                                        observable,
+                                                        rxPos,
+                                                        (*stv).first,
+                                                        *(getDefaultEphemeris()) );
+            }
+            catch(InvalidRequest& e)
+            {
 
-                        // A lot of the work is done by a CorrectedEphemerisRange object
-                        CorrectedEphemerisRange cerange;
+                // If some problem appears, then schedule this satellite
+                // for removal
+                satRejectedSet.insert( (*stv).first );
 
-                        try
-                        {
-                                // Compute most of the parameters
-                                tempPR = cerange.ComputeAtTransmitTime( time,
-                                                                        observable,
-                                                                        rxPos,
-                                                                        (*stv).first,
-                                                                        *(getDefaultEphemeris()) );
-                        }
-                        catch(InvalidRequest& e)
-                        {
+                continue; // Skip this SV if problems arise
 
-                                // If some problem appears, then schedule this satellite
-                                // for removal
-                                satRejectedSet.insert( (*stv).first );
+            }
 
-                                continue; // Skip this SV if problems arise
+            // Let's test if satellite has enough elevation over horizon
+            if ( rxPos.elevationGeodetic(cerange.svPosVel) < minElev )
+            {
 
-                        }
+                // Mark this satellite if it doesn't have enough elevation
+                satRejectedSet.insert( (*stv).first );
 
-                        // Let's test if satellite has enough elevation over horizon
-                        if ( rxPos.elevationGeodetic(cerange.svPosVel) < minElev )
-                        {
+                continue;
 
-                                // Mark this satellite if it doesn't have enough elevation
-                                satRejectedSet.insert( (*stv).first );
+            }
 
-                                continue;
+            // If given, computes tropospheric model
+            if ( pDefaultTropoModel )
+            {
 
-                        }
+                tempTrop = getTropoCorrections( pDefaultTropoModel,
+                                                cerange.elevationGeodetic );
 
-                        // If given, computes tropospheric model
-                        if ( pDefaultTropoModel )
-                        {
+                (*stv).second[TypeID::tropoSlant] = tempTrop;
 
-                                tempTrop = getTropoCorrections( pDefaultTropoModel,
-                                                                cerange.elevationGeodetic );
+            }
+            else
+            {
+                (*stv).second[TypeID::tropoSlant] = 0.0;
+            }
 
-                                (*stv).second[TypeID::tropoSlant] = tempTrop;
+            // If given, computes ionospheric model
+            if( pDefaultIonoModel )
+            {
 
-                        }
-                        else
-                        {
-                                (*stv).second[TypeID::tropoSlant] = 0.0;
-                        }
+                tempIono = getIonoCorrections( pDefaultIonoModel,
+                                               time,
+                                               rxPos,
+                                               cerange.elevationGeodetic,
+                                               cerange.azimuthGeodetic );
 
-                        // If given, computes ionospheric model
-                        if( pDefaultIonoModel )
-                        {
-
-                                tempIono = getIonoCorrections( pDefaultIonoModel,
-                                                               time,
-                                                               rxPos,
-                                                               cerange.elevationGeodetic,
-                                                               cerange.azimuthGeodetic );
-
-                        } // End of 'if( pDefaultIonoModel )...'
+            } // End of 'if( pDefaultIonoModel )...'
 
 
-                        tempModeledPR = tempPR + tempTrop + tempIono;
+            tempModeledPR = tempPR + tempTrop + tempIono;
 
 
-                        // Computing Total Group Delay (TGD - meters) and adding
-                        // it to result
-                        if( useTGD )
-                        {
+            // Computing Total Group Delay (TGD - meters) and adding
+            // it to result
+            if( useTGD )
+            {
 
-                                tempTGD = getTGDCorrections( time,
-                                                             (*pDefaultEphemeris),
-                                                             (*stv).first );
+                tempTGD = getTGDCorrections( time,
+                                             (*pDefaultEphemeris),
+                                             (*stv).first );
 
-                                tempModeledPR += tempTGD;
+                tempModeledPR += tempTGD;
 
-                        } // End of 'if( useTGD )...'
-
-
-                        tempPrefit = observable - tempModeledPR;
+            } // End of 'if( useTGD )...'
 
 
-                        // Now we have to add the new values to the data structure
-                        (*stv).second[TypeID::prefitC] = tempPrefit;
-                        (*stv).second[TypeID::dtSat] = cerange.svclkbias;
-
-                        // Now, lets insert the geometry matrix
-                        (*stv).second[TypeID::dx] = cerange.cosines[0];
-                        (*stv).second[TypeID::dy] = cerange.cosines[1];
-                        (*stv).second[TypeID::dz] = cerange.cosines[2];
-                        // When using pseudorange method, this is 1.0
-                        (*stv).second[TypeID::cdt] = 1.0;
-
-                        // Now we have to add the new values to the data structure
-                        (*stv).second[TypeID::rho] = cerange.rawrange;
-                        (*stv).second[TypeID::rel] = -cerange.relativity;
-                        (*stv).second[TypeID::elevation] = cerange.elevationGeodetic;
-                        (*stv).second[TypeID::azimuth] = cerange.azimuthGeodetic;
+            tempPrefit = observable - tempModeledPR;
 
 
-                        // Get iono and instrumental delays right
-                        TypeID ionoDelayType, instDelayType;
+            // Now we have to add the new values to the data structure
+            (*stv).second[TypeID::prefitC] = tempPrefit;
+            (*stv).second[TypeID::dtSat] = cerange.svclkbias;
 
-                        switch ( getDefaultObservable().type )
-                        {
+            // Now, lets insert the geometry matrix
+            (*stv).second[TypeID::dx] = cerange.cosines[0];
+            (*stv).second[TypeID::dy] = cerange.cosines[1];
+            (*stv).second[TypeID::dz] = cerange.cosines[2];
+            // When using pseudorange method, this is 1.0
+            (*stv).second[TypeID::cdt] = 1.0;
 
-                        case TypeID::C1:
-                        case TypeID::P1:
-                                ionoDelayType = TypeID::ionoL1;
-                                instDelayType = TypeID::instC1;
-                                break;
-
-                        case TypeID::C2:
-                        case TypeID::P2:
-                                ionoDelayType = TypeID::ionoL2;
-                                instDelayType = TypeID::instC2;
-                                break;
-
-                        case TypeID::C5:
-                                ionoDelayType = TypeID::ionoL5;
-                                instDelayType = TypeID::instC5;
-                                break;
-
-                        case TypeID::C6:
-                                ionoDelayType = TypeID::ionoL6;
-                                instDelayType = TypeID::instC6;
-                                break;
-
-                        case TypeID::C7:
-                                ionoDelayType = TypeID::ionoL7;
-                                instDelayType = TypeID::instC7;
-                                break;
-
-                        case TypeID::C8:
-                                ionoDelayType = TypeID::ionoL8;
-                                instDelayType = TypeID::instC8;
-                                break;
-
-                        default:
-                                ionoDelayType = TypeID::ionoL1;
-                                instDelayType = TypeID::instC1;
-
-                        } // End of 'switch ( getDefaultObservable().type )...'
+            // Now we have to add the new values to the data structure
+            (*stv).second[TypeID::rho] = cerange.rawrange;
+            (*stv).second[TypeID::rel] = -cerange.relativity;
+            (*stv).second[TypeID::elevation] = cerange.elevationGeodetic;
+            (*stv).second[TypeID::azimuth] = cerange.azimuthGeodetic;
 
 
-                        if( pDefaultIonoModel )
-                        {
-                                (*stv).second[ionoDelayType] = tempIono;
-                        }
+            // Get iono and instrumental delays right
+            TypeID ionoDelayType, instDelayType;
 
-                        if( useTGD )
-                        {
-                                (*stv).second[instDelayType] = tempTGD;
-                        }
+            switch ( getDefaultObservable().type )
+            {
+
+            case TypeID::C1:
+            case TypeID::P1:
+                ionoDelayType = TypeID::ionoL1;
+                instDelayType = TypeID::instC1;
+                break;
+
+            case TypeID::C2:
+            case TypeID::P2:
+                ionoDelayType = TypeID::ionoL2;
+                instDelayType = TypeID::instC2;
+                break;
+
+            case TypeID::C5:
+                ionoDelayType = TypeID::ionoL5;
+                instDelayType = TypeID::instC5;
+                break;
+
+            case TypeID::C6:
+                ionoDelayType = TypeID::ionoL6;
+                instDelayType = TypeID::instC6;
+                break;
+
+            case TypeID::C7:
+                ionoDelayType = TypeID::ionoL7;
+                instDelayType = TypeID::instC7;
+                break;
+
+            case TypeID::C8:
+                ionoDelayType = TypeID::ionoL8;
+                instDelayType = TypeID::instC8;
+                break;
+
+            default:
+                ionoDelayType = TypeID::ionoL1;
+                instDelayType = TypeID::instC1;
+
+            } // End of 'switch ( getDefaultObservable().type )...'
 
 
-                } // End of loop for (stv = gData.begin()...
+            if( pDefaultIonoModel )
+            {
+                (*stv).second[ionoDelayType] = tempIono;
+            }
 
-                // Remove satellites with missing data
-                gData.removeSatID(satRejectedSet);
+            if( useTGD )
+            {
+                (*stv).second[instDelayType] = tempTGD;
+            }
 
-                return gData;
 
-        } // End of try...
-        catch(Exception& u)
-        {
-                // Throw an exception if something unexpected happens
-                ProcessingException e( getClassName() + ":"
-                                       + u.what() );
+        } // End of loop for (stv = gData.begin()...
 
-                GPSTK_THROW(e);
+        // Remove satellites with missing data
+        gData.removeSatID(satRejectedSet);
 
-        }
+        return gData;
+
+    } // End of try...
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
+
+        GPSTK_THROW(e);
+
+    }
 
 }     // End of method 'ModelObsFixedStation::Process()'
 
@@ -454,23 +454,23 @@ throw(ProcessingException)
  *  -1 if problems arose
  */
 int ModelObsFixedStation::setInitialRxPosition( const double& aRx,
-                                                const double& bRx,
-                                                const double& cRx,
-                                                Position::CoordinateSystem s,
-                                                EllipsoidModel *ell,
-                                                ReferenceFrame frame )
+        const double& bRx,
+        const double& cRx,
+        Position::CoordinateSystem s,
+        EllipsoidModel *ell,
+        ReferenceFrame frame )
 {
 
-        try
-        {
-                Position rxpos(aRx, bRx, cRx, s, ell, frame);
-                setInitialRxPosition(rxpos);
-                return 0;
-        }
-        catch(GeometryException& e)
-        {
-                return -1;
-        }
+    try
+    {
+        Position rxpos(aRx, bRx, cRx, s, ell, frame);
+        setInitialRxPosition(rxpos);
+        return 0;
+    }
+    catch(GeometryException& e)
+    {
+        return -1;
+    }
 
 }     // End of method 'ModelObsFixedStation::setInitialRxPosition()'
 
@@ -478,18 +478,18 @@ int ModelObsFixedStation::setInitialRxPosition( const double& aRx,
 
 // Method to set the initial (a priori) position of receiver.
 int ModelObsFixedStation::setInitialRxPosition(
-        const Position& RxCoordinates )
+    const Position& RxCoordinates )
 {
 
-        try
-        {
-                rxPos = RxCoordinates;
-                return 0;
-        }
-        catch(GeometryException& e)
-        {
-                return -1;
-        }
+    try
+    {
+        rxPos = RxCoordinates;
+        return 0;
+    }
+    catch(GeometryException& e)
+    {
+        return -1;
+    }
 
 }     // End of method 'ModelObsFixedStation::setInitialRxPosition()'
 
@@ -499,16 +499,16 @@ int ModelObsFixedStation::setInitialRxPosition(
 int ModelObsFixedStation::setInitialRxPosition()
 {
 
-        try
-        {
-                Position rxpos(0.0, 0.0, 0.0, Position::Cartesian, NULL);
-                setInitialRxPosition(rxpos);
-                return 0;
-        }
-        catch(GeometryException& e)
-        {
-                return -1;
-        }
+    try
+    {
+        Position rxpos(0.0, 0.0, 0.0, Position::Cartesian, NULL);
+        setInitialRxPosition(rxpos);
+        return 0;
+    }
+    catch(GeometryException& e)
+    {
+        return -1;
+    }
 
 }     // End of method 'ModelObsFixedStation::setInitialRxPosition()'
 
@@ -516,51 +516,51 @@ int ModelObsFixedStation::setInitialRxPosition()
 
 // Method to get the tropospheric corrections.
 double ModelObsFixedStation::getTropoCorrections( TropModel *pTropModel,
-                                                  double elevation )
+        double elevation )
 {
 
-        double tropoCorr(0.0);
+    double tropoCorr(0.0);
 
-        try
+    try
+    {
+        tropoCorr = pTropModel->correction(elevation);
+
+        // Check validity
+        if( !(pTropModel->isValid()) )
         {
-                tropoCorr = pTropModel->correction(elevation);
-
-                // Check validity
-                if( !(pTropModel->isValid()) )
-                {
-                        tropoCorr = 0.0;
-                }
+            tropoCorr = 0.0;
         }
-        catch(Exception& e)
-        {
-                tropoCorr = 0.0;
-        }
+    }
+    catch(Exception& e)
+    {
+        tropoCorr = 0.0;
+    }
 
-        return tropoCorr;
+    return tropoCorr;
 
 }     // End of method 'ModelObsFixedStation::getTropoCorrections()'
 
 
 // Method to get the ionospheric corrections.
 double ModelObsFixedStation::getIonoCorrections( IonoModelStore *pIonoModel,
-                                                 CommonTime Tr,
-                                                 Position rxGeo,
-                                                 double elevation,
-                                                 double azimuth )
+        CommonTime Tr,
+        Position rxGeo,
+        double elevation,
+        double azimuth )
 {
 
-        double ionoCorr(0.0);
+    double ionoCorr(0.0);
 
-        try
-        {
-                ionoCorr = pIonoModel->getCorrection(Tr, rxGeo, elevation, azimuth);
-        }
-        catch(IonoModelStore::NoIonoModelFound& e)
-        {
-                ionoCorr = 0.0;
-        }
+    try
+    {
+        ionoCorr = pIonoModel->getCorrection(Tr, rxGeo, elevation, azimuth);
+    }
+    catch(IonoModelStore::NoIonoModelFound& e)
+    {
+        ionoCorr = 0.0;
+    }
 
-        return ionoCorr;
+    return ionoCorr;
 
 }     // End of method 'ModelObsFixedStation::getIonoCorrections()'
 
@@ -568,24 +568,24 @@ double ModelObsFixedStation::getIonoCorrections( IonoModelStore *pIonoModel,
 
 // Method to get TGD corrections.
 double ModelObsFixedStation::getTGDCorrections( CommonTime Tr,
-                                                const XvtStore<SatID>& Eph,
-                                                SatID sat )
+        const XvtStore<SatID>& Eph,
+        SatID sat )
 {
 
-        try
-        {
-                const GPSEphemerisStore& bce =
-                        dynamic_cast<const GPSEphemerisStore&>(Eph);
+    try
+    {
+        const GPSEphemerisStore& bce =
+            dynamic_cast<const GPSEphemerisStore&>(Eph);
 
-                //bce.findEphemeris(sat,Tr);
+        //bce.findEphemeris(sat,Tr);
 
-                //return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
-                return ( bce.findEphemeris(sat,Tr).Tgd * C_MPS );
-        }
-        catch(...)
-        {
-                return 0.0;
-        }
+        //return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
+        return ( bce.findEphemeris(sat,Tr).Tgd * C_MPS );
+    }
+    catch(...)
+    {
+        return 0.0;
+    }
 
 }     // End of method 'ModelObsFixedStation::getTGDCorrections()'
 

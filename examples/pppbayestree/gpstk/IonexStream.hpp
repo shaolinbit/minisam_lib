@@ -36,59 +36,59 @@
 namespace gpstk
 {
 
-      /** @addtogroup IonosphereMaps */
-      //@{
+/** @addtogroup IonosphereMaps */
+//@{
 
-      /** This class provides access to IONEX files.
-       *
-       * @sa gpstk::IonexHeader and gpstk::IonexData for more information.
-       * @sa main_ionextest.cpp for an example.
-       */
-   class IonexStream : public FFTextStream
-   {
-   public:
+/** This class provides access to IONEX files.
+ *
+ * @sa gpstk::IonexHeader and gpstk::IonexData for more information.
+ * @sa main_ionextest.cpp for an example.
+ */
+class IonexStream : public FFTextStream
+{
+public:
 
-         /// Default constructor
-      IonexStream()
-            : headerRead(false) {};
-
-
-         /** Common constructor.
-          *
-          * @param fn      IONEX file to open
-          * @param mode    Mode to open \a fn.
-          */
-      IonexStream(const char* fn, std::ios::openmode mode=std::ios::in)
-            : FFTextStream(fn, mode), headerRead(false) {};
+    /// Default constructor
+    IonexStream()
+        : headerRead(false) {};
 
 
-         /// Destructor
-      virtual ~IonexStream() {};
+    /** Common constructor.
+     *
+     * @param fn      IONEX file to open
+     * @param mode    Mode to open \a fn.
+     */
+    IonexStream(const char* fn, std::ios::openmode mode=std::ios::in)
+        : FFTextStream(fn, mode), headerRead(false) {};
 
 
-         /// Overrides open to reset the header
-      virtual void open(const char* fn, std::ios::openmode mode)
-      {
-
-         FFTextStream::open(fn, mode);
-         headerRead = false;
-         header = IonexHeader();
-
-      };
+    /// Destructor
+    virtual ~IonexStream() {};
 
 
-         /// Whether or not the IonexHeader has been read
-      bool headerRead;
+    /// Overrides open to reset the header
+    virtual void open(const char* fn, std::ios::openmode mode)
+    {
+
+        FFTextStream::open(fn, mode);
+        headerRead = false;
+        header = IonexHeader();
+
+    };
 
 
-         /// The header for this file.
-      IonexHeader header;
+    /// Whether or not the IonexHeader has been read
+    bool headerRead;
 
 
-   }; // End of class 'IonexStream'
+    /// The header for this file.
+    IonexHeader header;
 
 
-      //@}
+}; // End of class 'IonexStream'
+
+
+//@}
 
 
 }  // End of namespace gpstk

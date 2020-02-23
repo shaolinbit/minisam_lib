@@ -51,7 +51,7 @@ namespace gpstk
 // Returns a string identifying this object.
 std::string ModelObs::getClassName() const
 {
-        return "ModelObs";
+    return "ModelObs";
 }
 
 
@@ -77,13 +77,13 @@ ModelObs::ModelObs( const Position& RxCoordinates,
                     bool usetgd )
 {
 
-        InitializeValues();
-        Prepare(RxCoordinates);
-        setDefaultIonoModel(dIonoModel);
-        setDefaultTropoModel(dTropoModel);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    InitializeValues();
+    Prepare(RxCoordinates);
+    setDefaultIonoModel(dIonoModel);
+    setDefaultTropoModel(dTropoModel);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObs::ModelObs()'
 
@@ -109,13 +109,13 @@ ModelObs::ModelObs( const Position& RxCoordinates,
                     bool usetgd )
 {
 
-        InitializeValues();
-        Prepare(RxCoordinates);
-        setDefaultIonoModel(dIonoModel);
-        pDefaultTropoModel = NULL;
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    InitializeValues();
+    Prepare(RxCoordinates);
+    setDefaultIonoModel(dIonoModel);
+    pDefaultTropoModel = NULL;
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObs::ModelObs()'
 
@@ -141,13 +141,13 @@ ModelObs::ModelObs( const Position& RxCoordinates,
                     bool usetgd )
 {
 
-        InitializeValues();
-        Prepare(RxCoordinates);
-        pDefaultIonoModel = NULL;
-        setDefaultTropoModel(dTropoModel);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    InitializeValues();
+    Prepare(RxCoordinates);
+    pDefaultIonoModel = NULL;
+    setDefaultTropoModel(dTropoModel);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObs::ModelObs()'
 
@@ -171,13 +171,13 @@ ModelObs::ModelObs( const Position& RxCoordinates,
                     bool usetgd )
 {
 
-        InitializeValues();
-        Prepare(RxCoordinates);
-        pDefaultIonoModel = NULL;
-        pDefaultTropoModel = NULL;
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    InitializeValues();
+    Prepare(RxCoordinates);
+    pDefaultIonoModel = NULL;
+    pDefaultTropoModel = NULL;
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObs::ModelObs()'
 
@@ -201,12 +201,12 @@ ModelObs::ModelObs( IonoModelStore& dIonoModel,
                     bool usetgd )
 {
 
-        InitializeValues();
-        setDefaultIonoModel(dIonoModel);
-        setDefaultTropoModel(dTropoModel);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    InitializeValues();
+    setDefaultIonoModel(dIonoModel);
+    setDefaultTropoModel(dTropoModel);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObs::ModelObs()'
 
@@ -228,12 +228,12 @@ ModelObs::ModelObs( IonoModelStore& dIonoModel,
                     bool usetgd )
 {
 
-        InitializeValues();
-        setDefaultIonoModel(dIonoModel);
-        pDefaultTropoModel = NULL;
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    InitializeValues();
+    setDefaultIonoModel(dIonoModel);
+    pDefaultTropoModel = NULL;
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObs::ModelObs()'
 
@@ -255,12 +255,12 @@ ModelObs::ModelObs( TropModel& dTropoModel,
                     bool usetgd )
 {
 
-        InitializeValues();
-        pDefaultIonoModel = NULL;
-        setDefaultTropoModel(dTropoModel);
-        setDefaultObservable(dObservable);
-        setDefaultEphemeris(dEphemeris);
-        useTGD = usetgd;
+    InitializeValues();
+    pDefaultIonoModel = NULL;
+    setDefaultTropoModel(dTropoModel);
+    setDefaultObservable(dObservable);
+    setDefaultEphemeris(dEphemeris);
+    useTGD = usetgd;
 
 }     // End of 'ModelObs::ModelObs()'
 
@@ -285,25 +285,25 @@ int ModelObs::Prepare( const CommonTime& Tr,
                        const XvtStore<SatID>& Eph )
 {
 
-        Matrix<double> SVP;
-        Bancroft Ban;
-        Vector<double> vPos;
-        PRSolution2 raimObj;
+    Matrix<double> SVP;
+    Bancroft Ban;
+    Vector<double> vPos;
+    PRSolution2 raimObj;
 
-        try
+    try
+    {
+        raimObj.PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP);
+        if( Ban.Compute(SVP, vPos) < 0 )
         {
-                raimObj.PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP);
-                if( Ban.Compute(SVP, vPos) < 0 )
-                {
-                        return -1;
-                }
+            return -1;
         }
-        catch(...)
-        {
-                return -1;
-        }
+    }
+    catch(...)
+    {
+        return -1;
+    }
 
-        return Prepare(vPos(0), vPos(1), vPos(2));
+    return Prepare(vPos(0), vPos(1), vPos(2));
 
 }     // End of method 'ModelObs::Prepare()'
 
@@ -323,25 +323,25 @@ int ModelObs::Prepare( const CommonTime& time,
                        const satTypeValueMap& data )
 {
 
-        int i;
-        std::vector<SatID> vSat;
-        std::vector<double> vPR;
-        Vector<SatID> Satellite( data.getVectorOfSatID() );
-        Vector<double> Pseudorange(
-                data.getVectorOfTypeID( getDefaultObservable() ) );
+    int i;
+    std::vector<SatID> vSat;
+    std::vector<double> vPR;
+    Vector<SatID> Satellite( data.getVectorOfSatID() );
+    Vector<double> Pseudorange(
+        data.getVectorOfTypeID( getDefaultObservable() ) );
 
-        // Convert from gpstk::Vector to std::vector
-        for(i = 0; i < (int)Satellite.size(); i++)
-        {
-                vSat.push_back(Satellite[i]);
-        }
+    // Convert from gpstk::Vector to std::vector
+    for(i = 0; i < (int)Satellite.size(); i++)
+    {
+        vSat.push_back(Satellite[i]);
+    }
 
-        for(i = 0; i < (int)Pseudorange.size(); i++)
-        {
-                vPR.push_back(Pseudorange[i]);
-        }
+    for(i = 0; i < (int)Pseudorange.size(); i++)
+    {
+        vPR.push_back(Pseudorange[i]);
+    }
 
-        return Prepare(time, vSat, vPR, (*(getDefaultEphemeris())) );
+    return Prepare(time, vSat, vPR, (*(getDefaultEphemeris())) );
 
 }     // End of method 'ModelObs::Prepare()'
 
@@ -361,19 +361,19 @@ int ModelObs::Prepare( const double& aRx,
                        ReferenceFrame frame )
 {
 
-        int result = setInitialRxPosition(aRx, bRx, cRx, s, ell, frame);
+    int result = setInitialRxPosition(aRx, bRx, cRx, s, ell, frame);
 
-        // If everything is OK, the model is prepared
-        if( result ==0 )
-        {
-                modelPrepared = true;
-        }
-        else
-        {
-                modelPrepared = false;
-        }
+    // If everything is OK, the model is prepared
+    if( result ==0 )
+    {
+        modelPrepared = true;
+    }
+    else
+    {
+        modelPrepared = false;
+    }
 
-        return result;
+    return result;
 
 }     // End of method 'ModelObs::Prepare()'
 
@@ -388,19 +388,19 @@ int ModelObs::Prepare( const double& aRx,
 int ModelObs::Prepare(const Position& RxCoordinates)
 {
 
-        int result = setInitialRxPosition(RxCoordinates);
+    int result = setInitialRxPosition(RxCoordinates);
 
-        // If everything is OK, the model is prepared
-        if( result ==0 )
-        {
-                modelPrepared = true;
-        }
-        else
-        {
-                modelPrepared = false;
-        }
+    // If everything is OK, the model is prepared
+    if( result ==0 )
+    {
+        modelPrepared = true;
+    }
+    else
+    {
+        modelPrepared = false;
+    }
 
-        return result;
+    return result;
 
 }     // End of method 'ModelObs::Prepare()'
 
@@ -417,29 +417,29 @@ satTypeValueMap& ModelObs::Process( const CommonTime& time,
 throw(ProcessingException)
 {
 
-        try
+    try
+    {
+
+        // First, if the model is not prepared let's take care of it
+        if( !getModelPrepared() )
         {
-
-                // First, if the model is not prepared let's take care of it
-                if( !getModelPrepared() )
-                {
-                        Prepare(time, gData);
-                }
-
-                ModelObsFixedStation::Process(time, gData);
-
-                return gData;
-
+            Prepare(time, gData);
         }
-        catch(Exception& u)
-        {
-                // Throw an exception if something unexpected happens
-                ProcessingException e( getClassName() + ":"
-                                       + u.what() );
 
-                GPSTK_THROW(e);
+        ModelObsFixedStation::Process(time, gData);
 
-        }
+        return gData;
+
+    }
+    catch(Exception& u)
+    {
+        // Throw an exception if something unexpected happens
+        ProcessingException e( getClassName() + ":"
+                               + u.what() );
+
+        GPSTK_THROW(e);
+
+    }
 
 }      // End of method 'ModelObs::Process()'
 

@@ -112,375 +112,386 @@ public:
 
 /// Default constructor. Models C1 observations, use TGD,
 /// but doesn't apply atmospheric models
-ModelObsFixedStation()
+    ModelObsFixedStation()
         : minElev(10.0), useTGD(true), pDefaultIonoModel(NULL),
-        pDefaultTropoModel(NULL), defaultObservable(TypeID::C1),
-        pDefaultEphemeris(NULL)
-{
+          pDefaultTropoModel(NULL), defaultObservable(TypeID::C1),
+          pDefaultEphemeris(NULL)
+    {
         InitializeValues();
-};
+    };
 
 
-/** Explicit constructor taking as input reference
- *  station coordinates.
- *
- * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
- * (Latitude, Longitude, Altitude), but defaults to Cartesian.
- *
- * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
- * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
- * @param cRx   third coordinate [ Z, height above ellipsoid or
- *              radius, in meters ]
- * @param s     coordinate system (default is Cartesian, may be set
- *              to Geodetic).
- * @param ell   pointer to EllipsoidModel.
- * @param frame Reference frame associated with this position.
- */
-ModelObsFixedStation( const double& aRx,
-                      const double& bRx,
-                      const double& cRx,
-                      Position::CoordinateSystem s = Position::Cartesian,
-                      EllipsoidModel *ell = NULL,
-                      ReferenceFrame frame = ReferenceFrame::Unknown );
+    /** Explicit constructor taking as input reference
+     *  station coordinates.
+     *
+     * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
+     * (Latitude, Longitude, Altitude), but defaults to Cartesian.
+     *
+     * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
+     * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
+     * @param cRx   third coordinate [ Z, height above ellipsoid or
+     *              radius, in meters ]
+     * @param s     coordinate system (default is Cartesian, may be set
+     *              to Geodetic).
+     * @param ell   pointer to EllipsoidModel.
+     * @param frame Reference frame associated with this position.
+     */
+    ModelObsFixedStation( const double& aRx,
+                          const double& bRx,
+                          const double& cRx,
+                          Position::CoordinateSystem s = Position::Cartesian,
+                          EllipsoidModel *ell = NULL,
+                          ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
 /// Explicit constructor, taking as input a Position object
 /// containing reference station coordinates.
-ModelObsFixedStation(const Position& RxCoordinates);
+    ModelObsFixedStation(const Position& RxCoordinates);
 
 
-/** Explicit constructor, taking as input reference station
- *  coordinates, default ionospheric and tropospheric models,
- *  ephemeris to be used, default observable and whether TGD will
- *  be computed or not.
- *
- * @param RxCoordinates Reference station coordinates.
- * @param dIonoModel    Ionospheric model to be used by default.
- * @param dTropoModel   Tropospheric model to be used by default.
- * @param dEphemeris    EphemerisStore object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObsFixedStation( const Position& RxCoordinates,
-                      IonoModelStore& dIonoModel,
-                      TropModel& dTropoModel,
-                      XvtStore<SatID>& dEphemeris,
-                      const TypeID& dObservable,
-                      bool usetgd = true );
+    /** Explicit constructor, taking as input reference station
+     *  coordinates, default ionospheric and tropospheric models,
+     *  ephemeris to be used, default observable and whether TGD will
+     *  be computed or not.
+     *
+     * @param RxCoordinates Reference station coordinates.
+     * @param dIonoModel    Ionospheric model to be used by default.
+     * @param dTropoModel   Tropospheric model to be used by default.
+     * @param dEphemeris    EphemerisStore object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObsFixedStation( const Position& RxCoordinates,
+                          IonoModelStore& dIonoModel,
+                          TropModel& dTropoModel,
+                          XvtStore<SatID>& dEphemeris,
+                          const TypeID& dObservable,
+                          bool usetgd = true );
 
 
-/** Explicit constructor, taking as input reference station
- *  coordinates, default ionospheric model, ephemeris to be used,
- *  default observable and whether TGD will be computed or not.
- *
- * The default tropospheric model will be set to NULL.
- *
- * @param RxCoordinates Reference station coordinates.
- * @param dIonoModel    Ionospheric model to be used by default.
- * @param dEphemeris    EphemerisStore object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObsFixedStation( const Position& RxCoordinates,
-                      IonoModelStore& dIonoModel,
-                      XvtStore<SatID>& dEphemeris,
-                      const TypeID& dObservable,
-                      bool usetgd = true );
+    /** Explicit constructor, taking as input reference station
+     *  coordinates, default ionospheric model, ephemeris to be used,
+     *  default observable and whether TGD will be computed or not.
+     *
+     * The default tropospheric model will be set to NULL.
+     *
+     * @param RxCoordinates Reference station coordinates.
+     * @param dIonoModel    Ionospheric model to be used by default.
+     * @param dEphemeris    EphemerisStore object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObsFixedStation( const Position& RxCoordinates,
+                          IonoModelStore& dIonoModel,
+                          XvtStore<SatID>& dEphemeris,
+                          const TypeID& dObservable,
+                          bool usetgd = true );
 
 
-/** Explicit constructor, taking as input reference station
- *  coordinates, default tropospheric model, ephemeris to be used,
- *  default observable and whether TGD will be computed or not.
- *
- * The default ionospheric model will be set to NULL.
- *
- * @param RxCoordinates Reference station coordinates.
- * @param dTropoModel   Tropospheric model to be used by default.
- * @param dEphemeris    EphemerisStore object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObsFixedStation( const Position& RxCoordinates,
-                      TropModel& dTropoModel,
-                      XvtStore<SatID>& dEphemeris,
-                      const TypeID& dObservable,
-                      bool usetgd = true );
+    /** Explicit constructor, taking as input reference station
+     *  coordinates, default tropospheric model, ephemeris to be used,
+     *  default observable and whether TGD will be computed or not.
+     *
+     * The default ionospheric model will be set to NULL.
+     *
+     * @param RxCoordinates Reference station coordinates.
+     * @param dTropoModel   Tropospheric model to be used by default.
+     * @param dEphemeris    EphemerisStore object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObsFixedStation( const Position& RxCoordinates,
+                          TropModel& dTropoModel,
+                          XvtStore<SatID>& dEphemeris,
+                          const TypeID& dObservable,
+                          bool usetgd = true );
 
 
-/** Explicit constructor, taking as input reference station
- *  coordinates, ephemeris to be used, default observable and whether
- *  TGD will be computed or not.
- *
- * Both the tropospheric and ionospheric models will be set to NULL.
- *
- * @param RxCoordinates Reference station coordinates.
- * @param dEphemeris    EphemerisStore object to be used by default.
- * @param dObservable   Observable type to be used by default.
- * @param usetgd        Whether TGD will be used by default or not.
- *
- */
-ModelObsFixedStation( const Position& RxCoordinates,
-                      XvtStore<SatID>& dEphemeris,
-                      const TypeID& dObservable,
-                      bool usetgd = true);
+    /** Explicit constructor, taking as input reference station
+     *  coordinates, ephemeris to be used, default observable and whether
+     *  TGD will be computed or not.
+     *
+     * Both the tropospheric and ionospheric models will be set to NULL.
+     *
+     * @param RxCoordinates Reference station coordinates.
+     * @param dEphemeris    EphemerisStore object to be used by default.
+     * @param dObservable   Observable type to be used by default.
+     * @param usetgd        Whether TGD will be used by default or not.
+     *
+     */
+    ModelObsFixedStation( const Position& RxCoordinates,
+                          XvtStore<SatID>& dEphemeris,
+                          const TypeID& dObservable,
+                          bool usetgd = true);
 
 
-/** Returns a satTypeValueMap object, adding the new data generated
- *  when calling a modeling object.
- *
- * @param time      Epoch.
- * @param gData     Data object holding the data.
- */
-virtual satTypeValueMap& Process( const CommonTime& time,
-                                  satTypeValueMap& gData )
-throw(ProcessingException);
+    /** Returns a satTypeValueMap object, adding the new data generated
+     *  when calling a modeling object.
+     *
+     * @param time      Epoch.
+     * @param gData     Data object holding the data.
+     */
+    virtual satTypeValueMap& Process( const CommonTime& time,
+                                      satTypeValueMap& gData )
+    throw(ProcessingException);
 
 
-/** Returns a gnnsSatTypeValue object, adding the new data generated
- *  when calling a modeling object.
- *
- * @param gData    Data object holding the data.
- */
-virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-throw(ProcessingException)
-{
-        Process(gData.header.epoch, gData.body); return gData;
-};
+    /** Returns a gnnsSatTypeValue object, adding the new data generated
+     *  when calling a modeling object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.header.epoch, gData.body);
+        return gData;
+    };
 
 
-/** Returns a gnnsRinex object, adding the new data generated when
- *  calling a modeling object.
- *
- * @param gData    Data object holding the data.
- */
-virtual gnssRinex& Process(gnssRinex& gData)
-throw(ProcessingException)
-{
-        Process(gData.header.epoch, gData.body); return gData;
-};
+    /** Returns a gnnsRinex object, adding the new data generated when
+     *  calling a modeling object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssRinex& Process(gnssRinex& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.header.epoch, gData.body);
+        return gData;
+    };
 
 
 /// Method to get satellite elevation cut-off angle. By default, it
 /// is set to 10 degrees.
-virtual double getMinElev() const
-{
+    virtual double getMinElev() const
+    {
         return minElev;
-};
+    };
 
 
 /// Method to set satellite elevation cut-off angle. By default, it
 /// is set to 10 degrees.
-virtual ModelObsFixedStation& setMinElev(double newElevation)
-{
-        minElev = newElevation; return (*this);
-};
+    virtual ModelObsFixedStation& setMinElev(double newElevation)
+    {
+        minElev = newElevation;
+        return (*this);
+    };
 
 
 /// Method to set if instrumental delays (TGD) will be used or not
 /// in the modeling (it is set to true by default).
-virtual ModelObsFixedStation& setTGD(bool use)
-{
-        useTGD = use; return (*this);
-};
+    virtual ModelObsFixedStation& setTGD(bool use)
+    {
+        useTGD = use;
+        return (*this);
+    };
 
 
 /// Method to get a pointer to the default ionospheric model.
-virtual IonoModelStore* getDefaultIonoModel() const
-{
+    virtual IonoModelStore* getDefaultIonoModel() const
+    {
         return pDefaultIonoModel;
-};
+    };
 
 
 /// Method to set a NULL ionospheric model.
-virtual ModelObsFixedStation& setNULLIonoModel()
-{
-        pDefaultIonoModel = NULL; return (*this);
-};
+    virtual ModelObsFixedStation& setNULLIonoModel()
+    {
+        pDefaultIonoModel = NULL;
+        return (*this);
+    };
 
 
-/** Method to set the default ionospheric model.
- * @param dIonoModel    Ionospheric model to be used by default.
- */
-virtual ModelObsFixedStation& setDefaultIonoModel(
+    /** Method to set the default ionospheric model.
+     * @param dIonoModel    Ionospheric model to be used by default.
+     */
+    virtual ModelObsFixedStation& setDefaultIonoModel(
         IonoModelStore& dIonoModel)
-{
-        pDefaultIonoModel = &dIonoModel; return (*this);
-};
+    {
+        pDefaultIonoModel = &dIonoModel;
+        return (*this);
+    };
 
 
 /// Method to get a pointer to the default tropospheric model.
-virtual TropModel* getDefaultTropoModel() const
-{
+    virtual TropModel* getDefaultTropoModel() const
+    {
         return pDefaultTropoModel;
-};
+    };
 
 
 /// Method to set a NULL tropospheric model.
-virtual ModelObsFixedStation& setNULLTropoModel()
-{
-        pDefaultTropoModel = NULL; return (*this);
-};
+    virtual ModelObsFixedStation& setNULLTropoModel()
+    {
+        pDefaultTropoModel = NULL;
+        return (*this);
+    };
 
 
-/** Method to set the default tropospheric model.
- * @param dTropoModel    Tropospheric model to be used by default.
- */
-virtual ModelObsFixedStation& setDefaultTropoModel(
+    /** Method to set the default tropospheric model.
+     * @param dTropoModel    Tropospheric model to be used by default.
+     */
+    virtual ModelObsFixedStation& setDefaultTropoModel(
         TropModel& dTropoModel)
-{
-        pDefaultTropoModel = &dTropoModel; return (*this);
-};
+    {
+        pDefaultTropoModel = &dTropoModel;
+        return (*this);
+    };
 
 
 /// Method to get the default observable being used with GNSS
 /// data structures.
-virtual TypeID getDefaultObservable() const
-{
+    virtual TypeID getDefaultObservable() const
+    {
         return defaultObservable;
-};
+    };
 
 
-/** Method to set the default observable to be used when fed with
- *  GNSS data structures.
- * @param type      TypeID object to be used by default
- */
-virtual ModelObsFixedStation& setDefaultObservable(const TypeID& type)
-{
-        defaultObservable = type; return (*this);
-};
+    /** Method to set the default observable to be used when fed with
+     *  GNSS data structures.
+     * @param type      TypeID object to be used by default
+     */
+    virtual ModelObsFixedStation& setDefaultObservable(const TypeID& type)
+    {
+        defaultObservable = type;
+        return (*this);
+    };
 
 
 /// Method to get a pointer to the default XvtStore<SatID> to be used
 /// with GNSS data structures.
-virtual XvtStore<SatID>* getDefaultEphemeris() const
-{
+    virtual XvtStore<SatID>* getDefaultEphemeris() const
+    {
         return pDefaultEphemeris;
-};
+    };
 
 
-/** Method to set the default XvtStore<SatID> to be used with GNSS
- *  data structures.
- *
- * @param ephem     XvtStore<SatID> object to be used by default
- */
-virtual ModelObsFixedStation& setDefaultEphemeris(XvtStore<SatID>& ephem)
-{
-        pDefaultEphemeris = &ephem; return (*this);
-};
+    /** Method to set the default XvtStore<SatID> to be used with GNSS
+     *  data structures.
+     *
+     * @param ephem     XvtStore<SatID> object to be used by default
+     */
+    virtual ModelObsFixedStation& setDefaultEphemeris(XvtStore<SatID>& ephem)
+    {
+        pDefaultEphemeris = &ephem;
+        return (*this);
+    };
 
 
 /// Either estimated or "a priori" position of receiver
-Position rxPos;
+    Position rxPos;
 
 
 /// Returns a string identifying this object.
-virtual std::string getClassName(void) const;
+    virtual std::string getClassName(void) const;
 
 
 /// Destructor.
-virtual ~ModelObsFixedStation() {
-};
+    virtual ~ModelObsFixedStation()
+    {
+    };
 
 
 protected:
 
 
-/** Compute the modeled pseudoranges, given satellite ID's,
- *  pseudoranges and other data.
- *
- * @param Tr            Measured time of reception of the data.
- * @param Satellite     Vector of satellites.
- * @param Pseudorange   Vector of raw pseudoranges (parallel to
- *                      satellite), in meters.
- * @param Eph           EphemerisStore to be used.
- * @param pTropModel    Pointer to tropospheric model to be used.
- *                      By default points to NULL.
- * @param pIonoModel    Pointer to ionospheric model to be used.
- *                      By default points to NULL.
- *
- * @return
- *  Number of satellites with valid data
- *
- * @sa TropModel.hpp, IonoModelStore.hpp.
- */
-int Compute( const CommonTime& Tr,
-             Vector<SatID>& Satellite,
-             Vector<double>& Pseudorange,
-             const XvtStore<SatID>& Eph,
-             TropModel *pTropModel = NULL,
-             IonoModelStore *pIonoModel = NULL )
-throw(Exception);
+    /** Compute the modeled pseudoranges, given satellite ID's,
+     *  pseudoranges and other data.
+     *
+     * @param Tr            Measured time of reception of the data.
+     * @param Satellite     Vector of satellites.
+     * @param Pseudorange   Vector of raw pseudoranges (parallel to
+     *                      satellite), in meters.
+     * @param Eph           EphemerisStore to be used.
+     * @param pTropModel    Pointer to tropospheric model to be used.
+     *                      By default points to NULL.
+     * @param pIonoModel    Pointer to ionospheric model to be used.
+     *                      By default points to NULL.
+     *
+     * @return
+     *  Number of satellites with valid data
+     *
+     * @sa TropModel.hpp, IonoModelStore.hpp.
+     */
+    int Compute( const CommonTime& Tr,
+                 Vector<SatID>& Satellite,
+                 Vector<double>& Pseudorange,
+                 const XvtStore<SatID>& Eph,
+                 TropModel *pTropModel = NULL,
+                 IonoModelStore *pIonoModel = NULL )
+    throw(Exception);
 
 
 /// The elevation cut-off angle for accepted satellites.
 /// By default it is set to 10 degrees.
-double minElev;
+    double minElev;
 
 /// Boolean variable indicating if SV instrumental delays (TGD) will
 /// be included  in results. It is true by default.
-bool useTGD;
+    bool useTGD;
 
 /// Pointer to default ionospheric model.
-IonoModelStore *pDefaultIonoModel;
+    IonoModelStore *pDefaultIonoModel;
 
 /// Pointer to default tropospheric model.
-TropModel *pDefaultTropoModel;
+    TropModel *pDefaultTropoModel;
 
 /// Default observable to be used when fed with GNSS data structures.
-TypeID defaultObservable;
+    TypeID defaultObservable;
 
 /// Pointer to default XvtStore<SatID> object when working with GNSS
 /// data structures.
-XvtStore<SatID>* pDefaultEphemeris;
+    XvtStore<SatID>* pDefaultEphemeris;
 
 /// Initialization method
-virtual void InitializeValues()
-{
+    virtual void InitializeValues()
+    {
         setInitialRxPosition();
-};
+    };
 
 
-/** Method to set the initial (a priori) position of receiver.
- * @return
- *  0 if OK
- *  -1 if problems arose
- */
-virtual int setInitialRxPosition( const double& aRx,
-                                  const double& bRx,
-                                  const double& cRx,
-                                  Position::CoordinateSystem s = Position::Cartesian,
-                                  EllipsoidModel *ell = NULL,
-                                  ReferenceFrame frame = ReferenceFrame::Unknown );
-
-
-/// Method to set the initial (a priori) position of receiver.
-virtual int setInitialRxPosition(const Position& RxCoordinates);
+    /** Method to set the initial (a priori) position of receiver.
+     * @return
+     *  0 if OK
+     *  -1 if problems arose
+     */
+    virtual int setInitialRxPosition( const double& aRx,
+                                      const double& bRx,
+                                      const double& cRx,
+                                      Position::CoordinateSystem s = Position::Cartesian,
+                                      EllipsoidModel *ell = NULL,
+                                      ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
 /// Method to set the initial (a priori) position of receiver.
-virtual int setInitialRxPosition();
+    virtual int setInitialRxPosition(const Position& RxCoordinates);
+
+
+/// Method to set the initial (a priori) position of receiver.
+    virtual int setInitialRxPosition();
 
 
 /// Method to get the tropospheric corrections.
-virtual double getTropoCorrections( TropModel *pTropModel,
-                                    double elevation );
+    virtual double getTropoCorrections( TropModel *pTropModel,
+                                        double elevation );
 
 
 /// Method to get the ionospheric corrections.
-virtual double getIonoCorrections( IonoModelStore *pIonoModel,
-                                   CommonTime Tr,
-                                   Position rxGeo,
-                                   double elevation,
-                                   double azimuth );
+    virtual double getIonoCorrections( IonoModelStore *pIonoModel,
+                                       CommonTime Tr,
+                                       Position rxGeo,
+                                       double elevation,
+                                       double azimuth );
 
 
 /// Method to get TGD corrections.
-virtual double getTGDCorrections( CommonTime Tr,
-                                  const XvtStore<SatID>& Eph,
-                                  SatID sat );
+    virtual double getTGDCorrections( CommonTime Tr,
+                                      const XvtStore<SatID>& Eph,
+                                      SatID sat );
 
 
 };    // End of class 'ModelObsFixedStation'

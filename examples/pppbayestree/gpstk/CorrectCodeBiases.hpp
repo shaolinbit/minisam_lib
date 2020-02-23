@@ -90,104 +90,108 @@ class CorrectCodeBiases : public ProcessingClass
 public:
 
 /// Default constructor
-CorrectCodeBiases();
+    CorrectCodeBiases();
 
 /// Default deconstructor
-virtual ~CorrectCodeBiases();
+    virtual ~CorrectCodeBiases();
 
-/** Sets name of file containing DCBs data.
- * @param name      Name of the file containing DCB(P1-P2)
- * @param name      Name of the file containing DCB(P1-C1)
- */
-virtual CorrectCodeBiases& setDCBFile( const std::string& fileP1P2,
-                                       const std::string& fileP1C1);
+    /** Sets name of file containing DCBs data.
+     * @param name      Name of the file containing DCB(P1-P2)
+     * @param name      Name of the file containing DCB(P1-C1)
+     */
+    virtual CorrectCodeBiases& setDCBFile( const std::string& fileP1P2,
+                                           const std::string& fileP1C1);
 
-/** Set if C1 has been used as P1 to calculate some combinations
- * @param useC1      If C1 has been used as P1, then set it to true
- */
-virtual CorrectCodeBiases& setUsingC1(const bool& useC1)
-{
-        usingC1 = useC1; return (*this);
-}
-
-
-/** Set receiver name
- * @param receiver      Name of receiver with 4 char
- */
-virtual CorrectCodeBiases& setReceiver(const std::string& receiver)
-{
-        receiverName = receiver; return (*this);
-}
+    /** Set if C1 has been used as P1 to calculate some combinations
+     * @param useC1      If C1 has been used as P1, then set it to true
+     */
+    virtual CorrectCodeBiases& setUsingC1(const bool& useC1)
+    {
+        usingC1 = useC1;
+        return (*this);
+    }
 
 
-/** Returns a satTypeValueMap object, adding the new data generated
- *  when calling this object.
- *
- * @param time      Epoch corresponding to the data.
- * @param gData     Data object holding the data.
- */
-virtual satTypeValueMap& Process( const CommonTime& time,
-                                  satTypeValueMap& gData )
-throw(ProcessingException);
+    /** Set receiver name
+     * @param receiver      Name of receiver with 4 char
+     */
+    virtual CorrectCodeBiases& setReceiver(const std::string& receiver)
+    {
+        receiverName = receiver;
+        return (*this);
+    }
 
 
-/** Returns a gnnsSatTypeValue object, adding the new data
- *  generated when calling this object.
- *
- * @param gData    Data object holding the data.
- */
-virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-throw(ProcessingException)
-{
-        Process(gData.header.epoch, gData.body); return gData;
-};
+    /** Returns a satTypeValueMap object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param time      Epoch corresponding to the data.
+     * @param gData     Data object holding the data.
+     */
+    virtual satTypeValueMap& Process( const CommonTime& time,
+                                      satTypeValueMap& gData )
+    throw(ProcessingException);
 
 
-/** Returns a gnnsRinex object, adding the new data generated
- *  when calling this object.
- *
- * @param gData    Data object holding the data.
- */
-virtual gnssRinex& Process(gnssRinex& gData)
-throw(ProcessingException)
-{
-        Process(gData.header.epoch, gData.body); return gData;
-};
+    /** Returns a gnnsSatTypeValue object, adding the new data
+     *  generated when calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.header.epoch, gData.body);
+        return gData;
+    };
+
+
+    /** Returns a gnnsRinex object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssRinex& Process(gnssRinex& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.header.epoch, gData.body);
+        return gData;
+    };
 
 
 /// Returns a string identifying this object.
-virtual std::string getClassName() const;
+    virtual std::string getClassName() const;
 
 
 protected:
 
 /// get DCB(Differental Code Biases) corrections
-virtual double getDCBCorrection(const std::string& receiver,
-                                const SatID&  sat,
-                                const TypeID& type,
-                                const bool&   useC1 = false);
+    virtual double getDCBCorrection(const std::string& receiver,
+                                    const SatID&  sat,
+                                    const TypeID& type,
+                                    const bool&   useC1 = false);
 
-DCBDataReader dcbP1P2;
-DCBDataReader dcbP1C1;
+    DCBDataReader dcbP1P2;
+    DCBDataReader dcbP1C1;
 
 /// if C1 is used as P1 to calculate some combination
-bool usingC1;
+    bool usingC1;
 
 /// receiver name
-std::string receiverName;
+    std::string receiverName;
 
 /// If it's a cross-correlation receiver, set it true
 // it's false by default
-bool crossCorrelationReceiver;
+    bool crossCorrelationReceiver;
 
 
 private:
 
 
 /// Factors
-const static double factoP1P2[6];
-const static double factorP1C1[6];
-const static double factorC1X2[6];        // for cross-correlation receiver
+    const static double factoP1P2[6];
+    const static double factorP1C1[6];
+    const static double factorC1X2[6];        // for cross-correlation receiver
 
 };    // End of class 'CorrectCodeBiases'
 

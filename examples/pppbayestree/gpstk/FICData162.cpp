@@ -55,27 +55,28 @@
 
 namespace gpstk
 {
-   using namespace std;
-   using namespace gpstk;
+using namespace std;
+using namespace gpstk;
 
-      //
-      //  Note: the subframes are assumed to be 11 elements long so
-      //  elements 1-10 are used.
-   FICData162::FICData162(const short xmitPRN,
-                          const short SVID,
-                          const short xmitWeek,
-                          const short toaWeek,
-                          const std::vector<uint32_t> subframe )
-   {
-      blockNum = 162;
+//
+//  Note: the subframes are assumed to be 11 elements long so
+//  elements 1-10 are used.
+FICData162::FICData162(const short xmitPRN,
+                       const short SVID,
+                       const short xmitWeek,
+                       const short toaWeek,
+                       const std::vector<uint32_t> subframe )
+{
+    blockNum = 162;
 
-      i.push_back( (long) SVID );
-      for (int wndx=1;wndx<11;++wndx) i.push_back( (long) subframe[wndx] );
-      long dummy = 0;
-      i.push_back( (long) xmitPRN );
-      i.push_back( dummy );
-      i.push_back( (long) toaWeek );
-      i.push_back( (long) xmitWeek );
-   }
+    i.push_back( (long) SVID );
+    for (int wndx=1; wndx<11; ++wndx)
+        i.push_back( (long) subframe[wndx] );
+    long dummy = 0;
+    i.push_back( (long) xmitPRN );
+    i.push_back( dummy );
+    i.push_back( (long) toaWeek );
+    i.push_back( (long) xmitWeek );
+}
 
 }   // namespace

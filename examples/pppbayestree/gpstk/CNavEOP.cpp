@@ -49,130 +49,139 @@
 
 namespace gpstk
 {
-   using namespace std;
+using namespace std;
 
-   CNavEOP::CNavEOP()
-      :CNavDataElement(),
-       PM_X(0.0), 
-       PM_X_dot(0.0),
-       PM_Y(0.0),
-       PM_Y_dot(0.0),
-       deltaUT1(0.0),
-       deltaUT1_dot(0.0)
-   {
-   }
+CNavEOP::CNavEOP()
+    :CNavDataElement(),
+     PM_X(0.0),
+     PM_X_dot(0.0),
+     PM_Y(0.0),
+     PM_Y_dot(0.0),
+     deltaUT1(0.0),
+     deltaUT1_dot(0.0)
+{
+}
 
-   CNavEOP::CNavEOP(const PackedNavBits& message32)
-      throw( InvalidParameter)
-   {
-      loadData(message32);
-   }
+CNavEOP::CNavEOP(const PackedNavBits& message32)
+throw( InvalidParameter)
+{
+    loadData(message32);
+}
 
-   CNavEOP* CNavEOP::clone() const
-   {
-      return new CNavEOP (*this); 
-   }
+CNavEOP* CNavEOP::clone() const
+{
+    return new CNavEOP (*this);
+}
 
-     // In this case, since epoch time is arbitrarily set to Xmit, 
-     // the epoch time is NOT a distinguishing factor.  (This is
-     // worth noting because epoch time frequently is THE 
-     // distinguishing factor.) 
-   bool CNavEOP::isSameData(const CNavDataElement* right) const      
-   {
-      if (const CNavEOP* rp = dynamic_cast<const CNavEOP*>(right))
-      {
-         if (ctEpoch      !=rp->ctEpoch)      return false;
-         if (PM_X         !=rp->PM_X)         return false;
-         if (PM_X_dot     !=rp->PM_X_dot)     return false;
-         if (PM_Y         !=rp->PM_Y)         return false;
-         if (PM_Y_dot     !=rp->PM_Y_dot)     return false;
-         if (deltaUT1     !=rp->deltaUT1)     return false;
-         if (deltaUT1_dot !=rp->deltaUT1_dot) return false;
-            // Note: Already tested Teop (indirectly) by ctEpoch test.
-         return true;      
-      }
-      return false;
-   }
-   
-   void CNavEOP::loadData(const PackedNavBits& message32)
-      throw(InvalidParameter)
-   {
-         // First, verify the correct message type is being passed in. 
-      long msgType = message32.asUnsignedLong(14,6,1);
-      if(msgType!=32)
-      {
-         char errStr[80];
-         sprintf(errStr,"Expected CNAV MsgType 32.  Found MsgType %ld",msgType);
-         std::string tstr(errStr);
-         InvalidParameter exc(tstr);
-         GPSTK_THROW(exc);    
-      } 
-      obsID     = message32.getobsID();
-      satID     = message32.getsatSys();
-      ctXmit    = message32.getTransmitTime();
+// In this case, since epoch time is arbitrarily set to Xmit,
+// the epoch time is NOT a distinguishing factor.  (This is
+// worth noting because epoch time frequently is THE
+// distinguishing factor.)
+bool CNavEOP::isSameData(const CNavDataElement* right) const
+{
+    if (const CNavEOP* rp = dynamic_cast<const CNavEOP*>(right))
+    {
+        if (ctEpoch      !=rp->ctEpoch)
+            return false;
+        if (PM_X         !=rp->PM_X)
+            return false;
+        if (PM_X_dot     !=rp->PM_X_dot)
+            return false;
+        if (PM_Y         !=rp->PM_Y)
+            return false;
+        if (PM_Y_dot     !=rp->PM_Y_dot)
+            return false;
+        if (deltaUT1     !=rp->deltaUT1)
+            return false;
+        if (deltaUT1_dot !=rp->deltaUT1_dot)
+            return false;
+        // Note: Already tested Teop (indirectly) by ctEpoch test.
+        return true;
+    }
+    return false;
+}
 
-      Teop         = message32.asUnsignedLong(127,16, 16);
-      PM_X         = message32.asSignedDouble(143,21,-20);
-      PM_X_dot     = message32.asSignedDouble(164,15,-21);
-      PM_Y         = message32.asSignedDouble(179,21,-20);
-      PM_Y_dot     = message32.asSignedDouble(200,15,-21);
-      deltaUT1     = message32.asSignedDouble(215,31,-24);
-      deltaUT1_dot = message32.asSignedDouble(246,19,-25);
+void CNavEOP::loadData(const PackedNavBits& message32)
+throw(InvalidParameter)
+{
+    // First, verify the correct message type is being passed in.
+    long msgType = message32.asUnsignedLong(14,6,1);
+    if(msgType!=32)
+    {
+        char errStr[80];
+        sprintf(errStr,"Expected CNAV MsgType 32.  Found MsgType %ld",msgType);
+        std::string tstr(errStr);
+        InvalidParameter exc(tstr);
+        GPSTK_THROW(exc);
+    }
+    obsID     = message32.getobsID();
+    satID     = message32.getsatSys();
+    ctXmit    = message32.getTransmitTime();
 
-         // The message does not contain a week counter.
-         // We'll assume the Teop is to be within 1/2 week 
-         // of the transmit time. 
-      long xmitSOW = (static_cast<GPSWeekSecond>(ctXmit)).sow;
-      short xmitWeek = (static_cast<GPSWeekSecond>(ctXmit)).week;
-      double timeDiff = Teop - xmitSOW;
-      short epochWeek = xmitWeek;
-      if (timeDiff < -HALFWEEK) epochWeek++;
-      else if (timeDiff > HALFWEEK) epochWeek--;
+    Teop         = message32.asUnsignedLong(127,16, 16);
+    PM_X         = message32.asSignedDouble(143,21,-20);
+    PM_X_dot     = message32.asSignedDouble(164,15,-21);
+    PM_Y         = message32.asSignedDouble(179,21,-20);
+    PM_Y_dot     = message32.asSignedDouble(200,15,-21);
+    deltaUT1     = message32.asSignedDouble(215,31,-24);
+    deltaUT1_dot = message32.asSignedDouble(246,19,-25);
 
-      ctEpoch   = GPSWeekSecond(epochWeek, Teop, TimeSystem::GPS);
+    // The message does not contain a week counter.
+    // We'll assume the Teop is to be within 1/2 week
+    // of the transmit time.
+    long xmitSOW = (static_cast<GPSWeekSecond>(ctXmit)).sow;
+    short xmitWeek = (static_cast<GPSWeekSecond>(ctXmit)).week;
+    double timeDiff = Teop - xmitSOW;
+    short epochWeek = xmitWeek;
+    if (timeDiff < -HALFWEEK)
+        epochWeek++;
+    else if (timeDiff > HALFWEEK)
+        epochWeek--;
 
-      dataLoadedFlag = true;   
-   } // end of loadData()
+    ctEpoch   = GPSWeekSecond(epochWeek, Teop, TimeSystem::GPS);
 
-   void CNavEOP::dumpBody(ostream& s) const
-      throw( InvalidRequest )
-   {
-      if (!dataLoaded())
-      {
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      }
-    
-      s << endl
-        << "           EARTH ORIENTATION PARAMETERS"
-        << endl
-        << "Parameter        Value" << endl;
+    dataLoadedFlag = true;
+} // end of loadData()
 
-      s.setf(ios::scientific, ios::floatfield);
-      s.precision(8); 
-      s.fill(' ');
+void CNavEOP::dumpBody(ostream& s) const
+throw( InvalidRequest )
+{
+    if (!dataLoaded())
+    {
+        InvalidRequest exc("Required data not stored.");
+        GPSTK_THROW(exc);
+    }
 
-      s << "PM_X:           " << setw(16) << PM_X         << " arc-sec" << endl;
-      s << "PM_X(dot):      " << setw(16) << PM_X_dot     << " arc-sec/day" << endl;
-      s << "PM_X:           " << setw(16) << PM_Y         << " arc-sec" << endl;
-      s << "PM_X(dot):      " << setw(16) << PM_Y_dot     << " arc-sec/day" << endl;
-      s << "deltaUT1:       " << setw(16) << deltaUT1     << " sec" << endl;
-      s << "deltaUIT1(dot): " << setw(16) << deltaUT1_dot << " sec/day" << endl;
-      
-   } // end of dumpBody()   
+    s << endl
+      << "           EARTH ORIENTATION PARAMETERS"
+      << endl
+      << "Parameter        Value" << endl;
 
-   ostream& operator<<(ostream& s, const CNavEOP& eph)
-   {
-      try
-      {
-         eph.dump(s);
-      }
-      catch(gpstk::Exception& ex)
-      {
-         GPSTK_RETHROW(ex);
-      }
-      return s;
+    s.setf(ios::scientific, ios::floatfield);
+    s.precision(8);
+    s.fill(' ');
 
-   } // end of operator<<
+    s << "PM_X:           " << setw(16) << PM_X         << " arc-sec" << endl;
+    s << "PM_X(dot):      " << setw(16) << PM_X_dot     << " arc-sec/day" << endl;
+    s << "PM_X:           " << setw(16) << PM_Y         << " arc-sec" << endl;
+    s << "PM_X(dot):      " << setw(16) << PM_Y_dot     << " arc-sec/day" << endl;
+    s << "deltaUT1:       " << setw(16) << deltaUT1     << " sec" << endl;
+    s << "deltaUIT1(dot): " << setw(16) << deltaUT1_dot << " sec/day" << endl;
+
+} // end of dumpBody()
+
+ostream& operator<<(ostream& s, const CNavEOP& eph)
+{
+    try
+    {
+        eph.dump(s);
+    }
+    catch(gpstk::Exception& ex)
+    {
+        GPSTK_RETHROW(ex);
+    }
+    return s;
+
+} // end of operator<<
 
 } // end namespace

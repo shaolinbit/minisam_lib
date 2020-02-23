@@ -38,102 +38,102 @@ namespace gpstk
 {
 
 
-      /* Computes the probability density function
-       *
-       * @param x    Value
-       */
-   double StudentDistribution::pdf(double x)
-   {
+/* Computes the probability density function
+ *
+ * @param x    Value
+ */
+double StudentDistribution::pdf(double x)
+{
 
-         // If ndf == 1, this is a Cauchy distribution
-      if( ndf == 1 )
-      {
-         return ( 1.0 / ( PI * ( 1.0  + x*x ) ) );
-      }
-
-
-         // If ndf == 2, we use a simpler equation
-      if( ndf == 2 )
-      {
-         double temp( 2.0 + x*x );
-         return ( 1.0 / ( std::sqrt( temp * temp * temp ) ) );
-      }
-
-      double nu( static_cast<double>(ndf) );
-
-         // Let's compute some terms
-      double t1( 0.5*nu );
-      double t2( t1 + 0.5 );
-      double t3( std::log( std::sqrt(nu*PI) ) );
-
-      return ( std::exp( lngamma(t2) - t2 * std::log(1.0 + x*x/nu)
-                         - t3 - lngamma(t1) ) );
-
-   }  // End of method 'StudentDistribution::pdf()'
+    // If ndf == 1, this is a Cauchy distribution
+    if( ndf == 1 )
+    {
+        return ( 1.0 / ( PI * ( 1.0  + x*x ) ) );
+    }
 
 
+    // If ndf == 2, we use a simpler equation
+    if( ndf == 2 )
+    {
+        double temp( 2.0 + x*x );
+        return ( 1.0 / ( std::sqrt( temp * temp * temp ) ) );
+    }
 
-      /* Computes the cumulative distribution function
-       *
-       * @param x    Value
-       */
-   double StudentDistribution::cdf(double x)
-   {
+    double nu( static_cast<double>(ndf) );
 
-         // If ndf == 1, this is a Cauchy distribution
-      if( ndf == 1 )
-      {
-         return ( 0.5 + ( std::atan(x) / PI ) );
-      }
+    // Let's compute some terms
+    double t1( 0.5*nu );
+    double t2( t1 + 0.5 );
+    double t3( std::log( std::sqrt(nu*PI) ) );
 
-         // If ndf == 2, we use a simpler equation
-      if( ndf == 2 )
-      {
-         return ( 0.5 * ( 1.0 + x / std::sqrt( 2.0 + x*x ) ) );
-      }
+    return ( std::exp( lngamma(t2) - t2 * std::log(1.0 + x*x/nu)
+                       - t3 - lngamma(t1) ) );
 
-
-      double nu( static_cast<double>(ndf) );
-
-         // Let's compute some terms
-      double t1( 0.5*nu );
-      double t2( std::sqrt(x*x+nu) );
-      double t3( 0.5 * ( 1.0 + ( x / t2 ) )  );
-
-      return ( regIncompleteBeta(t3, t1, t1) );
-
-   }  // End of method 'StudentDistribution::cdf()'
+}  // End of method 'StudentDistribution::pdf()'
 
 
 
-      /* Set the number of degrees of freedom.
-       *
-       * @param n       Degrees of freedom
-       *
-       * \warning "n" must be > 0.0, otherwise n = |n|.
-       */
-   StudentDistribution& StudentDistribution::setNDF(int n)
-      throw(InvalidParameter)
-   {
+/* Computes the cumulative distribution function
+ *
+ * @param x    Value
+ */
+double StudentDistribution::cdf(double x)
+{
 
-      if( n == 0 )
-      {
-         InvalidParameter e( "Invalid value for NDF." );
-         GPSTK_THROW(e);
-      }
+    // If ndf == 1, this is a Cauchy distribution
+    if( ndf == 1 )
+    {
+        return ( 0.5 + ( std::atan(x) / PI ) );
+    }
 
-      if( n < 0 )
-      {
-         ndf = -n;
-      }
-      else
-      {
-         ndf = n;
-      }
+    // If ndf == 2, we use a simpler equation
+    if( ndf == 2 )
+    {
+        return ( 0.5 * ( 1.0 + x / std::sqrt( 2.0 + x*x ) ) );
+    }
 
-      return (*this);
 
-   }  // End of method 'StudentDistribution::setNDF()'
+    double nu( static_cast<double>(ndf) );
+
+    // Let's compute some terms
+    double t1( 0.5*nu );
+    double t2( std::sqrt(x*x+nu) );
+    double t3( 0.5 * ( 1.0 + ( x / t2 ) )  );
+
+    return ( regIncompleteBeta(t3, t1, t1) );
+
+}  // End of method 'StudentDistribution::cdf()'
+
+
+
+/* Set the number of degrees of freedom.
+ *
+ * @param n       Degrees of freedom
+ *
+ * \warning "n" must be > 0.0, otherwise n = |n|.
+ */
+StudentDistribution& StudentDistribution::setNDF(int n)
+throw(InvalidParameter)
+{
+
+    if( n == 0 )
+    {
+        InvalidParameter e( "Invalid value for NDF." );
+        GPSTK_THROW(e);
+    }
+
+    if( n < 0 )
+    {
+        ndf = -n;
+    }
+    else
+    {
+        ndf = n;
+    }
+
+    return (*this);
+
+}  // End of method 'StudentDistribution::setNDF()'
 
 
 

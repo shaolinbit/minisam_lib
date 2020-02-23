@@ -1,72 +1,58 @@
 #ifndef PREINTEGRATEDROTATION_H
 #define PREINTEGRATEDROTATION_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  *  @file  PreintegratedRotation.h
- *  @author Luca Carlone
- *  @author Stephen Williams
- *  @author Richard Roberts
- *  @author Vadim Indelman
- *  @author David Jensen
- *  @author Frank Dellaert
  **/
 
 #pragma once
 
 #include "../geometry/Pose3.h"
-#include "../base/Matrix.h"
-#include "../base/MatCal.h"
+#include "../mat/Matrix.h"
+#include "../mat/MatCal.h"
 
 namespace minisam
 {
 
 /// Parameters for pre-integration:
 /// Usage: Create just a single Params and pass a  pointer to the constructor
-struct PreintegratedRotationParams
+struct PreintegratedRotationParams:minimatrix
 {
-    Eigen::MatrixXd gyroscopeCovariance;  ///< continuous-time "Covariance" of gyroscope measurements
-    Eigen::Vector3d omegaCoriolis;  ///< Coriolis constant
-    Pose3* body_P_sensor;    ///< The pose of the sensor in the body frame
 
-    PreintegratedRotationParams() : gyroscopeCovariance(Eigen::MatrixXd::Identity(3,3)),omegaCoriolis(Eigen::Vector3d::Zero(3)),body_P_sensor(NULL) {}
-
-    virtual ~PreintegratedRotationParams() {}
-
-    void setGyroscopeCovariance(const Eigen::MatrixXd& cov)
+    PreintegratedRotationParams():minimatrix(4,3)
     {
-        gyroscopeCovariance = cov;
-    }
-    void setOmegaCoriolis(const Eigen::VectorXd& omega)
-    {
-        omegaCoriolis=omega;
-    }
-    void setBodyPSensor(const Pose3& pose)
-    {
-        *body_P_sensor=pose;
+        minimatrix_set_zero(this);
+        data[0]=1.0;
+        data[4]=1.0;
+        data[8]=1.0;
     }
 
-    const Eigen::MatrixXd& getGyroscopeCovariance()     const
+    virtual ~PreintegratedRotationParams()
     {
+
+    }
+
+    void setGyroscopeCovariance(const minimatrix& cov)
+    {
+        minimatrix gyroscopeCovariance=minimatrix_blockmatrix_var(this,0,0,3,3);
+        minimatrix_memcpy(&gyroscopeCovariance,cov);
+    }
+    void setOmegaCoriolis(const minivector& omega)
+    {
+        minivector omegaCoriolis=minimatrix_row(this,3);
+        minivector_memcpy(&omegaCoriolis,omega);
+    }
+
+
+     minimatrix getGyroscopeCovariance()     const
+    {
+        minimatrix gyroscopeCovariance=minimatrix_blockmatrix(*this,0,0,3,3);
         return gyroscopeCovariance;
     }
-    Eigen::Vector3d getOmegaCoriolis() const
+     minivector getOmegaCoriolis() const
     {
+        minivector omegaCoriolis=minimatrix_row(*this,3);
         return omegaCoriolis;
-    }
-    Pose3*   getBodyPSensor()   const
-    {
-        return body_P_sensor;
     }
 };
 
@@ -75,7 +61,7 @@ struct PreintegratedRotationParams
  * classes (in AHRSFactor, ImuFactor, and CombinedImuFactor).
  * It includes the definitions of the preintegrated rotation.
  */
-class PreintegratedRotation
+class PreintegratedRotation//not Ready for Parallel computing.
 {
 protected:
     /// Parameters
@@ -83,10 +69,14 @@ protected:
 
     double deltaTij_;           ///< Time interval from i to j
     Rot3 deltaRij_;             ///< Preintegrated relative orientation (in frame i)
-    Eigen::MatrixXd delRdelBiasOmega_;  ///< Jacobian of preintegrated rotation w.r.t. angular rate bias
+    minimatrix delRdelBiasOmega_;  ///< Jacobian of preintegrated rotation w.r.t. angular rate bias
 
     /// Default constructor for serialization
     PreintegratedRotation() {}
+
+    ~PreintegratedRotation()
+    {
+    }
 
 public:
     /// @name Constructors
@@ -98,7 +88,7 @@ public:
     /// Explicit initialization of all class members
     PreintegratedRotation(PreintegratedRotationParams* p,
                           double deltaTij, const Rot3& deltaRij,
-                          const Eigen::MatrixXd& delRdelBiasOmega);
+                          const minimatrix& delRdelBiasOmega);
     /// @}
 
     /// @name Basic utilities
@@ -116,7 +106,7 @@ public:
     const PreintegratedRotationParams* params() const;
     const double& deltaTij() const;
     const Rot3& deltaRij() const;
-    const Eigen::MatrixXd& delRdelBiasOmega() const;
+    const minimatrix& delRdelBiasOmega() const;
     /// @}
 
     /// @name Main functionality
@@ -125,24 +115,23 @@ public:
     /// Take the gyro measurement, correct it using the (constant) bias estimate
     /// and possibly the sensor pose, and then integrate it forward in time to yield
     /// an incremental rotation.
-    Rot3 incrementalRotation(const Eigen::VectorXd& measuredOmega, const Eigen::VectorXd& biasHat, double deltaT,
-                             Eigen::Matrix3d* D_incrR_integratedOmega) const;
-    // OptionalJacobian<3, 3> D_incrR_integratedOmega) const;
+    Rot3 incrementalRotation(const minivector& measuredOmega, const minivector& biasHat, double deltaT,
+                             minimatrix* D_incrR_integratedOmega) const;
 
     /// Calculate an incremental rotation given the gyro measurement and a time interval,
     /// and update both deltaTij_ and deltaRij_.
-    void integrateMeasurement(const Eigen::VectorXd& measuredOmega, const Eigen::VectorXd& biasHat, double deltaT,
-                              Eigen::MatrixXd* D_incrR_integratedOmega=NULL,
-                              Eigen::Matrix3d*  F =NULL);
+    void integrateMeasurement(const minivector& measuredOmega, const minivector& biasHat, double deltaT,
+                              minimatrix* D_incrR_integratedOmega=NULL,
+                              minimatrix*  F =NULL);
 
 
     /// Return a bias corrected version of the integrated rotation, with optional Jacobian
-    Rot3 biascorrectedDeltaRij(const Eigen::VectorXd& biasOmegaIncr,
-                               Eigen::MatrixXd& H);
-    Rot3 biascorrectedDeltaRij(const Eigen::VectorXd& biasOmegaIncr);
+    Rot3 biascorrectedDeltaRij(const minivector& biasOmegaIncr,
+                               minimatrix& H);
+    Rot3 biascorrectedDeltaRij(const minivector& biasOmegaIncr);
 
     /// Integrate coriolis correction in body frame rot_i
-    Eigen::VectorXd integrateCoriolis(const Rot3& rot_i) const;
+    minivector integrateCoriolis(const Rot3& rot_i) const;
 
     /// @}
 

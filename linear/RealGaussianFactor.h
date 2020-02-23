@@ -3,22 +3,9 @@
 
 ///Modified from GaussianFactor.h. However, this class is not a virtual class any more.
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    GaussianFactor.h
- * @brief   A factor with a quadratic error function - a Gaussian
- * @brief   GaussianFactor
- * @author  Richard Roberts, Christian Potthast
+ * @brief   A factor with a quadratic error function - GaussianFactor
  */
 
 
@@ -26,9 +13,9 @@
 
 
 #include "../inference/Factor.h"
-#include "../base/Matrix.h"
-#include "../base/MatCal.h"
-#include "../base/SVBlockMatrix.h"
+#include "../mat/Matrix.h"
+#include "../mat/MatCal.h"
+#include "../mat/GaussianBlockMatrix.h"
 #include "../linear/NoiseModel.h"
 #include <map>
 
@@ -39,12 +26,12 @@ namespace minisam
    * A base class for JacobianFactor and HessianFactor. A GaussianFactor has a
    * quadratic error function. The factor value
    * is exp(-0.5*||Ax-b||^2) */
-class RealGaussianFactor
+    class RealGaussianFactor
 {
 
 public:
-    SVBlockMatrix Ab_;         // the block view of the full matrix
-    DiagonalNoiseModel* model_; // Gaussian noise model with diagonal covariance matrix
+    GaussianBlockMatrix Ab_;         // the block view of the full matrix
+    GaussianNoiseModel* model_; // Gaussian noise model with diagonal covariance matrix
     int TypeGaussianFactor;    //{Jacobian,Hessian};
     bool iswrapper_;
     std::vector<int> keys_;
@@ -55,21 +42,22 @@ public:
 
     /** Construct from container of keys.  This constructor is used internally from derived factor
      *  constructors, either from a container of keys or from a boost::assign::list_of. */
-    RealGaussianFactor(const std::vector<int> &keys, const SVBlockMatrix& sb,DiagonalNoiseModel *model, int GaussianFactorT);
+    RealGaussianFactor(const std::vector<int> &keys,
+                       const GaussianBlockMatrix& sb,GaussianNoiseModel *model, int GaussianFactorT);
     /** Destructor */
     virtual ~RealGaussianFactor();
 
     RealGaussianFactor(const RealGaussianFactor &rf);
 
     /** Equals for testable */
-    const SVBlockMatrix& info() const;
+    const GaussianBlockMatrix& info() const;
     int rows() const;
 
-    Eigen::VectorXd JFunweighted_error(const std::map<int, Eigen::VectorXd> &c) const;
+    minivector JFunweighted_error(const std::map<int, minivector> &c) const;
 
-    Eigen::VectorXd JFerror_vector(const std::map<int, Eigen::VectorXd> &c) const;
+    minivector JFerror_vector(const std::map<int, minivector> &c) const;
     /** Print for testable */
-    double error(const std::map<int, Eigen::VectorXd> &c) const; /**  0.5*(A*x-b)'*D*(A*x-b) */
+    double error(const std::map<int, minivector> &c) const; /**  0.5*(A*x-b)'*D*(A*x-b) */
 
     /** Return the dimension of the variable pointed to by the given key iterator */
     int getDim(std::vector<int>::const_iterator variable) const;
@@ -81,8 +69,8 @@ public:
      * \f$ \frac{1}{2} \Vert Ax-b \Vert^2 \f$.  See also
      * GaussianFactorGraph::jacobian and GaussianFactorGraph::sparseJacobian.
      */
-    Eigen::MatrixXd augmentedJacobian();
-    Eigen::MatrixXd information() const;
+    minimatrix augmentedJacobian();
+    minimatrix information() const;
 
     /// Access the factor's involved variable keys
     const std::vector<int>& keys() const;
@@ -104,15 +92,15 @@ public:
 
     ///S
     void updateHessian(const std::vector<int> &keys,
-                       SVBlockMatrix* info) const;
+                       GaussianBlockMatrix* info) const;
 
-    std::map<int, Eigen::VectorXd> hessianDiagonal() const;
+    std::map<int, minivector> hessianDiagonal() const;
 
 
-    void transposeMultiplyAdd(double alpha, const Eigen::VectorXd &e,
-                              std::map<int, Eigen::VectorXd> &x) const;
+    void transposeMultiplyAdd(double alpha, const minivector &e,
+                              std::map<int, minivector> &x) const;
 
-    std::map<int, Eigen::VectorXd> gradientAtZero() const;
+    std::map<int, minivector> gradientAtZero() const;
 
 
     /** Test whether the factor is empty */

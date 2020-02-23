@@ -52,36 +52,37 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   //-----------------------------------------------------------------------------
-   // See notes in the .hpp. This function is designed to be called AFTER all elements
-   // are loaded. It can then make adjustments to time relationships based on
-   // inter-comparisons between sets of elements that cannot be performed until the
-   // ordering has been determined.
-   void QZSEphemerisStore::rationalize(void)
-   {
-   }
+//-----------------------------------------------------------------------------
+// See notes in the .hpp. This function is designed to be called AFTER all elements
+// are loaded. It can then make adjustments to time relationships based on
+// inter-comparisons between sets of elements that cannot be performed until the
+// ordering has been determined.
+void QZSEphemerisStore::rationalize(void)
+{
+}
 
-   //-----------------------------------------------------------------------------
-   // Add all ephemerides to an existing list<QZSEphemeris> for given satellite
-   // If sat.id is -1 (the default), all ephemerides are added.
-   // @return the number of ephemerides added.
-   int QZSEphemerisStore::addToList(list<QZSEphemeris>& qzslist, SatID sat) const
-   {
-      // get the list from OrbitEphStore
-      list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemQZSS));
+//-----------------------------------------------------------------------------
+// Add all ephemerides to an existing list<QZSEphemeris> for given satellite
+// If sat.id is -1 (the default), all ephemerides are added.
+// @return the number of ephemerides added.
+int QZSEphemerisStore::addToList(list<QZSEphemeris>& qzslist, SatID sat) const
+{
+    // get the list from OrbitEphStore
+    list<OrbitEph*> oelst;
+    OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemQZSS));
 
-      int n(0);
-      list<OrbitEph*>::const_iterator it;
-      for(it = oelst.begin(); it != oelst.end(); ++it) {
-         OrbitEph *ptr = *it;
-         QZSEphemeris *qzsptr = dynamic_cast<QZSEphemeris*>(ptr);
-         QZSEphemeris qzseph(*qzsptr);
-         qzslist.push_back(qzseph);
-         n++;
-      }
+    int n(0);
+    list<OrbitEph*>::const_iterator it;
+    for(it = oelst.begin(); it != oelst.end(); ++it)
+    {
+        OrbitEph *ptr = *it;
+        QZSEphemeris *qzsptr = dynamic_cast<QZSEphemeris*>(ptr);
+        QZSEphemeris qzseph(*qzsptr);
+        qzslist.push_back(qzseph);
+        n++;
+    }
 
-      return n;
-   }
+    return n;
+}
 
 } // namespace

@@ -56,32 +56,35 @@
 
 namespace gpstk
 {
-   using namespace std;
-   using namespace gpstk;
+using namespace std;
+using namespace gpstk;
 
-      //
-      //  Note: the subframes are assumed to be 11 elements long so
-      //  elements 1-10 are used.
-   FICData109::FICData109(const short PRNID,
-                          const std::vector<uint32_t> sf1,
-                          const std::vector<uint32_t> sf2,
-                          const std::vector<uint32_t> sf3 )
-   {
-      blockNum = 109;
+//
+//  Note: the subframes are assumed to be 11 elements long so
+//  elements 1-10 are used.
+FICData109::FICData109(const short PRNID,
+                       const std::vector<uint32_t> sf1,
+                       const std::vector<uint32_t> sf2,
+                       const std::vector<uint32_t> sf3 )
+{
+    blockNum = 109;
 
-      long temp = sf1[3];
-      temp &= 0x3FFFFFFF;       // Make certain top two bits are 0
-      temp >>= 20;
-                                 // DANGER WILL ROBINSON!!!!
-                                 // HERE IS A TEMP KLUDGE
-      temp += 1024;              // for the GPS Epoch.
+    long temp = sf1[3];
+    temp &= 0x3FFFFFFF;       // Make certain top two bits are 0
+    temp >>= 20;
+    // DANGER WILL ROBINSON!!!!
+    // HERE IS A TEMP KLUDGE
+    temp += 1024;              // for the GPS Epoch.
 
-      i.push_back( temp );
-      i.push_back( (long) PRNID );
+    i.push_back( temp );
+    i.push_back( (long) PRNID );
 
-      for (int wndx=1;wndx<11;++wndx) i.push_back( (long) sf1[wndx] );
-      for (int wndx=1;wndx<11;++wndx) i.push_back( (long) sf2[wndx] );
-      for (int wndx=1;wndx<11;++wndx) i.push_back( (long) sf3[wndx] );
-   }
+    for (int wndx=1; wndx<11; ++wndx)
+        i.push_back( (long) sf1[wndx] );
+    for (int wndx=1; wndx<11; ++wndx)
+        i.push_back( (long) sf2[wndx] );
+    for (int wndx=1; wndx<11; ++wndx)
+        i.push_back( (long) sf3[wndx] );
+}
 
 }   // namespace

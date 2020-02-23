@@ -2,7 +2,7 @@
 
 /**
 * @file EpochDataStore.hpp
-* Class to handle interpolatable time serial data 
+* Class to handle interpolatable time serial data
 */
 
 #ifndef GPSTK_EPOCHDATASTORE_HPP
@@ -41,114 +41,129 @@
 
 namespace gpstk
 {
-   
-      /** @addtogroup General Data Tool */
-      //@{
 
-      /** Class to handle interpolatable time serial data 
-       * 
-       */
-   class EpochDataStore
-   {
-   public:
+/** @addtogroup General Data Tool */
+//@{
 
-         /// Handy type definition
-      typedef std::set<CommonTime> EpochList;
-      typedef std::map<CommonTime, std::vector<double> > EpochData;
-      
+/** Class to handle interpolatable time serial data
+ *
+ */
+class EpochDataStore
+{
+public:
 
-         /// Default constructor
-      EpochDataStore()
-         : initialTime(CommonTime::END_OF_TIME),
-           finalTime(CommonTime::BEGINNING_OF_TIME),
-           interPoints(10)
-      {}
-
-      EpochDataStore(int interpolationPoints)
-         : initialTime(CommonTime::END_OF_TIME),
-         finalTime(CommonTime::BEGINNING_OF_TIME),
-         interPoints(interpolationPoints)
-      {}
-
-         /// Default deconstructor
-      virtual ~EpochDataStore()
-      { allData.clear(); }
-         
-         /// get epoch list stored in this object
-      EpochList epochList();
-
-      bool isEpochExist(CommonTime t)
-      { return (allData.find(t) != allData.end()) ? true : false ; }
-      
-         /// clear the all the data
-      void clear()
-      { allData.clear(); }
-
-         /** Edit the dataset, removing data outside the indicated time
-          *  interval.
-          *
-          * @param[in] tmin defines the beginning of the time interval
-          * @param[in] tmax defines the end of the time interval
-          */
-      virtual void edit(CommonTime tmin,
-                        CommonTime tmax = CommonTime::END_OF_TIME);
-
-         /// return the number of entries in the store
-      size_t size(void)
-      { return allData.size(); }
-
-         /** Determine the earliest time stored in the object 
-          *
-          * @return The initial time
-          *
-          */
-      virtual CommonTime getInitialTime()
-      { return initialTime; };
+    /// Handy type definition
+    typedef std::set<CommonTime> EpochList;
+    typedef std::map<CommonTime, std::vector<double> > EpochData;
 
 
-         /** Determine the latest time stored in the object
-          *
-          * @return The final time
-          *
-          */
-      virtual CommonTime getFinalTime()
-      { return finalTime; };
+    /// Default constructor
+    EpochDataStore()
+        : initialTime(CommonTime::END_OF_TIME),
+          finalTime(CommonTime::BEGINNING_OF_TIME),
+          interPoints(10)
+    {}
+
+    EpochDataStore(int interpolationPoints)
+        : initialTime(CommonTime::END_OF_TIME),
+          finalTime(CommonTime::BEGINNING_OF_TIME),
+          interPoints(interpolationPoints)
+    {}
+
+    /// Default deconstructor
+    virtual ~EpochDataStore()
+    {
+        allData.clear();
+    }
+
+    /// get epoch list stored in this object
+    EpochList epochList();
+
+    bool isEpochExist(CommonTime t)
+    {
+        return (allData.find(t) != allData.end()) ? true : false ;
+    }
+
+    /// clear the all the data
+    void clear()
+    {
+        allData.clear();
+    }
+
+    /** Edit the dataset, removing data outside the indicated time
+     *  interval.
+     *
+     * @param[in] tmin defines the beginning of the time interval
+     * @param[in] tmax defines the end of the time interval
+     */
+    virtual void edit(CommonTime tmin,
+                      CommonTime tmax = CommonTime::END_OF_TIME);
+
+    /// return the number of entries in the store
+    size_t size(void)
+    {
+        return allData.size();
+    }
+
+    /** Determine the earliest time stored in the object
+     *
+     * @return The initial time
+     *
+     */
+    virtual CommonTime getInitialTime()
+    {
+        return initialTime;
+    };
 
 
-      EpochDataStore& setInterpolationPoints(const int& n)
-      { interPoints = n; return (*this); }
+    /** Determine the latest time stored in the object
+     *
+     * @return The final time
+     *
+     */
+    virtual CommonTime getFinalTime()
+    {
+        return finalTime;
+    };
 
 
-   protected:
+    EpochDataStore& setInterpolationPoints(const int& n)
+    {
+        interPoints = n;
+        return (*this);
+    }
 
-         /// Add to the store directly
-      void addData(const CommonTime& time,const std::vector<double>& data);
+
+protected:
+
+    /// Add to the store directly
+    void addData(const CommonTime& time,const std::vector<double>& data);
 
 
-         /** Get the Data at the given epoch and return it.
-          *  @param t CommonTime at which to compute the EOPs.
-          *  @return EarthOrientation EOPs at time t.
-          *  @throw InvalidRequest if the epoch on either side of t
-          *     cannot be found in the map.
-          */
-      std::vector<double> getData(const CommonTime& t) const
-         throw(InvalidRequest);
+    /** Get the Data at the given epoch and return it.
+     *  @param t CommonTime at which to compute the EOPs.
+     *  @return EarthOrientation EOPs at time t.
+     *  @throw InvalidRequest if the epoch on either side of t
+     *     cannot be found in the map.
+     */
+    std::vector<double> getData(const CommonTime& t) const
+    throw(InvalidRequest);
 
-      
-         /// Object holding all the data for the vehicle
-      EpochData allData;
-         
-         /// These give the overall span of time for which this object
-         ///  contains data.
-      CommonTime initialTime;
-      CommonTime finalTime;
-      
-         /// Number of points to do Lagrange Interpolation, default is 10
-      int interPoints;
 
-   }; // End of class 'EpochDataStore'
+    /// Object holding all the data for the vehicle
+    EpochData allData;
 
-      // @}
+    /// These give the overall span of time for which this object
+    ///  contains data.
+    CommonTime initialTime;
+    CommonTime finalTime;
+
+    /// Number of points to do Lagrange Interpolation, default is 10
+    int interPoints;
+
+}; // End of class 'EpochDataStore'
+
+// @}
 
 }  // End of namespace gpstk
 

@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2013, The University of Texas at Austin
 //
 //============================================================================
@@ -34,13 +34,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -53,51 +53,51 @@
 
 namespace gpstk
 {
-   class CNavText : public CNavDataElement
-   {
-   public:
-         /// Default constructor
-      CNavText();
-  
-        /// Need description here...
-      CNavText(const PackedNavBits& pnb)
-         throw( InvalidParameter);
-      
-         /// Destructor
-      virtual ~CNavText() {}
+class CNavText : public CNavDataElement
+{
+public:
+    /// Default constructor
+    CNavText();
 
-         /// Clone method
-      virtual CNavText* clone() const;
-        
-         /**
-          * Store the contents of message this object.
-          * @param pnb - 300 bits of Message Type 15 or 37
-          * @throw InvalidParameter if message data is invalid
-          */
-      void loadData(const PackedNavBits& pnb)
-         throw(gpstk::InvalidParameter); 
+    /// Need description here...
+    CNavText(const PackedNavBits& pnb)
+    throw( InvalidParameter);
 
-      virtual std::string getName() const
-      {
-         return "CnavText";
-      }
+    /// Destructor
+    virtual ~CNavText() {}
 
-      virtual std::string getNameLong() const
-      {
-         return "Civilian Navigation (CNAV) Text Message";
-      }
+    /// Clone method
+    virtual CNavText* clone() const;
 
-      virtual bool isSameData(const CNavDataElement* right) const;
-      
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+    /**
+     * Store the contents of message this object.
+     * @param pnb - 300 bits of Message Type 15 or 37
+     * @throw InvalidParameter if message data is invalid
+     */
+    void loadData(const PackedNavBits& pnb)
+    throw(gpstk::InvalidParameter);
 
-      std::string textMessage;
-      int textPage;
-      
-   }; // end class CnavText
+    virtual std::string getName() const
+    {
+        return "CnavText";
+    }
 
-   std::ostream& operator<<(std::ostream& s, const CNavText& eph);
+    virtual std::string getNameLong() const
+    {
+        return "Civilian Navigation (CNAV) Text Message";
+    }
+
+    virtual bool isSameData(const CNavDataElement* right) const;
+
+    virtual void dumpBody(std::ostream& s = std::cout) const
+    throw( InvalidRequest );
+
+    std::string textMessage;
+    int textPage;
+
+}; // end class CnavText
+
+std::ostream& operator<<(std::ostream& s, const CNavText& eph);
 } // end namespace
 
 #endif // GPSTK_CNAVTEXT_HPP

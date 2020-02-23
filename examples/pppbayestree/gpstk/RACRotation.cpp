@@ -42,15 +42,15 @@ namespace gpstk
 
 RACRotation::RACRotation( const gpstk::Triple& SVPositionVector,
                           const gpstk::Triple& SVVelocityVector)
-                          : gpstk::Matrix<double>(3,3)
+    : gpstk::Matrix<double>(3,3)
 {
-   compute( SVPositionVector, SVVelocityVector );
+    compute( SVPositionVector, SVVelocityVector );
 }
 
 RACRotation::RACRotation(const gpstk::Xvt& xvt)
-                         : gpstk::Matrix<double>(3,3)
+    : gpstk::Matrix<double>(3,3)
 {
-   compute( xvt.x, xvt.v );
+    compute( xvt.x, xvt.v );
 }
 
 //
@@ -72,72 +72,72 @@ void RACRotation::compute( const gpstk::Triple& SVPositionVector,
                            const gpstk::Triple& SVVelocityVector)
 {
 
-   gpstk::Triple unitR = SVPositionVector.unitVector();
-   gpstk::Triple C = unitR.cross(SVVelocityVector);
-   gpstk::Triple unitC = C.unitVector();
-   gpstk::Triple unitA = unitC.cross(unitR);
+    gpstk::Triple unitR = SVPositionVector.unitVector();
+    gpstk::Triple C = unitR.cross(SVVelocityVector);
+    gpstk::Triple unitC = C.unitVector();
+    gpstk::Triple unitA = unitC.cross(unitR);
 
-   (*this) (0,0) = unitR[0];
-   (*this) (0,1) = unitR[1];
-   (*this) (0,2) = unitR[2];
-   (*this) (1,0) = unitA[0];
-   (*this) (1,1) = unitA[1];
-   (*this) (1,2) = unitA[2];
-   (*this) (2,0) = unitC[0];
-   (*this) (2,1) = unitC[1];
-   (*this) (2,2) = unitC[2];
+    (*this) (0,0) = unitR[0];
+    (*this) (0,1) = unitR[1];
+    (*this) (0,2) = unitR[2];
+    (*this) (1,0) = unitA[0];
+    (*this) (1,1) = unitA[1];
+    (*this) (1,2) = unitA[2];
+    (*this) (2,0) = unitC[0];
+    (*this) (2,1) = unitC[1];
+    (*this) (2,2) = unitC[2];
 }
 
 gpstk::Vector<double> RACRotation::convertToRAC( const gpstk::Vector<double>& inV )
 {
-   gpstk::Vector<double> outV(3);
+    gpstk::Vector<double> outV(3);
 
-   /*
-      My goal was to use the following statement.
-   outV =  this * inV;
-      However, for some reason, gcc refuses to recognize RACRotation as a
-      Matrix subclass.  Therefore, I've incorporated the matrix multiply
-      as a temporary kludge.
-   */
-   if (inV.size()!=3)
-   {
-      gpstk::Exception e("Incompatible dimensions for Vector");
-      GPSTK_THROW(e);
-   }
-   size_t i, j;
-   for (i = 0; i < 3; i++)
-   {
-      outV[i] = 0;
-      for (j = 0; j < 3; j++)
-      {
-         double temp =  (*this)(i,j) * inV[j];
-         outV[i] += temp;
-      }
-   }
-   /* end kludge */
-   return(outV);
+    /*
+       My goal was to use the following statement.
+    outV =  this * inV;
+       However, for some reason, gcc refuses to recognize RACRotation as a
+       Matrix subclass.  Therefore, I've incorporated the matrix multiply
+       as a temporary kludge.
+    */
+    if (inV.size()!=3)
+    {
+        gpstk::Exception e("Incompatible dimensions for Vector");
+        GPSTK_THROW(e);
+    }
+    size_t i, j;
+    for (i = 0; i < 3; i++)
+    {
+        outV[i] = 0;
+        for (j = 0; j < 3; j++)
+        {
+            double temp =  (*this)(i,j) * inV[j];
+            outV[i] += temp;
+        }
+    }
+    /* end kludge */
+    return(outV);
 }
 
 gpstk::Triple RACRotation::convertToRAC( const gpstk::Triple& inVec )
 {
-   gpstk::Vector<double> v(3);
-   v[0] = inVec[0];
-   v[1] = inVec[1];
-   v[2] = inVec[2];
+    gpstk::Vector<double> v(3);
+    v[0] = inVec[0];
+    v[1] = inVec[1];
+    v[2] = inVec[2];
 
-   gpstk::Vector<double> vOut = convertToRAC( v );
-   gpstk::Triple outVec( vOut[0], vOut[1], vOut[2] );
-   return(outVec);
+    gpstk::Vector<double> vOut = convertToRAC( v );
+    gpstk::Triple outVec( vOut[0], vOut[1], vOut[2] );
+    return(outVec);
 }
 
 gpstk::Xvt RACRotation::convertToRAC( const gpstk::Xvt& in )
 {
-   gpstk::Xvt out;
-   out.clkbias = in.clkbias;
-   out.relcorr = in.relcorr;
-   out.clkdrift = in.clkdrift;
-   out.x = convertToRAC( in.x );
-   out.v = convertToRAC( in.v );
-   return(out);
+    gpstk::Xvt out;
+    out.clkbias = in.clkbias;
+    out.relcorr = in.relcorr;
+    out.clkdrift = in.clkdrift;
+    out.x = convertToRAC( in.x );
+    out.v = convertToRAC( in.v );
+    return(out);
 }
 }     // end namespace gpstk

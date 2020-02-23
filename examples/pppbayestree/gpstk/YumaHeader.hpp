@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -41,47 +41,50 @@
 
 namespace gpstk
 {
-   /** @addtogroup Yuma */
-   //@{
+/** @addtogroup Yuma */
+//@{
 
-   /** 
-    * This class does not really do anything.  It is here to conform to the
-    * other file types, even though the Yuma file type 
-    * does not have any header information.
-    *
-    * @sa tests/Yuma for examples
-    * @sa YumaStream.
-    * @sa YumaData for more information on writing Yuma files.
-    */
-   class YumaHeader : public YumaBase
-   {
-   public:
-      /// Constructor.
-      YumaHeader() {}
+/**
+ * This class does not really do anything.  It is here to conform to the
+ * other file types, even though the Yuma file type
+ * does not have any header information.
+ *
+ * @sa tests/Yuma for examples
+ * @sa YumaStream.
+ * @sa YumaData for more information on writing Yuma files.
+ */
+class YumaHeader : public YumaBase
+{
+public:
+    /// Constructor.
+    YumaHeader() {}
 
-      /// Destructor
-      virtual ~YumaHeader() {}
-      
+    /// Destructor
+    virtual ~YumaHeader() {}
 
-      virtual void dump(std::ostream& s) const {};
-      
-      //! This class is a "header" so this function always returns "true". 
-      virtual bool isHeader() const {return true;}
 
-   protected:      
-      virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException)
-      {}
-  
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException)
-      {}
-      
-   }; // class YumaHeader
+    virtual void dump(std::ostream& s) const {};
 
-   //@}
+    //! This class is a "header" so this function always returns "true".
+    virtual bool isHeader() const
+    {
+        return true;
+    }
+
+protected:
+    virtual void reallyPutRecord(FFStream& s) const
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException)
+    {}
+
+    virtual void reallyGetRecord(FFStream& s)
+    throw(std::exception, FFStreamError,
+          gpstk::StringUtils::StringException)
+    {}
+
+}; // class YumaHeader
+
+//@}
 
 } // namespace
 

@@ -5,8 +5,6 @@
 /**
  * @file    LevenbergMarquardtState.h
  * @brief   A LevenbergMarquardtState class containing most of the logic for Levenberg-Marquardt
- * @author  Frank Dellaert
- * @date    April 2016
  */
 
 #include "../nonlinear/NonlinearOptimizerState.h"
@@ -30,18 +28,28 @@ struct CachedModel
     CachedModel()
     {
         model=NULL;   // default int makes zero-size matrices
+        A.data=NULL;
+        A.owner=0;
+        A.prd=0;
+        A.size1=0;
+        A.size2=0;
+        b.data=NULL;
+        b.owner=0;
+        b.prd=0;
+        b.size1=0;
+        b.size2=0;
     }
     CachedModel(int dim, double sigma)
-        : A(Eigen::MatrixXd::Identity(dim, dim)),
-          b(Eigen::VectorXd::Zero(dim)),
+        : A(minimatrix_identity_mat(dim)),
+          b(minivector(dim,0.0)),//b(Eigen::VectorXd::Zero(dim)),
           model(new IsotropicNoiseModel(dim, sigma)) {}
-    CachedModel(int dim, double sigma, const Eigen::VectorXd& diagonal)
-        : A(Eigen::DiagonalMatrix<double, Eigen::Dynamic>(diagonal)),
-          b(Eigen::VectorXd::Zero(dim)),
-          model(new IsotropicNoiseModel(dim, sigma)) {}
-    Eigen::MatrixXd A;
-    Eigen::VectorXd b;
-    DiagonalNoiseModel* model;
+    CachedModel(int dim, double sigma, const minivector& diagonal)
+        :A(minimatrix_vector_asDiagonal(diagonal)),// A(Eigen::DiagonalMatrix<double, Eigen::Dynamic>(diagonal)),
+         b(minivector(dim,0.0)),// b(Eigen::VectorXd::Zero(dim)),
+         model(new IsotropicNoiseModel(dim, sigma)) {}
+    minimatrix A;
+    minivector b;
+    GaussianNoiseModel* model;
     ~CachedModel()
     {
         if(model!=NULL)
@@ -62,26 +70,13 @@ public:
     int totalNumberInnerIterations;  ///< The total number of inner iterations in the
     // optimization (for each iteration, LM tries multiple
     // inner iterations with different lambdas)
-#ifdef GMF_Using_Pose3
-    // Constructor version that takes ownership of values
-    LevenbergMarquardtState(const std::map<int,Eigen::VectorXd>& initialValues,const std::map<int,Pose3>& initialposes, double error, double lambda, double currentFactor,
+    LevenbergMarquardtState(const std::map<int,minimatrix*>& initialValues,
+                            double error, double lambda, double currentFactor,
                             unsigned int iterations = 0, unsigned int totalNumberInnerIterations = 0)
-        : NonlinearOptimizerState(initialValues,initialposes, error, iterations),
+        : NonlinearOptimizerState(initialValues, error, iterations),
           lambda(lambda),
           currentFactor(currentFactor),
           totalNumberInnerIterations(totalNumberInnerIterations) {}
-#else
-
-    // Constructor version that takes ownership of values
-    LevenbergMarquardtState(const std::map<int,Eigen::VectorXd>& initialValues,const std::map<int,Pose2>& initialposes, double error, double lambda, double currentFactor,
-                            unsigned int iterations = 0, unsigned int totalNumberInnerIterations = 0)
-        : NonlinearOptimizerState(initialValues,initialposes, error, iterations),
-          lambda(lambda),
-          currentFactor(currentFactor),
-          totalNumberInnerIterations(totalNumberInnerIterations) {}
-#endif // GMF_Using_Pose3
-
-
 
     // Applies policy to *increase* lambda: should be used if the current update was NOT successful
     void increaseLambda(const LevenbergMarquardtParams& params);
@@ -89,18 +84,9 @@ public:
     // Apply policy to decrease lambda if the current update was successful
     // stepQuality not used in the naive policy)
     // Take ownsership of newValues, must be passed an rvalue
-#ifdef GMF_Using_Pose3
     LevenbergMarquardtState* decreaseLambda(const LevenbergMarquardtParams& params, double stepQuality,
-                                            std::map<int,Eigen::VectorXd>& newValues,
-                                            std::map<int,Pose3>& newPoses,
+                                            std::map<int,minimatrix*>& newValues,
                                             double newError) const;
-#else
-    LevenbergMarquardtState* decreaseLambda(const LevenbergMarquardtParams& params, double stepQuality,
-                                            std::map<int,Eigen::VectorXd>& newValues,
-                                            std::map<int,Pose2>& newPoses,
-                                            double newError) const;
-#endif // GMF_Using_Pose3
-
 
 
     // Small cache of A|b|model indexed by dimension. Can save many mallocs.
@@ -115,7 +101,7 @@ public:
 
     /// Build a damped system, use hessianDiagonal per variable (more expensive)
     GaussianFactorGraph buildDampedSystem(GaussianFactorGraph damped,  // gets copied
-                                          const std::map<int,Eigen::VectorXd>& sqrtHessianDiagonal) const;
+                                          const std::map<int,minivector>& sqrtHessianDiagonal) const;
 };
 };
 

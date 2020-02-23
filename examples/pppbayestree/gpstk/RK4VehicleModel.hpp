@@ -38,71 +38,71 @@
 namespace gpstk
 {
 
-      /** @defgroup vehicles Tools to model vehicles */
-      //@{
+/** @defgroup vehicles Tools to model vehicles */
+//@{
 
-      /// This class implements a simple kinematic model of a vehicle.
-   class RK4VehicleModel : public RungeKutta4
-   {
-   public:
-
-
-         /** Common constructor.
-          *
-          * @param initialState     Initial state matrix.
-          * @param initialTime      Initial time.
-          * @param timeEpsilon      Time epsilon for Runge-Kutta algorithm.
-          */
-      RK4VehicleModel( const Matrix<double>& initialState,
-                       double initialTime = 0.0,
-                       double timeEpsilon = 1e-18 )
-         : RungeKutta4(initialState, initialTime, timeEpsilon)
-      {};
+/// This class implements a simple kinematic model of a vehicle.
+class RK4VehicleModel : public RungeKutta4
+{
+public:
 
 
-         /** Set acceleration
-          *
-          * @param acceleration     Accelerations matrix (3D).
-          */
-      void setAcceleration( const Matrix<double>& acceleration );
+    /** Common constructor.
+     *
+     * @param initialState     Initial state matrix.
+     * @param initialTime      Initial time.
+     * @param timeEpsilon      Time epsilon for Runge-Kutta algorithm.
+     */
+    RK4VehicleModel( const Matrix<double>& initialState,
+                     double initialTime = 0.0,
+                     double timeEpsilon = 1e-18 )
+        : RungeKutta4(initialState, initialTime, timeEpsilon)
+    {};
 
 
-         /** Set acceleration
-          *
-          * @param accelerationX     Acceleration X component.
-          * @param accelerationY     Acceleration Y component.
-          * @param accelerationZ     Acceleration Z component.
-          */
-      void setAcceleration( double accelerationX = 0.0,
-                            double accelerationY = 0.0,
-                            double accelerationZ = 0.0 );
+    /** Set acceleration
+     *
+     * @param acceleration     Accelerations matrix (3D).
+     */
+    void setAcceleration( const Matrix<double>& acceleration );
 
 
-   protected:
+    /** Set acceleration
+     *
+     * @param accelerationX     Acceleration X component.
+     * @param accelerationY     Acceleration Y component.
+     * @param accelerationZ     Acceleration Z component.
+     */
+    void setAcceleration( double accelerationX = 0.0,
+                          double accelerationY = 0.0,
+                          double accelerationZ = 0.0 );
 
 
-      double ax;   //< acceleration in X component
-      double ay;   //< acceleration in Y component
-      double az;   //< acceleration in Z component
+protected:
 
 
-   private:
+    double ax;   //< acceleration in X component
+    double ay;   //< acceleration in Y component
+    double az;   //< acceleration in Z component
 
 
-         /** Implements "derivative()". It is based on accelerations.
-          *
-          * @param time          Time step.
-          * @param inState       Internal state matrix.
-          * @param inStateDot    Derivative of internal state matrix.
-          */
-      virtual Matrix<double>& derivative( long double time,
-                                          const Matrix<double>& inState,
-                                          Matrix<double>& inStateDot );
+private:
 
 
-   };  // End of class "RK4VehicleModel"
+    /** Implements "derivative()". It is based on accelerations.
+     *
+     * @param time          Time step.
+     * @param inState       Internal state matrix.
+     * @param inStateDot    Derivative of internal state matrix.
+     */
+    virtual Matrix<double>& derivative( long double time,
+                                        const Matrix<double>& inState,
+                                        Matrix<double>& inStateDot );
 
-      //@}
+
+};  // End of class "RK4VehicleModel"
+
+//@}
 
 }  // End of namespace gpstk
 

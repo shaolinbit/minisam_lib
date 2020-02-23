@@ -1,21 +1,8 @@
 #ifndef VARIABLEINDEX_H
 #define VARIABLEINDEX_H
 
-/* ----------------------------------------------------------------------------
-
- * GTSAM Copyright 2010, Georgia Tech Research Corporation,
- * Atlanta, Georgia 30332-0415
- * All Rights Reserved
- * Authors: Frank Dellaert, et al. (see THANKS for the full author list)
-
- * See LICENSE for the license information
-
- * -------------------------------------------------------------------------- */
-
 /**
  * @file    VariableIndex.h
- * @author  Richard Roberts
- * @date    March 26, 2013
  */
 
 #include "../inference/Factor.h"
@@ -68,7 +55,7 @@ public:
         augment(factorGraph);
     }
 
-    VariableIndex(const FactorGraph<NonlinearFactor>& factorGraph) : nFactors_(0), nEntries_(0)
+    VariableIndex(const FactorGraph<NoiseModelFactor>& factorGraph) : nFactors_(0), nEntries_(0)
     {
         augment(factorGraph);
     }
@@ -144,9 +131,7 @@ public:
 
     void augment(const GaussianFactorGraph& factors);
 
-    void augment(const FactorGraph<NonlinearFactor>& factors);
-
-    // void augment(const GaussianFactorGraph* factors);
+    void augment(const FactorGraph<NoiseModelFactor>& factors);
 
     void augment(const NonlinearFactorGraph& factors);
 

@@ -10,74 +10,76 @@
 #include "minisam/nonlinear/NonlinearFactor.h"
 #include "../gnssNavigation/nonBiasStates.h"
 
-namespace minisam {
+namespace minisam
+{
 
 class  PseudorangeFactor : public NoiseModelFactor1
 {
 private:
-typedef NoiseModelFactor1 Base;
-Eigen::Vector3d nomXYZ_;
-Eigen::Vector3d satXYZ_;
-nonBiasStates h_;
-double measured_;
+    typedef NoiseModelFactor1 Base;
+    minivector* nomXYZ_;
+    minivector* satXYZ_;
+    minivector* h_;
+    //nonBiasStates h_;
+    double measured_;
 
 public:
 
-typedef PseudorangeFactor This;
+    typedef PseudorangeFactor This;
 
-PseudorangeFactor() : measured_(0) {
-         Eigen::VectorXd bh(5);
-        bh<<1,1,1,1,1;
-
-        h_=nonBiasStates(bh);
-}
-
-virtual ~PseudorangeFactor() {
-}
-
-Eigen::Vector3d satXYZ()
-{
-  return satXYZ_;
-}
-
-Eigen::Vector3d nomXYZ()
-{
-  return nomXYZ_;
-}
-
-double measured()
-{
-  return measured_;
-}
-
-
-PseudorangeFactor(int key, const double deltaObs, const Eigen::Vector3d& satXYZ,
-const Eigen::Vector3d& nomXYZ, GaussianNoiseModel* model) :
-        Base(model, key), measured_(deltaObs), satXYZ_(satXYZ) {
-        nomXYZ_=nomXYZ;
-}
-
-
-virtual NonlinearFactor* clone() const
-{
-   PseudorangeFactor* nprf=new PseudorangeFactor(key(),measured_,satXYZ_,nomXYZ_,noiseModel());
-   return nprf;
-
-}
-/// vector of errors
-
- virtual Eigen::VectorXd unwhitenedError(const std::map<int, Eigen::VectorXd>& x) const
+    PseudorangeFactor() : measured_(0),nomXYZ_(new minivector(3)),
+    satXYZ_(new minivector(3)),h_(new nonBiasStates(1,1,1,1,1))
     {
-        std::map<int, Eigen::VectorXd>::const_iterator xbegin = x.find(keys_[0]);
-        Eigen::VectorXd x1 = xbegin->second;
-        return evaluateError(x1);
+       
     }
 
-Eigen::VectorXd  evaluateError(const Eigen::VectorXd& q) const;
+    virtual ~PseudorangeFactor()
+    {
+
+     delete nomXYZ_;
+     delete satXYZ_;
+     delete h_;
+     delete noiseModel_;
+    }
+
+    minivector* satXYZ()
+    {
+        return satXYZ_;
+    }
+
+    minivector* nomXYZ()
+    {
+        return nomXYZ_;
+    }
+
+    double measured()
+    {
+        return measured_;
+    }
 
 
-Eigen::VectorXd  evaluateError(const Eigen::VectorXd& q,
-                     Eigen::MatrixXd& H) const;
+    PseudorangeFactor(int key, const double deltaObs, minivector* satXYZ,
+                      minivector* nomXYZ, GaussianNoiseModel* model) :
+        Base(model, key), measured_(deltaObs),h_(new nonBiasStates(1,1,1,1,1)),
+        satXYZ_(satXYZ),nomXYZ_(nomXYZ)
+    {
+       
+    }
+
+
+    virtual NoiseModelFactor* clone() const
+    {
+        PseudorangeFactor* nprf=new PseudorangeFactor(key(),measured_,satXYZ_,nomXYZ_,noiseModel());
+        return nprf;
+
+    }
+
+
+    virtual minivector  evaluateError(const minimatrix* q) const;
+
+
+    virtual minivector  evaluateError(const minimatrix* q,
+                              minimatrix& H) const;
 
 
 }; // PseudorangeFactor Factor

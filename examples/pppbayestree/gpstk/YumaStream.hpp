@@ -23,7 +23,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -31,13 +31,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -52,53 +52,53 @@
 
 namespace gpstk
 {
-   /** @addtogroup Yuma */
-   //@{
+/** @addtogroup Yuma */
+//@{
 
-      /**
-       * This class performs file i/o on a Yuma file for the 
-       * YumaHeader and YumaData classes.
-       *
-       * @sa tests/Yuma for examples.
-       * @sa YumaData.
-       * @sa YumaHeader for information on writing Yuma files.
-       *
-       */
-   class YumaStream : public FFTextStream
-   {
-   public:
-         /// Default constructor
-      YumaStream() {}
-      
-         /**
-          * Constructor
-          * @param fn the name of the ascuu FIC file to be opened
-          * @param mode the ios::openmode to be used on \a fn
-          */
-      YumaStream(const char* fn,
-                std::ios::openmode mode=std::ios::in)
-            : FFTextStream(fn, mode), headerRead(false) {};
+/**
+ * This class performs file i/o on a Yuma file for the
+ * YumaHeader and YumaData classes.
+ *
+ * @sa tests/Yuma for examples.
+ * @sa YumaData.
+ * @sa YumaHeader for information on writing Yuma files.
+ *
+ */
+class YumaStream : public FFTextStream
+{
+public:
+    /// Default constructor
+    YumaStream() {}
 
-         /// destructor per the coding standards
-      virtual ~YumaStream() {}
+    /**
+     * Constructor
+     * @param fn the name of the ascuu FIC file to be opened
+     * @param mode the ios::openmode to be used on \a fn
+     */
+    YumaStream(const char* fn,
+               std::ios::openmode mode=std::ios::in)
+        : FFTextStream(fn, mode), headerRead(false) {};
 
-         /// overrides open to reset the header
-      virtual void open(const char* fn, std::ios::openmode mode)
-         {
-	    FFTextStream::open(fn, mode);
-	    headerRead = false;
-	    header = YumaHeader();
-	 }
-	 /// YumaHeader for this file
-      YumaHeader header;
-      
-         /// Flag showing whether or not the header has been read.
-      bool headerRead;
+    /// destructor per the coding standards
+    virtual ~YumaStream() {}
 
-   }; // class YumaStream
-   
-   //@}
-   
+    /// overrides open to reset the header
+    virtual void open(const char* fn, std::ios::openmode mode)
+    {
+        FFTextStream::open(fn, mode);
+        headerRead = false;
+        header = YumaHeader();
+    }
+    /// YumaHeader for this file
+    YumaHeader header;
+
+    /// Flag showing whether or not the header has been read.
+    bool headerRead;
+
+}; // class YumaStream
+
+//@}
+
 } // namespace gpstk
 
 #endif

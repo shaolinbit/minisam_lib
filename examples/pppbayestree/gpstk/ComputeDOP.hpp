@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2011
 //
@@ -24,13 +24,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -50,154 +50,170 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
-      //@{
+/** @addtogroup DataStructures */
+//@{
 
 
-      /** This class computes the usual DOP values: GDOP, PDOP, TDOP, HDOP
-       *  and VDOP.
-       *
-       * This class is meant to be used with the GNSS data structures objects
-       * found in "DataStructures" class.
-       *
-       * A typical way to use this class follows:
-       *
-       * @code
-       *      // Create the input obs file stream
-       *   RinexObsStream rin("ebre0300.02o");
-       *
-       *      // Loads precise ephemeris object with file data
-       *   SP3EphemerisStore SP3EphList;
-       *   SP3EphList.loadFile("igs11513.sp3");
-       *
-       *      // Sets nominal position of receiver
-       *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
-       *
-       *      // Object to compute basic model data
-       *   BasicModel basicM(nominalPos, SP3EphList);
-       *
-       *      // Declare a base-changing object: ECEF to North-East-Up (NEU)
-       *   XYZ2NEU baseChange(nominalPos);
-       *
-       *      // Object to compute DOP
-       *   ComputeDOP cDOP;
-       *
-       *   gnssRinex gRin;
-       *   while(rin >> gRin)
-       *   {
-       *      gRin >> basicM >> baseChange >> cDOP;
-       *   }
-       * @endcode
-       *
-       * Please note that, in order to work appropriately, class ComputeDOP
-       * needs that the GNSS Data Structure contains the values of the full
-       * geometry matrix both for XYZ and ENU. This may be achieved if before
-       * calling the ComputeDOP objects, we call objects from classes like
-       * BasicModel and XYZ2NEU, among others.
-       *
-       * \warning If the GNSS Data Structure does not contain the necessary
-       * geometric coefficients, ComputeDOP will return the corresponding
-       * DOP values as -1.0.
-       *
-       * \sa BasicModel.hpp, ModelObsFixedStation.hpp, ModelObs.hpp,
-       * ModeledReferencePR.hpp, ModeledPR.hpp, XYZ2NEU.hpp and XYZ2NED.hpp.
-       *
-       */
-   class ComputeDOP : public ProcessingClass
-   {
-   public:
+/** This class computes the usual DOP values: GDOP, PDOP, TDOP, HDOP
+ *  and VDOP.
+ *
+ * This class is meant to be used with the GNSS data structures objects
+ * found in "DataStructures" class.
+ *
+ * A typical way to use this class follows:
+ *
+ * @code
+ *      // Create the input obs file stream
+ *   RinexObsStream rin("ebre0300.02o");
+ *
+ *      // Loads precise ephemeris object with file data
+ *   SP3EphemerisStore SP3EphList;
+ *   SP3EphList.loadFile("igs11513.sp3");
+ *
+ *      // Sets nominal position of receiver
+ *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
+ *
+ *      // Object to compute basic model data
+ *   BasicModel basicM(nominalPos, SP3EphList);
+ *
+ *      // Declare a base-changing object: ECEF to North-East-Up (NEU)
+ *   XYZ2NEU baseChange(nominalPos);
+ *
+ *      // Object to compute DOP
+ *   ComputeDOP cDOP;
+ *
+ *   gnssRinex gRin;
+ *   while(rin >> gRin)
+ *   {
+ *      gRin >> basicM >> baseChange >> cDOP;
+ *   }
+ * @endcode
+ *
+ * Please note that, in order to work appropriately, class ComputeDOP
+ * needs that the GNSS Data Structure contains the values of the full
+ * geometry matrix both for XYZ and ENU. This may be achieved if before
+ * calling the ComputeDOP objects, we call objects from classes like
+ * BasicModel and XYZ2NEU, among others.
+ *
+ * \warning If the GNSS Data Structure does not contain the necessary
+ * geometric coefficients, ComputeDOP will return the corresponding
+ * DOP values as -1.0.
+ *
+ * \sa BasicModel.hpp, ModelObsFixedStation.hpp, ModelObs.hpp,
+ * ModeledReferencePR.hpp, ModeledPR.hpp, XYZ2NEU.hpp and XYZ2NED.hpp.
+ *
+ */
+class ComputeDOP : public ProcessingClass
+{
+public:
 
-         /// Default constructor
-      ComputeDOP()
-         : gdop(-1.0), pdop(-1.0), tdop(-1.0), hdop(-1.0), vdop(-1.0)
-      { };
-
-
-         /** Returns a satTypeValueMap object, adding the new data generated
-          *  when calling this object.
-          *
-          * @param time      Epoch corresponding to the data.
-          * @param gData     Data object holding the data.
-          */
-      virtual satTypeValueMap& Process( const CommonTime& time,
-                                        satTypeValueMap& gData )
-         throw(ProcessingException);
+    /// Default constructor
+    ComputeDOP()
+        : gdop(-1.0), pdop(-1.0), tdop(-1.0), hdop(-1.0), vdop(-1.0)
+    { };
 
 
-         /** Returns a gnnsSatTypeValue object, adding the new data 
-          *  generated when calling this object.
-          *
-          * @param gData    Data object holding the data.
-          */
-      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(ProcessingException)
-      { Process(gData.header.epoch, gData.body); return gData; };
+    /** Returns a satTypeValueMap object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param time      Epoch corresponding to the data.
+     * @param gData     Data object holding the data.
+     */
+    virtual satTypeValueMap& Process( const CommonTime& time,
+                                      satTypeValueMap& gData )
+    throw(ProcessingException);
 
 
-         /** Returns a gnnsRinex object, adding the new data generated 
-          *  when calling this object.
-          *
-          * @param gData    Data object holding the data.
-          */
-      virtual gnssRinex& Process(gnssRinex& gData)
-         throw(ProcessingException)
-      { Process(gData.header.epoch, gData.body); return gData; };
+    /** Returns a gnnsSatTypeValue object, adding the new data
+     *  generated when calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.header.epoch, gData.body);
+        return gData;
+    };
 
 
-         /// Returns GDOP.
-      virtual double getGDOP(void) const
-      { return gdop; };
+    /** Returns a gnnsRinex object, adding the new data generated
+     *  when calling this object.
+     *
+     * @param gData    Data object holding the data.
+     */
+    virtual gnssRinex& Process(gnssRinex& gData)
+    throw(ProcessingException)
+    {
+        Process(gData.header.epoch, gData.body);
+        return gData;
+    };
 
 
-         /// Returns PDOP.
-      virtual double getPDOP(void) const
-      { return pdop; };
+    /// Returns GDOP.
+    virtual double getGDOP(void) const
+    {
+        return gdop;
+    };
 
 
-         /// Returns TDOP.
-      virtual double getTDOP(void) const
-      { return tdop; };
+    /// Returns PDOP.
+    virtual double getPDOP(void) const
+    {
+        return pdop;
+    };
 
 
-         /// Returns HDOP.
-      virtual double getHDOP(void) const
-      { return hdop; };
+    /// Returns TDOP.
+    virtual double getTDOP(void) const
+    {
+        return tdop;
+    };
 
 
-         /// Returns VDOP.
-      virtual double getVDOP(void) const
-      { return vdop; };
+    /// Returns HDOP.
+    virtual double getHDOP(void) const
+    {
+        return hdop;
+    };
 
 
-         /// Returns a string identifying this object.
-      virtual std::string getClassName(void) const;
+    /// Returns VDOP.
+    virtual double getVDOP(void) const
+    {
+        return vdop;
+    };
 
 
-         /// Destructor
-      virtual ~ComputeDOP() {};
+    /// Returns a string identifying this object.
+    virtual std::string getClassName(void) const;
 
 
-   private:
+    /// Destructor
+    virtual ~ComputeDOP() {};
 
 
-         /// Geometric Dilution of Precision
-      double gdop;
+private:
 
-         /// Position Dilution of Precision
-      double pdop;
 
-         /// Time Dilution of Precision
-      double tdop;
+    /// Geometric Dilution of Precision
+    double gdop;
 
-         /// Horizontal Dilution of Precision
-      double hdop;
+    /// Position Dilution of Precision
+    double pdop;
 
-         /// Vertical Dilution of Precision
-      double vdop;
+    /// Time Dilution of Precision
+    double tdop;
 
-   }; // End of class 'ComputeDOP'
+    /// Horizontal Dilution of Precision
+    double hdop;
 
-      //@}
+    /// Vertical Dilution of Precision
+    double vdop;
+
+}; // End of class 'ComputeDOP'
+
+//@}
 
 }  // End of namespace gpstk
 

@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -39,17 +39,18 @@
 #ifndef MERGEPCODEWORDS_H
 #define MERGEPCODEWORDS_H
 
-   inline uint32_t merge( uint32_t w1,
-                        uint32_t w2,
-                        int first_bit )
-   {
-      uint32_t outword = w1;
-      if (first_bit==0) return(outword);
-      
-      outword <<= first_bit;
-      outword |= w2 >> (gpstk::MAX_BIT - first_bit);
-      
-      return(outword);
-   }
+inline uint32_t merge( uint32_t w1,
+                       uint32_t w2,
+                       int first_bit )
+{
+    uint32_t outword = w1;
+    if (first_bit==0)
+        return(outword);
+
+    outword <<= first_bit;
+    outword |= w2 >> (gpstk::MAX_BIT - first_bit);
+
+    return(outword);
+}
 
 #endif   // end of MERGEPCODEWORDS_H

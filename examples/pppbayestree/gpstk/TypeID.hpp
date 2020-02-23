@@ -87,8 +87,8 @@ class TypeID
 public:
 
 /// The type of the data value.
-enum ValueType
-{
+    enum ValueType
+    {
         Unknown,
         // Observation-related types
         C1,         ///< GPS civil code observation in L1 frequency
@@ -393,142 +393,145 @@ enum ValueType
 
         Last,       ///< used to extend this...
         Placeholder = Last+1000
-};
+    };
 
 
 /// empty constructor, creates an invalid object
-TypeID()
-        : type(Unknown) {
-};
+    TypeID()
+        : type(Unknown)
+    {
+    };
 
 
-/** Explicit constructor
- *
- * @param vt   ValueType for the new TypeID. If you want to use the
- *             next available ValueType, generate it using the
- *             'newValueType()' method, as indicated in the example in
- *             the documentation.
- */
+    /** Explicit constructor
+     *
+     * @param vt   ValueType for the new TypeID. If you want to use the
+     *             next available ValueType, generate it using the
+     *             'newValueType()' method, as indicated in the example in
+     *             the documentation.
+     */
 
-TypeID(ValueType vt)
-        : type(vt) {
-};
+    TypeID(ValueType vt)
+        : type(vt)
+    {
+    };
 
 
 /// Equality requires all fields to be the same
-virtual bool operator==(const TypeID& right) const
-{
+    virtual bool operator==(const TypeID& right) const
+    {
         return type==right.type;
-};
+    };
 
 
 /// This ordering is somewhat arbitrary but is required to be able
 /// to use an TypeID as an index to a std::map. If an application
 /// needs some other ordering, inherit and override this function.
-virtual bool operator<(const TypeID& right) const
-{
+    virtual bool operator<(const TypeID& right) const
+    {
         return type < right.type;
-};
+    };
 
 
 /// Inequality operator
-bool operator!=(const TypeID& right) const
-{
+    bool operator!=(const TypeID& right) const
+    {
         return !(operator==(right));
-};
+    };
 
 
 /// Greater than operator
-bool operator>(const TypeID& right) const
-{
+    bool operator>(const TypeID& right) const
+    {
         return (!operator<(right) && !operator==(right));
-};
+    };
 
 
 /// Less than or equal operator
-bool operator<=(const TypeID& right) const
-{
+    bool operator<=(const TypeID& right) const
+    {
         return (operator<(right) || operator==(right));
-};
+    };
 
 
 /// Greater than or equal operator
-bool operator>=(const TypeID& right) const
-{
+    bool operator>=(const TypeID& right) const
+    {
         return !(operator<(right));
-};
+    };
 
 
 /// Assignment operator
-virtual TypeID operator=(const TypeID& right);
+    virtual TypeID operator=(const TypeID& right);
 
 
 /// Convenience output method
-virtual std::ostream& dump(std::ostream& s) const;
+    virtual std::ostream& dump(std::ostream& s) const;
 
 
 /// Returns true if this is a valid TypeID. Basically just
 /// checks that the enum is defined
-virtual bool isValid() const;
+    virtual bool isValid() const;
 
 
 /// Destructor
-virtual ~TypeID() {
-};
+    virtual ~TypeID()
+    {
+    };
 
 
-/** Static method to add new TypeID's
- * @param s      Identifying string for the new TypeID
- */
-static ValueType newValueType(const std::string& s);
+    /** Static method to add new TypeID's
+     * @param s      Identifying string for the new TypeID
+     */
+    static ValueType newValueType(const std::string& s);
 
 
 /// Type of the value
-ValueType type;
+    ValueType type;
 
 
 /// Map holding type descriptions
-static std::map< ValueType, std::string > tStrings;
+    static std::map< ValueType, std::string > tStrings;
 
 
 public:
-class Initializer
-{
+    class Initializer
+    {
+    public:
+        Initializer();
+    };
+
+    static Initializer TypeIDsingleton;
+
 public:
-Initializer();
-};
 
-static Initializer TypeIDsingleton;
+    /** Static method to get the user registered TypeID by name string
+     * @param name      Identifying string for the new TypeID
+     * @return          The desired TypeID
+     */
+    static TypeID byName(std::string name)
+    throw(InvalidRequest);
 
-public:
-
-/** Static method to get the user registered TypeID by name string
- * @param name      Identifying string for the new TypeID
- * @return          The desired TypeID
- */
-static TypeID byName(std::string name)
-throw(InvalidRequest);
-
-/** Static method to add new TypeID's by name string
- * @param name      Identifying string for the new TypeID
- * @param desc      Descriptions of the new TypeID
- * @return          The new TypeID
- */
-static TypeID regByName(std::string name,std::string desc);
+    /** Static method to add new TypeID's by name string
+     * @param name      Identifying string for the new TypeID
+     * @param desc      Descriptions of the new TypeID
+     * @return          The new TypeID
+     */
+    static TypeID regByName(std::string name,std::string desc);
 
 /// unregister a TypeID by it's name string
-static void unregByName(std::string name);
+    static void unregByName(std::string name);
 
 /// unregister all TypeIDs registered by name string
-static void unregAll();
+    static void unregAll();
 
 private:
 
 /// Have user deined TypeIDs been registered ?
-static bool bUserTypeIDRegistered;
+    static bool bUserTypeIDRegistered;
 
 /// Map holding user defined TypeIDs by a string
-static std::map<std::string,TypeID> mapUserTypeID;
+    static std::map<std::string,TypeID> mapUserTypeID;
 
 
 };    // End of class 'TypeID'

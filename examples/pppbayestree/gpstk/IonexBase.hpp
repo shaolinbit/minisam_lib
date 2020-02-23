@@ -38,23 +38,23 @@ namespace gpstk
 {
 
 
-      /** @defgroup IonosphereMaps IONEX format file I/O */
-      //@{
+/** @defgroup IonosphereMaps IONEX format file I/O */
+//@{
 
-      /** This class does not served any purpose other than to make readable
-       *  inheritance diagrams.
-       */
-   class IonexBase : public FFData
-   {
-   public:
+/** This class does not served any purpose other than to make readable
+ *  inheritance diagrams.
+ */
+class IonexBase : public FFData
+{
+public:
 
-         /// Destructor per the coding standards
-      virtual ~IonexBase() {};
+    /// Destructor per the coding standards
+    virtual ~IonexBase() {};
 
-   }; // End of class 'IonexBase'
+}; // End of class 'IonexBase'
 
 
-      //@}
+//@}
 
 
 }  // End of namespace gpstk
