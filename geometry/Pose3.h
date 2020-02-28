@@ -156,7 +156,7 @@ public:
 
     virtual minimatrix* Retract(const minimatrix* mpose);
 
-    virtual minimatrix LocalCoordinates(const minimatrix* pg) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* pg,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
 
     Pose3 compose(const Pose3& g, minimatrix* H1=NULL,
                   minimatrix* H2 = NULL) const;

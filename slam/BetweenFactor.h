@@ -46,7 +46,7 @@ public:
                                       minimatrix& H1,minimatrix& H2) const
     {
         minimatrix hx =p1->between(p2,H1,H2);
-        minimatrix resultm=measured_->LocalCoordinates(&hx);
+        minimatrix resultm=measured_->LocalCoordinates(&hx,&H1,&H2);
         return minivector(resultm);
     }
 

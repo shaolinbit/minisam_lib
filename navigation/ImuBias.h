@@ -89,7 +89,7 @@ public:
     virtual minimatrix between(const minimatrix* q) const;
     virtual minimatrix between(const minimatrix* q,minimatrix& H1,minimatrix& H2) const;
     virtual minimatrix* Retract(const minimatrix* mpose);
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
 
 
     static minivector Logmap(const ConstantBias& p);

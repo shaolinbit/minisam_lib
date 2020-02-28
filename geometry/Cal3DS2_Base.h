@@ -147,7 +147,7 @@ public:
         return new Cal3DS2_Base(result);
     }
     /// Given a different calibration, calculate update to obtain it
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         Cal3DS2_Base bb(mpose);
         minivector fb=bb.vector();

@@ -5,8 +5,8 @@
 
 //#define USE_QUATERNIONS
 
-#define GMF_Using_Pose3
-
+//#define POSE3_EXPMAP
+//#define SLOW_BUT_CORRECT_BETWEENFACTOR
 #define TANGENT_PREINTEGRATION
 
 

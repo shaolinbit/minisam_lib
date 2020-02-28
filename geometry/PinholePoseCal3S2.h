@@ -101,6 +101,7 @@ public:
         minivector pn = PinholeBase::project2Point(pw); // project to normalized coordinates
         //return calibration().uncalibrate(pn); // uncalibrate to pixel coordinates
         minivector result=calibration().uncalibrate(pn);
+        //minivector_free(&pn);
         return result;
     }
 
@@ -630,7 +631,7 @@ public:
         return new PinholePoseCal3S2(Pose3::ChartAtOrigin::retract(*mpose),  Cal3_S2(data[4],data[10],data[16],data[5],data[11]));
 #endif
     }
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
 
 #ifdef USE_QUATERNIONS

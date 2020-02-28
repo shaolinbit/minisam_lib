@@ -173,7 +173,7 @@ public:
 
 
     /// Given a different calibration, calculate update to obtain it
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
 
     /// Return dimensions of calibration manifold object
     size_t dim() const

@@ -259,9 +259,9 @@ public:
                          NULL)const ;
     virtual minimatrix* Retract(const minimatrix* mpose);
     /// localCoordinates with optional derivatives
-    minivector LocalCoordinates(const NavState& g, //
+    virtual minimatrix LocalCoordinates(const minimatrix* g, //
                                 minimatrix* H1 = NULL, minimatrix* H2 =NULL) const;
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const;
+    //virtual minimatrix LocalCoordinates(const minimatrix* mpose) const;
 
     /// @}
     /// @name Dynamics

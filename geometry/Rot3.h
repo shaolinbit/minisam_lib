@@ -419,7 +419,7 @@ Rot3* CayleyChartretractp(const minivector& v);
         return this->retractp(v);
 
     }
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         Rot3 g(mpose);
         return Rot3::ChartAtOrigin::Local(g);

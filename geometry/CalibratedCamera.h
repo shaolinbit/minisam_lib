@@ -269,7 +269,7 @@ public:
 
     /// move a cameras pose according to d
     virtual minimatrix* Retract(const minimatrix* d) const;
-    virtual minimatrix LocalCoordinates(const minimatrix* T2) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* T2,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
 
 
 

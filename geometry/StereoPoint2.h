@@ -168,7 +168,7 @@ public:
         return result;
     }
 
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         StereoPoint2 result;
         result.data[0]=minimatrix_get(mpose,0,0)-minivector_get(this,0);

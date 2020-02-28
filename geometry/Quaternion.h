@@ -397,7 +397,7 @@ public:
 
     }
 
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         Quaternion4 v(minimatrix_get(mpose,0,0),minimatrix_get(mpose,1,0),minimatrix_get(mpose,2,0),minimatrix_get(mpose,3,0));
         return Logmap(v);

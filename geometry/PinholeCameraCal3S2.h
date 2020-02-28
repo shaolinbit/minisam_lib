@@ -386,7 +386,7 @@ public:
         return new PinholeCameraCal3S2(Pose3::ChartAtOrigin::retract(minivector_subvector(mm,0,6)),bres);
     }
 
-    virtual minimatrix LocalCoordinates(const minimatrix* T2) const
+    virtual minimatrix LocalCoordinates(const minimatrix* T2,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         minivector d(dimension);
         minivector dhead=minivector_subvector_var(&d,0,6);

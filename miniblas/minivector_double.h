@@ -88,7 +88,7 @@ struct minivector:public minimatrix
         data[1]=y;
         data[2]=z;
     }
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         const size_t N = size1;
         minivector result(size1);

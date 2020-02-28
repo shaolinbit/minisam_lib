@@ -328,7 +328,6 @@ minivector enu2xyz(const minivector& p1, const minivector& p2)
 
 minivector ned2enu(const minivector& p1)
 {
-
     //enuConv<< 0, 1, 0, 1, 0, 0, 0, 0, -1;
     // enuConv.data[0]=0;enuConv.data[1]=1;enuConv.data[2]=0;
     // enuConv.data[3]=1;enuConv.data[4]=0;enuConv.data[5]=0;
@@ -374,9 +373,6 @@ minivector xyz2enu(const minivector &p1, const minivector &p2)
     // pos = R*posDiff;
     miniblas_dgemv(blasNoTrans,1.0,R,posDiff,0.0,&pos);
 
-    // minivector posENU=minivector_3dim(pos.data[0], pos.data[1], pos.data[2]);
-
-
     return pos;
 }
 
@@ -392,7 +388,6 @@ double calcElNed(const minivector& p1)
     double dnrm2=miniblas_dnrm2(&posENU);
     double El = std::atan2(posENU.data[2], dnrm2);
     //double El = std::atan2(posENU.data[2], gsl_blas_sqrt_dnrm2(posENU));
-    //minivector_free(&posENU);
     return El;
 }
 

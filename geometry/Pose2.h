@@ -148,7 +148,7 @@ public:
     virtual minimatrix* Retract(const minimatrix* mpose);
     virtual minimatrix  between(const minimatrix* mpose) const ;
     virtual minimatrix between(const minimatrix* mpose,minimatrix& H1,minimatrix& H2) const;
-    virtual minimatrix LocalCoordinates(const minimatrix *pg) const;
+    virtual minimatrix LocalCoordinates(const minimatrix *pg,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
 
     /** Return point coordinates in pose coordinate frame */
     minivector transform_to(const minivector &point,

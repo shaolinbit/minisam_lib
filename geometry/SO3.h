@@ -165,7 +165,7 @@ public:
         }
     };
     virtual minimatrix* Retract(const minimatrix* mpose);
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
     virtual minimatrix between(const minimatrix* mpose) const;
     virtual minimatrix between(const minimatrix* mpose,minimatrix& H1,minimatrix& H2) const;
     /// @}

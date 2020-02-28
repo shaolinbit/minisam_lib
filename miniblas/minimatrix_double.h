@@ -74,7 +74,7 @@ struct minimatrix
             return data[1];
         }
     }
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         minimatrix result(size1,size2);
         const size_t M = size1;

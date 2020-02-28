@@ -173,7 +173,7 @@ public:
                            skew()+  d->data[2*d->prd], px() +  d->data[3*d->prd], py() +  d->data[4*d->prd]);
     }
 
-        virtual minimatrix LocalCoordinates(const minimatrix* T2) const;
+        virtual minimatrix LocalCoordinates(const minimatrix* T2,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
     /// @}
 
 };

@@ -172,7 +172,7 @@ public:
     virtual minimatrix* Retract(const minimatrix* mpose);
 
     /// The local coordinates function
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
 
     /// @}
 

@@ -40,7 +40,6 @@ public:
     gnssStateVec(double x, double y, double z, double cb, double tz) :minivector(5)
        // x_(x), y_(y), z_(z), cb_(cb), tz_(tz)
     {
-        //gnssstate_vector_=NULL_VECTOR;
         //minivector_resize(&gnssstate_vector_,5);
         data[0]=x;
         data[1]=y;

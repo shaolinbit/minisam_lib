@@ -151,7 +151,7 @@ public:
     }
 
     /// Unretraction for the calibration
-    virtual minimatrix LocalCoordinates(const minimatrix* T2)
+    virtual minimatrix LocalCoordinates(const minimatrix* T2,minimatrix* H1=NULL,minimatrix* H2=NULL)
     {
         minivector t2v(T2);
         minivector result(2);

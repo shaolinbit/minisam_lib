@@ -131,7 +131,7 @@ public:
         return new StereoCamera(Pose3(bp),calibration());
     }
 
-    virtual minimatrix LocalCoordinates(const minimatrix* mpose) const
+    virtual minimatrix LocalCoordinates(const minimatrix* mpose,minimatrix* H1=NULL,minimatrix* H2=NULL) const
     {
         StereoCamera t2(mpose);
         Pose3 t2pose=t2.pose();

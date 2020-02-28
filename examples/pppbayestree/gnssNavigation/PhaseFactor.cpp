@@ -19,7 +19,6 @@ minivector PhaseFactor::evaluateError(const minimatrix* q, const minimatrix* g) 
     miniblas_ddot(h,minivector(q),&est);
     est+=g->data[0];
 
-
     minivector result(1,est-measured_);
     //result.data[0]=est-measured_;
     return result;

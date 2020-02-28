@@ -95,7 +95,6 @@ void writeEarthFrame(std::map<int,minivector> &results, minivector &nom, string 
                                         nom.data[2] - delta.data[2]);
         outFile << epoch++ << " " << std::setprecision(10) << ecef.data[0]
                 << " " << ecef.data[1] << " " << ecef.data[2] << endl;
-        //minivector_free(&ecef);
     }
 }
 

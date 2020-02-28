@@ -117,7 +117,7 @@ public:
     /// Update calibration with tangent space delta
     virtual minimatrix* Retract(const minimatrix* d);
     /// Calculate local coordinates to another calibration
-    virtual minimatrix LocalCoordinates(const minimatrix* T2) const;
+    virtual minimatrix LocalCoordinates(const minimatrix* T2,minimatrix* H1=NULL,minimatrix* H2=NULL) const;
     /// dimensionality
     virtual size_t dim() const
     {
