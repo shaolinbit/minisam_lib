@@ -4,7 +4,7 @@
 #pragma once
 
 
-#define POSE3_EXPMAP
+//#define POSE3_EXPMAP
 //#define SLOW_BUT_CORRECT_BETWEENFACTOR
 #define TANGENT_PREINTEGRATION
 
