@@ -21,7 +21,7 @@ class  StereoCamera:
 #ifdef USE_QUATERNIONS
     public minivector//(13)
 #else
-    public minimatrix//(3,6)
+    public minimatrix//(6,3)
 #endif
 {
 
@@ -42,7 +42,7 @@ public:
 #ifdef USE_QUATERNIONS
         minivector(13)
 #else
-        minimatrix(3,6)
+        minimatrix(6,3)
 #endif
     {
         dimension=6;
@@ -59,15 +59,16 @@ public:
         data[9]=0.0;
         data[10]=0.0;
         data[11]=0.0;
-        data[12]=0.0;
+        data[12]=1.0;
 
 #else
         minimatrix_set_zero(this);
         data[0]=1.0;
-        data[7]=1.0;
-        data[14]=1.0;
         data[4]=1.0;
-        data[10]=1.0;
+        data[8]=1.0;
+        data[12]=1.0;
+        data[13]=1.0;
+        data[17]=1.0;
 #endif
 
     }
@@ -76,7 +77,7 @@ public:
 #ifdef USE_QUATERNIONS
         minivector(13)
 #else
-        minimatrix(3,6)
+        minimatrix(6,3)
 #endif
     {
         dimension=6;
@@ -86,7 +87,7 @@ public:
             throw std::invalid_argument("size not right");
         }
 #else
-        if(mcopy->size1!=3||mcopy->size2!=6)
+        if(mcopy->size1!=6||mcopy->size2!=3)
         {
             throw std::invalid_argument("size not right");
         }
@@ -107,7 +108,7 @@ public:
         minivector qk=minivector_subvector(*this,7,6);
         return Cal3_S2Stereo(&qk);
 #else
-        return Cal3_S2Stereo(data[4],data[10],data[16],data[5],data[11],data[17]);
+        return Cal3_S2Stereo(data[12],data[13],data[14],data[15],data[16],data[17]);
 #endif
 
     }
@@ -151,7 +152,7 @@ public:
         minivector f=minivector_subvector(*this,0,4);
         return Pose3(f);
 #else
-        minimatrix f=minimatrix_blockmatrix(*this,0,0,3,4);
+        minimatrix f=minimatrix_blockmatrix(*this,0,0,4,3);
         return Pose3(&f);
 #endif
     }
@@ -173,8 +174,8 @@ public:
      * @param H1 derivative with respect to pose
      * @param H2 derivative with respect to point
      */
-    StereoPoint2 project2(const minivector& point, minimatrix* H1=NULL,//3*6,
-                          minimatrix* H2=NULL//3*3
+    StereoPoint2 project(const minivector& point, minimatrix* H1,//3*6,
+                          minimatrix* H2//3*3
                          ) const;
 
     /// back-project a measurement
@@ -184,9 +185,9 @@ public:
      * @param H1 derivative with respect to pose
      * @param H2 derivative with respect to point
      */
-    minivector backproject2(const StereoPoint2& z,
-                            minimatrix* H1=NULL,//3*6,
-                            minimatrix* H2=NULL//3*3
+    minivector backproject(const StereoPoint2& z,
+                            minimatrix* H1,//3*6,
+                            minimatrix* H2//3*3
                            ) const;
 
     /// @}

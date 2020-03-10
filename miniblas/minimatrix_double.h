@@ -255,6 +255,8 @@ minimatrix_blockmatrix (const minimatrix& m,
                         const size_t i, const size_t j,
                         const size_t n1, const size_t n2);
 void minimatrix_set_zero (minimatrix * m);
+void minimatrix_trangular_set_zero (minimatrix * m,int upperorlower=0);
+
 void minimatrix_set_identity (minimatrix * m);
 minimatrix minimatrix_identity_mat(int n);
 void minimatrix_set_neg_identity (minimatrix * m);
@@ -268,7 +270,7 @@ int minimatrix_transpose (minimatrix * m);
 minimatrix minimatrix_transmat (const minimatrix& m);
 int minimatrix_transpose_memcpy (minimatrix * dest, const minimatrix * src);
 int minimatrix_transpose_memcpy (minimatrix * dest, const minimatrix& src);
-int minimatrix_equal (const minimatrix& a, const minimatrix&  b);
+bool minimatrix_equal (const minimatrix& a, const minimatrix&  b,double tol=1.0-9);
 int minimatrix_add (minimatrix * a, const minimatrix& b);
 int minimatrix_mat_add (minimatrix * a, const minimatrix& b, const minimatrix& c);
 int minimatrix_mat_add (minimatrix * a, const minimatrix& b,double alpha, const minimatrix& c);

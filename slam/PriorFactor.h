@@ -19,7 +19,7 @@ namespace minisam
 class PriorFactor: public NoiseModelFactor1
 {
 
-private:
+public:
     minimatrix* prior_; /** The measurement */
 public:
     /** default constructor - only use for serialization */

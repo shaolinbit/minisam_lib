@@ -68,7 +68,7 @@ Values result = DoglegOptimizer(graph, initialValues, params).optimize();
 class NonlinearOptimizer
 {
 
-protected:
+public:
     NonlinearFactorGraph graph_; ///< The graph with nonlinear factors
 
     NonlinearOptimizerState* state_; ///< PIMPL'd state

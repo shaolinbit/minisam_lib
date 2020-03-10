@@ -38,10 +38,15 @@ public:
     /** The number of optimization iterations performed. */
     int iterations;
     double delta;
+    double lambda;
+    double currentFactor;
+    int totalNumberInnerIterations;  ///< The total number of inner iterations in the
+
 
     NonlinearOptimizerState() {}
     virtual ~NonlinearOptimizerState()
     {
+    /*
      for(auto& kst:values)
      {
        if(kst.second!=NULL)
@@ -51,15 +56,23 @@ public:
        }
      }
      values.clear();
+     */
     }
     NonlinearOptimizerState(const std::map<int,minimatrix*>& invalues,
-                            double error,unsigned int iterations = 0,double delta=0.0)
-        : values(invalues), error(error), iterations(iterations),delta(delta) {}
+                            double error,unsigned int iterations = 0,double delta=0.0,
+                           double inlambda=0.0,
+    double incurrentFactor=0.0,
+    int intotalNumberInnerIterations=0)
+        : values(invalues), error(error), iterations(iterations),delta(delta),
+        lambda(inlambda),currentFactor(incurrentFactor),totalNumberInnerIterations(intotalNumberInnerIterations) {}
 
     // Constructor version that takes ownership of values
     NonlinearOptimizerState(std::map<int,minimatrix*>& invalues,double error,
-                            unsigned int iterations = 0,double delta=0.0)
-        : values(std::move(invalues)), error(error), iterations(iterations),delta(delta) {}
+                            unsigned int iterations = 0,double delta=0.0,double inlambda=0.0,
+    double incurrentFactor=0.0,
+    int intotalNumberInnerIterations=0)
+        : values(std::move(invalues)), error(error), iterations(iterations),delta(delta),
+        lambda(inlambda),currentFactor(incurrentFactor),totalNumberInnerIterations(intotalNumberInnerIterations) {}
 
 };
 NonlinearOptimizerState* GetNonlinearOptimizerState(const std::map<int,minimatrix*>& invalues,

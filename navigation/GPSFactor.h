@@ -53,7 +53,7 @@ public:
      * @param model Gaussian noise model
      */
     GPSFactor(int key, const minimatrix& gpsIn,  GaussianNoiseModel* model) :
-        NoiseModelFactor1(model, key,1)
+        NoiseModelFactor1(model, key)
     {
         nT_=new minivector(3);
         minimatrix_memcpy(nT_,gpsIn);

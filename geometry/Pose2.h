@@ -15,6 +15,7 @@
 #include "../mat/MatCal.h"
 #include <iostream>
 
+using namespace std;
 namespace minisam
 {
 
@@ -75,7 +76,25 @@ public:
     Pose2 inverse() const;
 
 
-    inline Pose2* multiply(const Pose2 &p2) const
+    inline Pose2 multiply(const Pose2 &p2) const
+    {
+        minivector b=r().multiplyvector(p2.t());
+        minivector_add(&b,t());
+        Pose2 result(r().multiply(p2.r()),b);
+
+        if(DEBUGSTATE)
+        {
+        cout<<"this and pose2"<<endl;
+        cout<<*this<<endl;
+        cout<<p2<<endl;
+
+        std::cout<<"result"<<std::endl;
+        std::cout<<result<<std::endl;
+        }
+        return result;
+    }
+
+    inline Pose2* multiplypointer(const Pose2 &p2) const
     {
         minivector b=r().multiplyvector(p2.t());
         minivector_add(&b,t());
@@ -129,6 +148,9 @@ public:
         return m;
     }
 
+    Pose2* compose(const Pose2& g, minimatrix* H1=NULL,
+                  minimatrix* H2 = NULL) const;
+
     /// Derivative of Expmap
     static minimatrix ExpmapDerivative(const minivector &v);
 
@@ -144,7 +166,6 @@ public:
         static minivector Local(const Pose2 &r, minimatrix *H);
     };
 
-    Pose2 retract(const minivector &v);
     virtual minimatrix* Retract(const minimatrix* mpose);
     virtual minimatrix  between(const minimatrix* mpose) const ;
     virtual minimatrix between(const minimatrix* mpose,minimatrix& H1,minimatrix& H2) const;
@@ -212,7 +233,7 @@ public:
     inline Rot2 rotation() const
     {
         minivector bb=minivector_subvector(*this,0,2);
-        return Rot2(&bb);
+        return Rot2(bb);
     }
 
     //// return transformation matrix

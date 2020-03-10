@@ -80,6 +80,11 @@ public:
     {
         return 2;
     }
+    virtual NoiseModelFactor* clone()const
+    {
+        BetweenFactor* newfactor=new BetweenFactor(key1(),key2(),measured_,noiseModel_);
+        return newfactor;
+    }
 
 }; // \class BetweenFactor
 };

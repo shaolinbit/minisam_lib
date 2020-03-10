@@ -214,6 +214,7 @@ void minivector_cwisemax(minivector * a,double maxnumber);
 void minivector_cwisemin(minivector * a,double minnumber);
 minivector minivector_cwisesqrt(const minivector& a);
 minivector minivector_cwiseProduct(const minivector& a,const minivector& b);
+void minivector_cwiseProduct(minivector* result,const minivector& a,const minivector& b);
 minivector minivector_reciprocal(const minivector& a);
 void minivector_print(const minivector& m);
 void minivector_ostream(std::ostream& os,const minivector& m);
