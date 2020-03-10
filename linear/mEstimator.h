@@ -62,7 +62,6 @@ namespace minisam
       /// Null class is not robust so is a Gaussian ?
       class  Null_mEstimator : public Base_mEstimator {
       public:
-        //typedef boost::shared_ptr<Null> shared_ptr;
 
         Null_mEstimator(const ReweightScheme reweight = Block) : Base_mEstimator(reweight) {}
         virtual ~Null_mEstimator() {}
@@ -77,7 +76,6 @@ namespace minisam
         double c_;
 
       public:
-       // typedef boost::shared_ptr<Fair> shared_ptr;
 
         Fair_mEstimator(double c = 1.3998, const ReweightScheme reweight = Block);
         double weight(double error) const {
@@ -93,7 +91,6 @@ namespace minisam
         double k_;
 
       public:
-       // typedef boost::shared_ptr<Huber> shared_ptr;
 
         Huber_mEstimator(double k = 1.345, const ReweightScheme reweight = Block);
         double weight(double error) const {
@@ -113,7 +110,6 @@ namespace minisam
         double k_, ksquared_;
 
       public:
-       // typedef boost::shared_ptr<Cauchy> shared_ptr;
 
         Cauchy_mEstimator(double k = 0.1, const ReweightScheme reweight = Block);
         double weight(double error) const {
@@ -129,7 +125,6 @@ namespace minisam
         double c_, csquared_;
 
       public:
-        //typedef boost::shared_ptr<Tukey> shared_ptr;
 
         Tukey_mEstimator(double c = 4.6851, const ReweightScheme reweight = Block);
         double weight(double error) const {
@@ -149,7 +144,6 @@ namespace minisam
         double c_, csquared_;
 
       public:
-        //typedef boost::shared_ptr<Welsh> shared_ptr;
 
         Welsh_mEstimator(double c = 2.9846, const ReweightScheme reweight = Block);
         double weight(double error) const {
@@ -168,7 +162,6 @@ namespace minisam
       /// the generalized Geman-McClure from (Agarwal15phd).
       class  GemanMcClure_mEstimator : public Base_mEstimator {
       public:
-        //typedef boost::shared_ptr<GemanMcClure> shared_ptr;
 
         GemanMcClure_mEstimator(double c = 1.0, const ReweightScheme reweight = Block);
         virtual ~GemanMcClure_mEstimator() {}
@@ -187,7 +180,6 @@ namespace minisam
       /// forcing the output weight s <= 1.0, DCS is similar to Geman-McClure.
       class  DCS_mEstimator: public Base_mEstimator {
       public:
-        //typedef boost::shared_ptr<DCS> shared_ptr;
 
         DCS_mEstimator(double c = 1.0, const ReweightScheme reweight = Block);
         virtual ~DCS_mEstimator() {}
@@ -209,7 +201,6 @@ namespace minisam
           double k_;
 
       public:
-          //typedef boost::shared_ptr<L2WithDeadZone> shared_ptr;
 
           L2WithDeadZone_mEstimator(double k, const ReweightScheme reweight = Block);
           double residual(double error) const {
@@ -245,12 +236,7 @@ namespace minisam
      *  k in the Huber norm is expressed in whitened units, i.e., "nr of sigmas".
      */
     class  RobustNoiseModel : public GaussianNoiseModel {
-   // public:
-   //   typedef boost::shared_ptr<Robust> shared_ptr;
-
     public:
-      //typedef mEstimator::Base RobustModel;
-      //typedef noiseModel::Base NoiseModel;
 
       Base_mEstimator* robust_; ///< robust error function used
       GaussianNoiseModel* noise_;   ///< noise model used
@@ -281,7 +267,6 @@ namespace minisam
       /// Return the contained noise model
       GaussianNoiseModel* noise()  { return noise_; }
 
-      // TODO: functions below are dummy but necessary for the noiseModel::Base
       inline virtual minivector whiten(const minivector& v) const
       {
            minivector r(v);
@@ -298,16 +283,13 @@ namespace minisam
       { throw std::invalid_argument("unwhiten is not currently supported for robust noise models."); }
       inline virtual double distance(const minivector& v) const
       {
-         // return this->whiten(v).squaredNorm();
           double result;
           minivector b=this->whiten(v);
           miniblas_ddot(b,b,&result);
           return  result;
       }
-      // TODO(mike): fold the use of the m-estimator residual(...) function into distance(...)
-      inline virtual double distance_non_whitened(const minivector& v) const
+           inline virtual double distance_non_whitened(const minivector& v) const
       { return robust_->residual(norm2d(v)); }
-      // TODO: these are really robust iterated re-weighting support functions
       virtual void WhitenSystem(minivector& b) const;
       virtual void WhitenSystem(std::vector<minimatrix>& A, minivector& b) const;
       virtual void WhitenSystem(minimatrix& A, minivector& b) const;
