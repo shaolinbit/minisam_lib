@@ -75,6 +75,8 @@ public:
 
 public:
     GaussianNoiseModel(int dim = 0,bool isdiagonal=false);
+
+    ///this is information initialization
     GaussianNoiseModel(const minimatrix &R,bool smart = true);
 
     // constructor to allow for disabling initialization of invsigmas
@@ -144,6 +146,13 @@ public:
 
     static GaussianNoiseModel* Precisions(const minivector &precisions,
                                           bool smart = true);
+
+    /**
+       * A Gaussian noise model created by specifying a covariance matrix.
+       * @param covariance The square covariance Matrix
+       * @param smart check if can be simplified to derived class
+       */
+    static GaussianNoiseModel* Covariance(const minimatrix& covariance, bool smart = true);
 
     virtual double sigma(int i) const;
 
@@ -249,7 +258,8 @@ public:
     static ConstrainedNoiseModel* All(int dim, const minivector &mu);
 
     /** Fully constrained variations with a mu parameter */
-    static ConstrainedNoiseModel* All(int dim, double mu);
+    static ConstrainedNoiseModel* All(int dim, double mu=1000.0);
+
 
     /// Calculates error vector with weights applied
     virtual minivector whiten(const minivector &v) const;

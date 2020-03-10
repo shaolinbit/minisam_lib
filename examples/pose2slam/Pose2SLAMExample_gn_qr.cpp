@@ -183,6 +183,15 @@ int main(int argc, char** argv)
   delete priorNoise;
   delete model;
 
+  for(auto& kst:optimizer.state_->values)
+     {
+       if(kst.second!=NULL)
+       {
+         delete kst.second;
+         kst.second=NULL;
+       }
+     }
+     optimizer.state_->values.clear();
 
 
   return 0;

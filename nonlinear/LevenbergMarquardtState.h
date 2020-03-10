@@ -65,18 +65,22 @@ class LevenbergMarquardtState : public NonlinearOptimizerState
 
 public:
 
-    double lambda;
-    double currentFactor;
-    int totalNumberInnerIterations;  ///< The total number of inner iterations in the
+  //  double lambda;
+  //  double currentFactor;
+ //   int totalNumberInnerIterations;  ///< The total number of inner iterations in the
     // optimization (for each iteration, LM tries multiple
     // inner iterations with different lambdas)
     LevenbergMarquardtState(const std::map<int,minimatrix*>& initialValues,
-                            double error, double lambda, double currentFactor,
+                            double error,double lambda, double currentFactor,
+                            double delta=0.0,
                             unsigned int iterations = 0, unsigned int totalNumberInnerIterations = 0)
-        : NonlinearOptimizerState(initialValues, error, iterations),
-          lambda(lambda),
-          currentFactor(currentFactor),
-          totalNumberInnerIterations(totalNumberInnerIterations) {}
+        : NonlinearOptimizerState(initialValues, error, iterations,delta,lambda,currentFactor,totalNumberInnerIterations)
+        {
+
+
+        } // lambda(lambda),
+        //  currentFactor(currentFactor),
+        //  totalNumberInnerIterations(totalNumberInnerIterations) {}
 
     // Applies policy to *increase* lambda: should be used if the current update was NOT successful
     void increaseLambda(const LevenbergMarquardtParams& params);
@@ -87,7 +91,9 @@ public:
     LevenbergMarquardtState* decreaseLambda(const LevenbergMarquardtParams& params, double stepQuality,
                                             std::map<int,minimatrix*>& newValues,
                                             double newError) const;
-
+    void decreaseLambda(const LevenbergMarquardtParams& params, double stepQuality,
+                                            std::map<int,minimatrix*>& newValues,
+                                            double newError,NonlinearOptimizerState* setstate) const;
 
     // Small cache of A|b|model indexed by dimension. Can save many mallocs.
     mutable std::vector<CachedModel*> noiseModelCache;

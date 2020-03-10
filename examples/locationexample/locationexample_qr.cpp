@@ -137,6 +137,18 @@ int main()
     delete unaryNoise1;
     delete unaryNoise2;
     delete unaryNoise3;
+
+  for(auto& kst:optimizer.state_->values)
+     {
+       if(kst.second!=NULL)
+       {
+         delete kst.second;
+         kst.second=NULL;
+       }
+     }
+     optimizer.state_->values.clear();
+
+
     return 0;
 }
 

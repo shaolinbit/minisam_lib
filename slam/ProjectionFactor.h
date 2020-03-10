@@ -29,7 +29,7 @@ public:
 
     /// Default constructor
     GenericProjectionFactor() :
-        measured_(minivector(2,0.0)), NoiseModelFactor2(2),K_(NULL),body_P_sensor_(NULL)//,throwCheirality_(false), verboseCheirality_(false),
+        measured_(minivector(2,0.0)), NoiseModelFactor2(),K_(NULL),body_P_sensor_(NULL)//,throwCheirality_(false), verboseCheirality_(false),
     {
 
     }
@@ -47,31 +47,11 @@ public:
     GenericProjectionFactor(const minivector& measured, GaussianNoiseModel* model,
                             int poseKey, int pointKey,  Cal3_S2* K,
                             Pose3* body_P_sensor=NULL) :
-        NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor)//,throwCheirality_(false), verboseCheirality_(false)
+        NoiseModelFactor2(model, poseKey, pointKey), measured_(measured), K_(K), body_P_sensor_(body_P_sensor)//,throwCheirality_(false), verboseCheirality_(false)
         {
 
         }
 
-    /**
-     * Constructor with exception-handling flags
-     * TODO: Mark argument order standard (keys, measurement, parameters)
-     * @param measured is the 2 dimensional location of point in image (the measurement)
-     * @param model is the standard deviation
-     * @param poseKey is the index of the camera
-     * @param pointKey is the index of the landmark
-     * @param K  pointer to the constant calibration
-     * @param throwCheirality determines whether Cheirality exceptions are rethrown
-     * @param verboseCheirality determines whether exceptions are printed for Cheirality
-     * @param body_P_sensor is the transform from body to sensor frame  (default identity)
-
-    GenericProjectionFactor(const  minivector& measured, GaussianNoiseModel* model,
-                            int poseKey, int pointKey,  Cal3_S2* K,
-                           Pose3*  body_P_sensor,// bool throwCheirality, bool verboseCheirality,
-                            ) :
-        NoiseModelFactor2(model, poseKey, pointKey,2), measured_(measured), K_(K), body_P_sensor_(body_P_sensor)//,throwCheirality_(throwCheirality), verboseCheirality_(verboseCheirality)
-        {
-
-        } */
 
     /** Virtual destructor */
     virtual ~GenericProjectionFactor() {}
@@ -166,17 +146,6 @@ public:
         return K_;
     }
 
-    /** return verbosity
-    inline bool verboseCheirality() const
-    {
-        return verboseCheirality_;
-    }
-
-    // return flag for throwing cheirality exceptions
-    inline bool throwCheirality() const
-    {
-        return throwCheirality_;
-    }*/
      virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x,
                                        std::vector<minimatrix> &H) const
     {

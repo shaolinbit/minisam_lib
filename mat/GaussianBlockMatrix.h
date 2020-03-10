@@ -27,7 +27,7 @@ public:
     vector<int> *variableColOffsets_; //Offsets Variable for Column
 
     ///constructors for initial the basic information of matrix
-    GaussianBlockMatrix();                                                                                                                                                                                             
+    GaussianBlockMatrix();
     GaussianBlockMatrix(bool blockkindsb);
     GaussianBlockMatrix(const vector<int> &dimensions, bool appendOneDimension, bool blockkindsb);
     GaussianBlockMatrix(vector<int>::iterator firstBlockDim, vector<int>::iterator lastBlockDim, bool appendOneDimension = false, bool blockkindsb = true);
@@ -97,8 +97,11 @@ public:
 
     void SsetFullMatrix(const minimatrix&xpr);
 
+    /// Set the upper active matrix zero.
+    void UppersetZero();
     /// Set the entire active matrix zero.
     void setZero();
+
 
     /// Retrieve or modify the first logical block, i.e. the block referenced by
     /// block index 0. Blocks before it will be inaccessible, except by accessing

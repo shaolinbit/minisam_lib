@@ -41,14 +41,13 @@ public:
     /// The keys involved in this factor
     std::vector<int> keys_;
 
-    int factortype;
     GaussianNoiseModel *noiseModel_; /** Noise model */
 
 public:
     /** Default constructor for I/O only */
-    NoiseModelFactor(int factort = 0);
+    NoiseModelFactor();
 
-    NoiseModelFactor(const std::vector<int>& keys, int factort = 0);
+    NoiseModelFactor(const std::vector<int>& keys);
 
     /** Destructor */
     virtual ~NoiseModelFactor();
@@ -56,13 +55,13 @@ public:
     /**
     * Constructor
     */
-    NoiseModelFactor(GaussianNoiseModel *noiseModel, const std::vector<int>& keys, int factort = 0);
+    NoiseModelFactor(GaussianNoiseModel *noiseModel, const std::vector<int>& keys);
 
 protected:
     /**
     * Constructor - only for subclasses, as this does not set keys.
     */
-    NoiseModelFactor(GaussianNoiseModel *noiseModel, int factort = 0);
+    NoiseModelFactor(GaussianNoiseModel *noiseModel);
 
 public:
     /** get the dimension of the factor (number of rows on linearization) */
@@ -116,11 +115,11 @@ public:
     virtual double error(const std::map<int, minimatrix*>& c) const;
 
     /**
-    * Linearize a non-linearFactorN to get a GaussianFactor,
+    * Linearize a non-linearFactor to get a GaussianFactor,
     * \f$ Ax-b \approx h(x+\delta x)-z = h(x) + A \delta x - z \f$
     * Hence \f$ b = z - h(x) = - \mathtt{error\_vector}(x) \f$
     */
-    virtual RealGaussianFactor*  linearize(const std::map<int, minimatrix*>& x,int factorizaton) const;
+    virtual RealGaussianFactor*  linearize(const std::map<int, minimatrix*>& x,int factorizaton=0) const;
     virtual NoiseModelFactor *clone() const;
 
 };     // \class NoiseModelFactor
@@ -141,7 +140,7 @@ class NoiseModelFactor1 : public NoiseModelFactor
 
 public:
     /** Default constructor for I/O only */
-    NoiseModelFactor1(int factort = 0) : NoiseModelFactor(factort) {}
+    NoiseModelFactor1() : NoiseModelFactor() {}
 
     virtual ~NoiseModelFactor1() {}
 
@@ -155,7 +154,7 @@ public:
     *  @param noiseModel  pointer to noise model
     *  @param key1 by which to look up X value in Values
     */
-    NoiseModelFactor1(GaussianNoiseModel *noiseModel, int key1, int factort = 0) : NoiseModelFactor(noiseModel, factort)
+    NoiseModelFactor1(GaussianNoiseModel *noiseModel, int key1) : NoiseModelFactor(noiseModel)
     {
         std::vector<int> key;
         keys_.push_back(key1);
@@ -198,7 +197,7 @@ public:
     /**
     * Default Constructor for I/O
     */
-    NoiseModelFactor2(int factort = 2) : NoiseModelFactor(factort) {}
+    NoiseModelFactor2( ) : NoiseModelFactor() {}
 
     /**
     * Constructor
@@ -206,7 +205,7 @@ public:
     * @param j1 key of the first variable
     * @param j2 key of the second variable
     */
-    NoiseModelFactor2(GaussianNoiseModel *noiseModel, int j1, int j2, int factort = 2) : NoiseModelFactor(noiseModel, factort)
+    NoiseModelFactor2(GaussianNoiseModel *noiseModel, int j1, int j2) : NoiseModelFactor(noiseModel)
     {
         keys_.reserve(2);
         keys_.push_back(j1);
@@ -265,6 +264,78 @@ public:
 
 
 }; // \class NoiseModelFactor2
+
+/** A convenient base class for creating your own NoiseModelFactor with 3
+ * variables.  To derive from this class, implement evaluateError(). */
+class NoiseModelFactor3: public NoiseModelFactor {
+
+public:
+
+  /**
+   * Default Constructor for I/O
+   */
+  NoiseModelFactor3() : NoiseModelFactor() {}
+
+  /**
+   * Constructor
+   * @param noiseModel shared pointer to noise model
+   * @param j1 key of the first variable
+   * @param j2 key of the second variable
+   * @param j3 key of the third variable
+   */
+  NoiseModelFactor3(GaussianNoiseModel* noiseModel, int j1, int j2, int j3): NoiseModelFactor(noiseModel)
+    {
+      keys_.reserve(3);
+      keys_.push_back(j1);keys_.push_back(j2);keys_.push_back(j3);
+    }
+
+  virtual ~NoiseModelFactor3() {}
+
+  /** methods to retrieve keys */
+  inline int key1() const { return keys_[0]; }
+  inline int key2() const { return keys_[1]; }
+  inline int key3() const { return keys_[2]; }
+
+  /** Calls the 3-key specific version of evaluateError, which is pure virtual
+   * so must be implemented in the derived class. */
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x) const
+    {
+        std::map<int, minimatrix*>::const_iterator xbegin = x.find(key1());
+        std::map<int, minimatrix*>::const_iterator xsecond = x.find(key2());
+        std::map<int, minimatrix*>::const_iterator xthird = x.find(key3());
+        return evaluateError(xbegin->second, xsecond->second,xthird->second);
+    }
+    virtual minivector unwhitenedError(const std::map<int, minimatrix*>& x, std::vector<minimatrix> &H) const
+    {
+        std::map<int, minimatrix*>::const_iterator xbegin = x.find(key1());
+        std::map<int, minimatrix*>::const_iterator xsecond = x.find(key2());
+        std::map<int, minimatrix*>::const_iterator xthird = x.find(key3());
+
+        return evaluateError(xbegin->second, xsecond->second,xthird->second, *(H.begin()), *(H.begin() + 1), *(H.begin() + 2));
+    }
+
+  /**
+   *  Override this method to finish implementing a trinary factor.
+   *  If any of the optional Matrix reference arguments are specified, it should compute
+   *  both the function evaluation and its derivative(s) in X1 (and/or X2, X3).
+   */
+   virtual minivector
+    evaluateError(const minimatrix* X1, const minimatrix* X2, const minimatrix* X3) const
+    {
+        minivector VV;
+        return VV;
+    }
+
+    virtual minivector
+    evaluateError(const minimatrix* X1, const minimatrix* X2, const minimatrix* X3,
+                  minimatrix &H1, minimatrix &H2, minimatrix &H3) const
+    {
+        minivector VV;
+        return VV;
+    }
+
+}; // \class NoiseModelFactor3
+
 
 /* ************************************************************************* */
 void check(GaussianNoiseModel *noiseModel, int m);

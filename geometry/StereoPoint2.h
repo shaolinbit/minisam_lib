@@ -112,7 +112,7 @@ public:
     /** convert to vector */
     minivector vector() const
     {
-        return *this;
+        return minivector(*this);
     }
 
     /** convenient function to get a Point2 from the left image */
