@@ -134,7 +134,7 @@ public:
     const PreintegrationParams& p() const
     {
         minimatrix PreintegrationParams_=minimatrix_blockmatrix(*this,0,0,11,3);
-        return PreintegrationParams_;
+        return PreintegrationParams(&PreintegrationParams_);
     }
     ///@}
     /// @name test
