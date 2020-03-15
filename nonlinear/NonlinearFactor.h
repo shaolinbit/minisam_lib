@@ -18,6 +18,7 @@
 namespace minisam
 {
 
+
 /* ************************************************************************* */
 /**
  * A nonlinear sum-of-squares factor with a zero-mean noise model

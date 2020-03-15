@@ -21,6 +21,9 @@
 
 namespace minisam
 {
+  enum Factorization  {
+     CHOLESKY,QR
+  };
 
 /**
    * A base class for JacobianFactor and HessianFactor. A GaussianFactor has a

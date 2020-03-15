@@ -25,11 +25,7 @@ class  Marginals
 public:
 
     /** The linear factorization mode - either CHOLESKY (faster and suitable for most problems) or QR (slower but more numerically stable for poorly-conditioned problems). */
-    enum Factorization
-    {
-        CHOLESKY,
-        QR
-    };
+
 
 protected:
 

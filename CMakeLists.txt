@@ -80,7 +80,9 @@ set(HEAD_FILES_linear
 	./linear/GaussianBayesNet.h
 	./linear/GaussianConditional.h
 	./linear/GaussianFactorGraph.h
+	./linear/GaussianDensity.h
 	./linear/HessianFactor.h
+        ./linear/KalmanFilter.h
 	./linear/JacobianFactor.h
 	./linear/NoiseModel.h
 	./linear/RealGaussianFactor.h
@@ -106,6 +108,7 @@ set(HEAD_FILES_navigation
 set(HEAD_FILES_nonlinear
 	./nonlinear/DoglegOptimizer.h
         ./nonlinear/DoglegOptimizerImpl.h
+	./nonlinear/ExtendedKalmanFilter.h
 	./nonlinear/GaussNewtonOptimizer.h
 	./nonlinear/ISAM2.h
 	./nonlinear/ISAM2Clique.h
@@ -124,9 +127,16 @@ set(HEAD_FILES_nonlinear
         ./nonlinear/NonlinearOptimizerState.h
 )
 set(HEAD_FILES_slam
+	./slam/BearingFactor.h
+        ./slam/BearingRangeFactor.h
 	./slam/BetweenFactor.h
+        ./slam/dataset.h
+        ./slam/NonlinearEquality.h
 	./slam/PriorFactor.h
+	./slam/RangeFactor.h
 	./slam/ProjectionFactor.h
+        ./slam/Sampler.h
+        ./slam/StereoFactor.h
         ./slam/UnaryFactor.h
 )
 

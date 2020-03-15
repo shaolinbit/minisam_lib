@@ -99,6 +99,9 @@ public:
 
     HessianFactor(const std::vector<std::pair<int, minimatrix>> &terms,
                   const minivector &b);
+    HessianFactor(int j1, int j2, const minimatrix& G11,
+                             const minimatrix& G12, const minivector& g1, const minimatrix& G22, const minivector& g2,
+                             double f);
 
     /** Combine a set of factors into a single dense HessianFactor */
     explicit HessianFactor(const GaussianFactorGraph& factors,Scatter& scatter);
@@ -120,7 +123,7 @@ public:
     /** Return the constant term \f$ f \f$ as described above
      * @return The constant term \f$ f \f$
      */
-    double& constantTerm();
+    void setconstantTerm(double svalue);
 
     /** Return the part of linear term \f$ g \f$ as described above corresponding to the requested variable.
      * @param j Which block row to get, as an iterator pointing to the slot in this factor.  You can
@@ -134,7 +137,7 @@ public:
     minivector  linearTerm() const;
     /** Return the complete linear term \f$ g \f$ as described above.
      * @return The linear term \f$ g \f$ */
-    minivector& linearTerm();
+    minivector changelinearTerm();
 
     //S
     /// Return underlying information matrix.

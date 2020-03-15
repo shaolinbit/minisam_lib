@@ -89,7 +89,7 @@ public:
     }
 
 
-    int getEliminationFunction() const;
+    Factorization getEliminationFunction() const;
     std::string getLinearSolverType() const;
 
     void setLinearSolverType(const std::string& solver);

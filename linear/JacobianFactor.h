@@ -92,6 +92,10 @@ public:
     JacobianFactor(int i1, const minimatrix &A1,
                    const minivector &b,
                    GaussianNoiseModel *model);
+        /** Construct binary factor */
+    JacobianFactor(int i1, const minimatrix &A1,
+                   int i2, const minimatrix &A2,
+                   const minivector &b, GaussianNoiseModel * model = NULL);
 
     /** Constructor with arbitrary number keys, and where the augmented matrix is given all together
      *  instead of in block terms.  Note that only the active view of the provided augmented matrix
@@ -199,7 +203,7 @@ std::vector<int> JFgetvectorint_fromiterator(const Factor &nrParents_);
 std::vector<JacobianFactor*> _convertOrCastToJacobians(
     const GaussianFactorGraph &factors);
 std::vector<const JacobianFactor*> _convertOrCastToJacobiansConst(
-    const std::vector<const RealGaussianFactor*> &factors);
+    const std::vector<const RealGaussianFactor*> &factors,std::vector<int>& newjacobianskeys);
 
 };
 #endif // JACOBIANFACTOR_H

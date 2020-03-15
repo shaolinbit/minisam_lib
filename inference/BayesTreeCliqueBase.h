@@ -116,13 +116,13 @@ public:
 
     /** return the conditional P(S|Root) on the separator given the root */
     GaussianBayesNet* shortcut(const BayesTreeCliqueBase* root,
-                               int EliminationFunctionType) const;
+                               Factorization EliminationFunctionType=CHOLESKY) const;
 
     /** return the marginal P(S) on the separator */
-    GaussianFactorGraph* separatorMarginal(int EliminationFunctionType);
+    GaussianFactorGraph* separatorMarginal(Factorization EliminationFunctionType=CHOLESKY);
 
     /** return the marginal P(C) of the clique, using marginal caching */
-    GaussianFactorGraph* marginal2(int EliminationFunctionType);
+    GaussianFactorGraph* marginal2(Factorization EliminationFunctionType=CHOLESKY);
 
     /**
      * This deletes the cached shortcuts of all cliques (subtree) below this clique.

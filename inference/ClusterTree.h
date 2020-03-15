@@ -160,10 +160,11 @@ public:
      * in GaussianFactorGraph.h
      * @return The Bayes tree and factor graph resulting from elimination
      */
-    std::pair<ISAM2*, GaussianFactorGraph*> eliminateISAM2(const
-            int Eliminatetype,std::list<ISAM2Clique*>* orphancliques,const GaussianFactorGraph& gf);
-    std::pair<BayesTree*, GaussianFactorGraph*> eliminate(const int Eliminatefunction,
-            std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
+    std::pair<ISAM2*, GaussianFactorGraph*> eliminateISAM2(std::list<ISAM2Clique*>* orphancliques,
+            const GaussianFactorGraph& gf,const Factorization Eliminatefunction=CHOLESKY);
+    std::pair<BayesTree*, GaussianFactorGraph*> eliminate(
+            std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf,
+            const Factorization Eliminatefunction=CHOLESKY);
 
     /// @}
     /// @name Advanced Interface
@@ -232,6 +233,10 @@ struct EliminationDatachildFactors
                 {
                     if(bf!=NULL)
                     {
+                        if(bf->model_!=NULL)
+                        {
+                         delete bf->model_;
+                        }
                         delete bf;
                         bf=NULL;
                     }
@@ -278,11 +283,14 @@ void InitEliminationDataISAM2childFactors(EliminationDataISAM2childFactors *curr
         EliminationDataISAM2childFactors *parentdata);
 
 RealGaussianFactor* EliminationPostOrderVisitor(Cluster* node, EliminationDatachildFactors* myData,
-        BayesTree* result,int Eliminatetype, std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
+        BayesTree* result,
+         std::list<BayesTreeCliqueBase*>* orphans,
+         const GaussianFactorGraph& gf,const Factorization Eliminatetype);
 
 RealGaussianFactor* ISAM2EliminationPostOrderVisitor(Cluster* node,
         EliminationDataISAM2childFactors* myData,
-        ISAM2* result,int Eliminatetype, std::list<ISAM2Clique*>* orphans,const GaussianFactorGraph& gf);
+        ISAM2* result, std::list<ISAM2Clique*>* orphans
+        ,const GaussianFactorGraph& gf,const Factorization Eliminatetype);
 
 
 struct CTTraversalNode
@@ -314,11 +322,16 @@ struct CTTraversalNodeISAM2
 
 int I2ClusterTreeDepthFirstForest(EliminatableClusterTree* forest,
                                   EliminationDataISAM2childFactors* rootData,
-                                  ISAM2* result,int EFunction, std::list<ISAM2Clique*>* orphans,const GaussianFactorGraph& gf);
+                                  ISAM2* result,
+                                  std::list<ISAM2Clique*>* orphans,
+                                  const GaussianFactorGraph& gf,
+                                  const Factorization EFunction=CHOLESKY);
 int ClusterTreeDepthFirstForest(EliminatableClusterTree* forest,
                                 EliminationDatachildFactors* rootData,
-                                BayesTree* result,int Eliminatetype,
-                                std::list<BayesTreeCliqueBase*>* orphans,const GaussianFactorGraph& gf);
+                                BayesTree* result,
+                                std::list<BayesTreeCliqueBase*>* orphans,
+                                const GaussianFactorGraph& gf,
+                                const Factorization Eliminatetype=CHOLESKY);
 
 class ConstructorTraversalDataChildFactors
 {

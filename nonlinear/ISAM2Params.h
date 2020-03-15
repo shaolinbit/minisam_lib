@@ -141,7 +141,6 @@ struct  ISAM2Params
 
     bool evaluateNonlinearError; ///< Whether to evaluate the nonlinear error before and after the update, to return in ISAM2Result from update()
 
-    enum Factorization { CHOLESKY, QR };
 
     Factorization factorization;
 
@@ -175,7 +174,7 @@ struct  ISAM2Params
         int _relinearizeSkip = 10, ///< see ISAM2Params::relinearizeSkip
         bool _enableRelinearization = true, ///< see ISAM2Params::enableRelinearization
         bool _evaluateNonlinearError = false, ///< see ISAM2Params::evaluateNonlinearError
-        Factorization _factorization = ISAM2Params::CHOLESKY, ///< see ISAM2Params::factorization
+        Factorization _factorization =CHOLESKY, ///< see ISAM2Params::factorization
         bool _cacheLinearizedFactors = true ///< see ISAM2Params::cacheLinearizedFactors
                                        //  const KeyFormatter& _keyFormatter = DefaultKeyFormatter ///< see ISAM2::Params::keyFormatter
     ) :optimizationParamsDogleg(_optimizationParamsDog),
@@ -292,9 +291,9 @@ struct  ISAM2Params
     }
 
 
-    int  getEliminationFunction() const
+    Factorization  getEliminationFunction() const
     {
-        return factorization == CHOLESKY ? 1 : 0;
+        return factorization;
     }
 
     /// @}
