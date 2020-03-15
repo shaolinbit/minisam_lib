@@ -56,7 +56,8 @@ public:
     std::map<int,minivector> optimizeGradientSearch() const;
     std::map<int,minivector> gradientAtZero() const;
     std::list<minivector> operator*(const std::map<int,minivector>& x) const;
-    std::map<int,minivector> optimize(std::vector<int>& ordering, const int Eliminatekind) const;
+    std::map<int,minivector> optimize(std::vector<int>& ordering,
+    const Factorization Eliminatekind=CHOLESKY) const;
     std::map<int,minivector> hessianDiagonal() const;
 
 };

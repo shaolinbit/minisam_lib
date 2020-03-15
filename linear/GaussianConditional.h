@@ -30,14 +30,10 @@ public:
     virtual ~GaussianConditional();
     GaussianConditional(const GaussianConditional &rObj);
 
-    /** Constructor with arbitrary number of frontals and parents.
-    *   @tparam TERMS A container whose value type is std::pair<Key, Matrix>, specifying the
-    *           collection of keys and matrices making up the conditional.
-    GaussianConditional(const std::pair<int, Eigen::MatrixXd> &terms,
-                        const JacobianFactor &nrFrontals, const JacobianFactor &nrParents, const minivector &d,
-                        DiagonalNoiseModel *sigmas =NULL);
-                        //DiagonalNoiseModel *sigmas =new DiagonalNoiseModel());
-    */
+       /** constructor with no parents |Rx-d| */
+    GaussianConditional(int key, const minimatrix &R,const minivector &d,
+                        GaussianNoiseModel*  sigmas = NULL);
+
     /** Constructor with arbitrary number keys, and where the augmented matrix is given all together
      *  instead of in block terms.  Note that only the active view of the provided augmented matrix
      *  is used, and that the matrix data is copied into a newly-allocated matrix in the constructed

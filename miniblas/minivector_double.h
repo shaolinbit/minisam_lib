@@ -256,7 +256,7 @@ minimatrix_subrow (minimatrix * m, const size_t i,
                    const size_t offset, const size_t n);
 
 minivector
-minimatrix_subcolumn (minimatrix * m, const size_t j,
+minimatrix_subcolumn_var(minimatrix * m, const size_t j,
                       const size_t offset, const size_t n);
 minivector
 minimatrix_subcolumn (const minimatrix& m, const size_t j,

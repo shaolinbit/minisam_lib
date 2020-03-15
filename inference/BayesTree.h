@@ -108,19 +108,19 @@ public:
      *  Alternatively, it may be directly used as its factor base class.  For example, for Gaussian
      *  systems, this returns a GaussianConditional, which inherits from JacobianFactor and
      *  GaussianFactor. */
-    std::pair<GaussianConditional*,GaussianBayesNet*> marginalFactor(int j,int Eliminatefunction);
+    std::pair<GaussianConditional*,GaussianBayesNet*> marginalFactor(int j,Factorization EliminatefunctionType=CHOLESKY);
 
     /**
      * return joint on two variables
      * Limitation: can only calculate joint if cliques are disjoint or one of them is root
      */
-    GaussianFactorGraph* joint(int j1, int j2, const int Eliminatefunction);
+    GaussianFactorGraph* joint(int j1, int j2, Factorization Eliminatefunction=CHOLESKY);
 
     /**marginalFactor
      * return joint on two variables as a BayesNet
      * Limitation: can only calculate joint if cliques are disjoint or one of them is root
      */
-    GaussianBayesNet* jointBayesNet(int j1, int j2, const int Eliminatefunction);
+    GaussianBayesNet* jointBayesNet(int j1, int j2, Factorization Eliminatefunction=CHOLESKY);
 
 
     /// @}

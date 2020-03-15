@@ -58,8 +58,9 @@ struct ETNode
         }
     }
     RealGaussianFactor* eliminate(GaussianBayesNet* output,
-                                  const int  Eliminatefunction,
-                                  const std::vector<RealGaussianFactor*>& childrenFactors,const GaussianFactorGraph& gf);
+                                  const std::vector<RealGaussianFactor*>& childrenFactors,
+                                  const GaussianFactorGraph& gf,
+                                  const Factorization  Eliminatefunction=CHOLESKY);
 };
 
 class EliminationTree
@@ -110,7 +111,7 @@ public:
     * @return The Bayes net and factor graph resulting from elimination
     */
     std::pair<GaussianBayesNet*, GaussianFactorGraph*>
-    eliminate(const int Eliminatefunction,const GaussianFactorGraph& gf) const;
+    eliminate(const GaussianFactorGraph& gf,const Factorization Eliminatefunction=CHOLESKY) const;
 
 
     /// @name Testable
@@ -154,6 +155,11 @@ struct ETEliminationDataChildrenFactors
         {
             if(bf!=NULL)
             {
+                if(bf->model_!=NULL)
+                {
+                  delete bf->model_;
+                  bf->model_=NULL;
+                }
                 delete bf;
                 bf=NULL;
             }
@@ -176,10 +182,13 @@ struct ETTraversalNode
 };
 
 std::vector<RealGaussianFactor*>
-inferenceEliminateTree(GaussianBayesNet* result, const EliminationTree& tree, const int Eliminatefunction,
-                       const GaussianFactorGraph& gf);
+inferenceEliminateTree(GaussianBayesNet* result, const EliminationTree& tree,
+                       const GaussianFactorGraph& gf,
+                       const Factorization Eliminatefunction=CHOLESKY);
 void ETDepthFirstForestBN(GaussianBayesNet* BNresult,
-                          const int elimationtype,const EliminationTree& forest,
-                          ETEliminationDataChildrenFactors* rootData,const GaussianFactorGraph& gf);
+                          const EliminationTree& forest,
+                          ETEliminationDataChildrenFactors* rootData,
+                          const GaussianFactorGraph& gf,
+                          const Factorization elimationtype=CHOLESKY);
 };
 #endif // ELIMINATIONTREE_H_INCLUDED
